@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Faculty+Glyphic&family=Lato:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.site-header > .container {
+  width: min(var(--content-width), calc(100% - 40px));
+  margin-inline: auto;
+}
+
+:root {
+  --paper: #efe7dc;
+  --ink: #222222;
+  --blue: #2c5aa0;
+  --blue-dark: #214478;
+  --paper-deep: #e4d8c9;
+  --line: #cdbfae;
+  --serif: "Faculty Glyphic", Georgia, serif;
+  --sans: "Lato", Arial, sans-serif;
+  --content-width: 1160px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background-color: var(--paper);
+  font-family: var(--sans);
+  line-height: 1.6;
+  font-size: 1.3em;
+}
+
+a {
+  color: inherit;
+}
+
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+}
+
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
