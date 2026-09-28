@@ -57,8 +57,8 @@
         <article class="feature-card">
           <span class="feature-icon" aria-hidden="true">▤</span>
           <h3>Albums & compositions</h3>
-          <p>Écoutez les albums de Bards in Exile et découvrez les compositions de Lucius Barde.</p>
-          <a href="#albums" class="text-link">Découvrir les albums →</a>
+          <p>Écoutez les albums de Bards in Exile et découvrez les compositions de Lucius Barde sur Spotify, Apple Music, Bandcamp et autres.</p>
+          <a href="https://linktr.ee/bardsinexile" target="_blank" class="text-link">Plateformes disponibles →</a>
         </article>
       </div>
     </section>

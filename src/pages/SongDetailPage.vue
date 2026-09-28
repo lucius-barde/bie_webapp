@@ -26,29 +26,33 @@
         <article class="song-article">
           <!-- Main Info -->
           <div class="song-info">
-            <div v-if="song.song_type_legacy" class="info-row">
-              <strong>Type:</strong>
-              <span>{{ song.song_type_legacy }}</span>
+            <div class="info-left">
+              <div v-if="song.song_type_legacy" class="info-row">
+                <strong>Type:</strong>
+                <span>{{ song.song_type_legacy }}</span>
+              </div>
+              <div v-if="song.song_author_legacy" class="info-row">
+                <strong>Auteur:</strong>
+                <span>{{ song.song_author_legacy }}</span>
+              </div>
+              <div v-if="song.song_date_info" class="info-row">
+                <strong>Époque:</strong>
+                <span>{{ song.song_date_info }}</span>
+              </div>
+              <div v-if="song.song_duration_sec" class="info-row">
+                <strong>Durée:</strong>
+                <span>{{ formatDuration(song.song_duration_sec) }}</span>
+              </div>
+              <div v-if="song.song_collection_legacy" class="info-row">
+                <strong>Collection:</strong>
+                <span>{{ song.song_collection_legacy }}</span>
+              </div>
             </div>
-            <div v-if="song.song_artist" class="info-row">
-              <strong>Artiste:</strong>
-              <span>{{ song.song_artist }}</span>
-            </div>
-            <div v-if="song.song_author_legacy" class="info-row">
-              <strong>Auteur:</strong>
-              <span>{{ song.song_author_legacy }}</span>
-            </div>
-            <div v-if="song.song_date_info" class="info-row">
-              <strong>Époque:</strong>
-              <span>{{ song.song_date_info }}</span>
-            </div>
-            <div v-if="song.song_duration_sec" class="info-row">
-              <strong>Durée:</strong>
-              <span>{{ formatDuration(song.song_duration_sec) }}</span>
-            </div>
-            <div v-if="song.song_collection_legacy" class="info-row">
-              <strong>Collection:</strong>
-              <span>{{ song.song_collection_legacy }}</span>
+            <div class="info-right">
+              <div class="info-row">
+                <strong>Lien YouTube:</strong>
+                <span>Lien YouTube bientôt disponible</span>
+              </div>
             </div>
           </div>
 
@@ -58,30 +62,36 @@
             <p>{{ song.song_bie_comments }}</p>
           </div>
 
-          <!-- Links Section -->
-          <div class="song-links">
-            <h2>Ressources</h2>
-            <div class="links-grid">
-              <a
-                v-if="song.song_youtube_link"
-                :href="song.song_youtube_link"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="resource-link"
-              >
-                ▶ Écouter sur YouTube
-              </a>
-              <a
-                v-if="song.song_musicsheet_link"
-                :href="song.song_musicsheet_link"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="resource-link"
-              >
-                ♫ Consulter la partition
-              </a>
-            </div>
-          </div>
+          <!-- Description Section -->
+          <section class="song-section">
+            <h2>Description</h2>
+            <p>Description du chant bientôt disponible</p>
+          </section>
+
+          <!-- Lyrics Section -->
+          <section class="song-section">
+            <h2>Paroles</h2>
+            <div class="bie-lyrics">Paroles bientôt disponibles</div>
+          </section>
+
+          <!-- Translations Section -->
+          <section class="song-section">
+            <h2>Traductions</h2>
+            <details class="translation-details">
+              <summary>Langue 1</summary>
+              <div>Langue 1 bientôt disponible</div>
+            </details>
+            <details class="translation-details">
+              <summary>Langue 2</summary>
+              <div>Langue 2 bientôt disponible</div>
+            </details>
+          </section>
+
+          <!-- Sources Section -->
+          <section class="song-section">
+            <h2>Sources</h2>
+            <p>Sources bientôt disponibles</p>
+          </section>
 
           <!-- Navigation -->
           <div class="song-navigation">
@@ -290,7 +300,17 @@ watch(() => route.params.songId, () => {
   max-width: 760px;
 }
 
+
+
+.info-left,
+.info-right {
+  flex: 1;
+}
+
 .song-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
   margin-bottom: 40px;
   padding: 24px;
   border: 1px solid var(--line);
@@ -315,6 +335,54 @@ watch(() => route.params.songId, () => {
   font-weight: 600;
 }
 
+.song-section {
+  margin-bottom: 40px;
+}
+
+.song-section h2 {
+  margin-bottom: 16px;
+}
+
+.bie-lyrics {
+  padding: 20px;
+  background: rgb(255 255 255 / 50%);
+  border-left: 4px solid var(--blue);
+  border-radius: 2px;
+  font-family: monospace;
+  white-space: pre-wrap;
+  line-height: 1.8;
+}
+
+.translation-details {
+  margin-bottom: 12px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.translation-details summary {
+  padding: 12px 16px;
+  background: var(--paper-deep);
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
+}
+
+.translation-details summary:hover {
+  background: var(--line);
+}
+
+.translation-details[open] summary {
+  background: rgb(44 90 160 / 10%);
+  border-bottom: 1px solid var(--line);
+}
+
+.translation-details > div {
+  padding: 16px;
+  background: white;
+}
+
 .song-description {
   margin-bottom: 40px;
 }
@@ -328,37 +396,12 @@ watch(() => route.params.songId, () => {
   color: rgb(34 34 34 / 85%);
 }
 
-.song-links {
-  margin-bottom: 40px;
+.song-section p {
+  line-height: 1.8;
+  color: rgb(34 34 34 / 85%);
 }
 
-.song-links h2 {
-  margin-bottom: 16px;
-}
 
-.links-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
-}
-
-.resource-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 18px;
-  border: 1px solid var(--blue);
-  border-radius: 4px;
-  color: var(--blue);
-  text-decoration: none;
-  transition: all 160ms ease;
-  font-size: 14px;
-}
-
-.resource-link:hover {
-  background: var(--blue);
-  color: white;
-}
 
 .song-navigation {
   display: grid;
@@ -447,6 +490,10 @@ watch(() => route.params.songId, () => {
     padding: 38px 0;
   }
 
+  .song-info {
+    grid-template-columns: 1fr;
+  }
+
   .info-row {
     grid-template-columns: 100px 1fr;
   }
@@ -458,6 +505,11 @@ watch(() => route.params.songId, () => {
   .prev-button,
   .next-button {
     flex-grow: 0;
+  }
+
+  .translation-details summary {
+    padding: 10px 12px;
+    font-size: 14px;
   }
 }
 
@@ -484,6 +536,7 @@ watch(() => route.params.songId, () => {
 
   .song-info {
     padding: 16px;
+    grid-template-columns: 1fr;
   }
 
   .info-row {

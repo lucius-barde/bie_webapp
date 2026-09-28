@@ -2,7 +2,7 @@
   <header class="site-header">
     <div class="container header-inner">
       <router-link to="/" class="brand" aria-label="Bards in Exile, accueil">
-        <span class="brand-mark" aria-hidden="true">♪</span>
+        <img class="brand-logo" src="/bardsinexile_logo.png" alt="" />
         <span>
           <span class="brand-name">Bards in Exile</span>
           <span class="brand-caption">Le chansonnier européen</span>
@@ -40,14 +40,10 @@
   text-decoration: none;
 }
 
-.brand-mark {
+.brand-logo {
   width: 42px;
   height: 42px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  font-size: 22px;
+  object-fit: contain;
 }
 
 .brand-name {

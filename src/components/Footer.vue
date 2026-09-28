@@ -31,7 +31,7 @@
       </div>
 
       <div class="copyright-bar">
-        <p class="copyright">© Bards in Exile · Le chansonnier européen</p>
+        <p class="copyright">© Bards in Exile · Le chansonnier européen <a href="/bie-login" class="login-link">Connexion</a></p>
       </div>
     </div>
   </footer>
@@ -94,6 +94,19 @@
   margin: 0;
   font-size: 12px;
   opacity: 0.8;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.login-link {
+  color: var(--paper);
+  text-decoration: none;
+  transition: opacity 160ms ease;
+}
+
+.login-link:hover {
+  opacity: 0.7;
 }
 
 @media (max-width: 760px) {

@@ -132,7 +132,7 @@ Exemple URL: /musique/12-ce-que-laino
 
 Couleurs:
 - Fond: #efe7dc (paper)
-- Texte: #222222 (ink)  
+- Texte: #222222 (ink)
 - Primaire: #2c5aa0 (blue)
 - Primaire foncée: #214478 (blue-dark)
 
