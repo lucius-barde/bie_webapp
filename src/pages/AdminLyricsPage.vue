@@ -326,7 +326,7 @@ onMounted(async () => {
   vertical-align: baseline;
 }
 
-.actions {
+.actions, .lyrics-actions {
   display: flex;
   gap: 8px;
   align-items: center;

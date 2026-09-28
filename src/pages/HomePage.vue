@@ -6,7 +6,7 @@
         <p class="eyebrow">Chants folk · médiévaux · traditionnels</p>
         <h1 id="hero-title">Paroles de chants d'Europe à découvrir et à faire revivre</h1>
         <p class="hero-copy">
-          Parcourez un répertoire de chants anciens et populaires,
+          Parcourez un répertoire de chants anciens et populaires de France, de Suisse et d'ailleurs,
           avec paroles, traductions et partitions.
         </p>
 
@@ -22,9 +22,8 @@
 
         <div class="topic-list" aria-label="Thèmes populaires">
           <a href="/musique">Chants médiévaux</a>
-          <a href="/musique">Folk revival</a>
+          <a href="/musique">Chants militaires</a>
           <a href="/musique">Chants traditionnels</a>
-          <a href="/musique">Paroles & traductions</a>
           <a href="#partitions">Partitions</a>
         </div>
       </div>

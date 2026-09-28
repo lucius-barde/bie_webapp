@@ -36,6 +36,7 @@
               <option value="de">Allemand</option>
               <option value="de-old">Moyen / Haut allemand</option>
               <option value="it">Italien</option>
+              <option value="la">Latin</option>
               <option value="hu">Hongrois</option>
               <option value="arp">Arpitan (patois, franco-provençal)</option>
               <option value="pho">Alphabet phonétique</option>
@@ -66,6 +67,7 @@
               <option value="de">Allemand</option>
               <option value="de-old">Moyen / Haut allemand</option>
               <option value="it">Italien</option>
+              <option value="la">Latin</option>
               <option value="hu">Hongrois</option>
               <option value="arp">Arpitan (patois, franco-provençal)</option>
               <option value="pho">Alphabet phonétique</option>
@@ -96,6 +98,7 @@
               <option value="de">Allemand</option>
               <option value="de-old">Moyen / Haut allemand</option>
               <option value="it">Italien</option>
+              <option value="la">Latin</option>
               <option value="hu">Hongrois</option>
               <option value="arp">Arpitan (patois, franco-provençal)</option>
               <option value="pho">Alphabet phonétique</option>
@@ -126,6 +129,7 @@
               <option value="de">Allemand</option>
               <option value="de-old">Moyen / Haut allemand</option>
               <option value="it">Italien</option>
+              <option value="la">Latin</option>
               <option value="hu">Hongrois</option>
               <option value="arp">Arpitan (patois, franco-provençal)</option>
               <option value="pho">Alphabet phonétique</option>

@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { supabase } from '../lib/supabase'
 
 // Components
 import HomePage from '../pages/HomePage.vue'
@@ -47,38 +48,57 @@ const routes = [
   {
     path: '/admin',
     name: 'admin',
-    component: AdminPage
+    component: AdminPage,
+    meta: { requiresAuth: true }
   },
   {
     path: '/admin/song/create',
     name: 'song-create',
-    component: SongCreatePage
+    component: SongCreatePage,
+    meta: { requiresAuth: true }
   },
   {
     path: '/admin/song/:songId/edit',
     name: 'song-edit',
-    component: SongEditPage
+    component: SongEditPage,
+    meta: { requiresAuth: true }
   },
   {
     path: '/admin/lyrics',
     name: 'admin-lyrics',
-    component: AdminLyricsPage
+    component: AdminLyricsPage,
+    meta: { requiresAuth: true }
   },
   {
     path: '/admin/lyrics/create',
     name: 'lyrics-create',
-    component: LyricsCreatePage
+    component: LyricsCreatePage,
+    meta: { requiresAuth: true }
   },
   {
     path: '/admin/lyrics/:lyricsId/edit',
     name: 'lyrics-edit',
-    component: LyricsEditPage
+    component: LyricsEditPage,
+    meta: { requiresAuth: true }
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+// Protect admin routes from unauthenticated users
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requiresAuth) {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
+      next('/bie-login')
+      return
+    }
+  }
+
+  next()
 })
 
 export default router

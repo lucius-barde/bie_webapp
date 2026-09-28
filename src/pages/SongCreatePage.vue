@@ -162,14 +162,14 @@
 
         <!-- Comments / BIE Comments -->
         <div class="form-group">
-          <label for="song_bie_comments">Commentaires</label>
-          <textarea
+         <!--<label for="song_bie_comments">Commentaires</label>-->
+          <input type="hidden"
             id="song_bie_comments"
             v-model="formData.song_bie_comments"
             rows="6"
             placeholder="Entrez les commentaires sur ce chant..."
-            class="form-textarea"
-          ></textarea>
+            class="form-input"
+          ></input>
         </div>
 
         <!-- Form Actions -->

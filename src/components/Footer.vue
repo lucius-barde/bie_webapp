@@ -31,11 +31,54 @@
       </div>
 
       <div class="copyright-bar">
-        <p class="copyright">© Bards in Exile · Le chansonnier européen <a href="/bie-login" class="login-link">Connexion</a></p>
+        <p class="copyright">
+          © Bards in Exile · Le chansonnier européen
+          <span class="auth-info">
+            <template v-if="user">
+              Connecté: {{ user.email }} - <a href="/bie-logout" class="logout-link">Déconnexion</a>
+            </template>
+            <template v-else>
+              <a href="/bie-login" class="login-link">Connexion</a>
+            </template>
+          </span>
+        </p>
       </div>
     </div>
   </footer>
 </template>
+
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+import { supabase } from '../lib/supabase'
+
+const user = ref(null)
+let unsubscribe = null
+
+onMounted(async () => {
+  // Get current session
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session?.user) {
+    user.value = session.user
+  }
+
+  // Listen for auth changes
+  const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    if (session?.user) {
+      user.value = session.user
+    } else {
+      user.value = null
+    }
+  })
+  
+  unsubscribe = subscription.unsubscribe
+})
+
+onUnmounted(() => {
+  if (unsubscribe) {
+    unsubscribe()
+  }
+})
+</script>
 
 <style scoped>
 .site-footer {
@@ -97,15 +140,26 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.login-link {
+.auth-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.login-link,
+.logout-link {
   color: var(--paper);
   text-decoration: none;
   transition: opacity 160ms ease;
 }
 
-.login-link:hover {
+.login-link:hover,
+.logout-link:hover {
   opacity: 0.7;
 }
 
@@ -131,6 +185,11 @@
     flex-direction: row;
     flex-wrap: wrap;
     gap: 12px;
+  }
+
+  .copyright {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 

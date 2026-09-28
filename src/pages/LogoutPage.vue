@@ -22,8 +22,10 @@ onMounted(async () => {
     console.error('Logout error:', error)
   }
 
-  // Redirection vers l'accueil
-  router.push('/')
+  // Redirection vers l'accueil après 1 seconde
+  setTimeout(() => {
+    router.push('/')
+  }, 1000)
 })
 </script>
 

@@ -43,19 +43,24 @@
                 <strong>Durée:</strong>
                 <span>{{ formatDuration(song.song_duration_sec) }}</span>
               </div>
-              <div v-if="song.song_collection_legacy" class="info-row">
-                <strong>Collection:</strong>
-                <span>{{ song.song_collection_legacy }}</span>
-              </div>
               <div v-if="lyrics && lyrics.main_lyrics_language" class="info-row">
                 <strong>Langue:</strong>
                 <span>{{ getLanguageName(lyrics.main_lyrics_language) }}</span>
               </div>
+              <div v-if="song.song_collection_legacy" class="info-row">
+                <strong>Collection:</strong>
+                <span>{{ song.song_collection_legacy }}</span>
+              </div>
             </div>
-            <div class="info-right">
-              <div class="info-row">
-                <strong>Lien YouTube:</strong>
-                <span>Lien YouTube bientôt disponible</span>
+            <div v-if="youtubeEmbedUrl" class="info-right">
+              <div class="youtube-player">
+                <iframe
+                  :src="youtubeEmbedUrl"
+                  :title="`Lecteur YouTube pour ${song.song_title}`"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen
+                ></iframe>
               </div>
             </div>
           </div>
@@ -67,13 +72,16 @@
           </div>
 
           <!-- Description Section -->
-          <section class="song-section">
+          <section v-if="song.song_description_fr || song.song_description_en" class="song-section">
             <h2>Description</h2>
             <div class="flex">
-                <div class="w-1/2 pr-2"><p class="song-description-fr">Description française</p></div>
-                <div class="w-1/2 pl-2" style="font-style: italic;"><p class="song-description-en">English description</p></div>
+              <div v-if="song.song_description_fr" class="w-1/2 pr-2">
+                <p class="song-description-fr">{{ song.song_description_fr }}</p>
+              </div>
+              <div v-if="song.song_description_en" class="w-1/2 pl-2" style="font-style: italic;">
+                <p class="song-description-en">{{ song.song_description_en }}</p>
+              </div>
             </div>
-
           </section>
 
           <!-- Lyrics Section -->
@@ -100,9 +108,19 @@
           </section>
 
           <!-- Sources Section -->
-          <section class="song-section">
+          <section v-if="song.song_sources?.length" class="song-section">
             <h2>Sources</h2>
-            <p>Sources bientôt disponibles</p>
+            <ul style="list-style: square inside;">
+              <li v-for="(source, index) in song.song_sources" :key="index">
+                <a class="underline"
+                  v-if="getSourceLink(source)"
+                  :href="getSourceLink(source).url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >{{ getSourceLink(source).text }}</a>
+                <span v-else>{{ source }}</span>
+              </li>
+            </ul>
           </section>
 
           <!-- Navigation -->
@@ -164,7 +182,7 @@ const languageLabels = {
     "de-old": "Moyen / Haut allemand",
     "it": "Italien",
     "hu": "Hongrois",
-    "pho": "Alphabet phonétique"
+    "pho": "Phonétique"
   }
 }
 
@@ -172,6 +190,51 @@ const languageLabels = {
 const getLanguageName = (languageCode) => {
   if (!languageCode) return null
   return languageLabels.fr[languageCode] || languageCode
+}
+
+const getYoutubeVideoId = (value) => {
+  if (!value) return null
+
+  try {
+    const url = new URL(value)
+    if (url.protocol !== 'https:') return null
+
+    const hostname = url.hostname.toLowerCase()
+    let videoId = null
+
+    if (hostname === 'youtu.be') {
+      videoId = url.pathname.slice(1).split('/')[0]
+    } else if (hostname === 'youtube.com' || hostname.endsWith('.youtube.com')) {
+      if (url.pathname === '/watch') {
+        videoId = url.searchParams.get('v')
+      } else {
+        videoId = url.pathname.match(/^\/(?:embed|shorts|live)\/([^/]+)/)?.[1]
+      }
+    }
+
+    return videoId && /^[\w-]{11}$/.test(videoId) ? videoId : null
+  } catch {
+    return null
+  }
+}
+
+const youtubeEmbedUrl = computed(() => {
+  const videoId = getYoutubeVideoId(song.value?.song_youtube_link)
+  return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : null
+})
+
+const getSourceLink = (source) => {
+  if (typeof source !== 'string') return null
+
+  const match = source.match(/^\[([^\]]+)\]\((https:\/\/[^\s)]+)\)$/i)
+  if (!match) return null
+
+  try {
+    const url = new URL(match[2])
+    return url.protocol === 'https:' ? { text: match[1], url: url.href } : null
+  } catch {
+    return null
+  }
 }
 
 const previousSongLink = computed(() => {
@@ -367,15 +430,39 @@ watch(() => route.params.songId, () => {
   padding: 52px 0;
 }
 
+/*
 .song-article {
   max-width: 760px;
-}
+}*/
 
 
 
 .info-left,
 .info-right {
   flex: 1;
+}
+
+.info-right > strong {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--blue-dark);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.youtube-player {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.youtube-player iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 4px;
 }
 
 .song-info {

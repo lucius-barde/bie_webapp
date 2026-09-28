@@ -17,7 +17,7 @@
 
             <div class="flex">
                 <!-- Catalog ID (read-only) -->
-                <div class="form-group w-1/2 pr-2">
+                <div class="form-group w-1/3 pr-2">
                   <label for="song_catalog_id">ID du catalogue</label>
                   <input
                     id="song_catalog_id"
@@ -29,7 +29,7 @@
                 </div>
 
                 <!-- Status -->
-                <div class="form-group w-1/2 pl-2">
+                <div class="form-group w-1/3 pl-2 pr-2">
                   <label for="song_status">Statut</label>
                   <select v-model.number="formData.song_status" id="song_status" class="form-input">
                     <option :value="0">0 - En projet</option>
@@ -38,6 +38,16 @@
                     <option :value="3">3 - Publié</option>
                     <option :value="4">4 - Sorti en album</option>
                   </select>
+                </div>
+
+                <div class="form-group w-1/3 pl-2 flex items-end">
+                  <button
+                    type="button"
+                    class="rounded bg-red-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                    @click="showDeleteConfirmation = true"
+                  >
+                    Supprimer ce chant
+                  </button>
                 </div>
 
             </div>
@@ -172,6 +182,20 @@
             </div>
           </div>
 
+          <!-- Comments / BIE Comments -->
+          <div class="form-group">
+            <!--<label for="song_bie_comments">Commentaires B.i.E</label>-->
+            <input type="hidden"
+              id="song_bie_comments"
+              v-model="formData.song_bie_comments"
+              rows="6"
+              placeholder="Entrez les commentaires sur ce chant..."
+              class="form-input"
+            />
+          </div>
+
+          <h2 class="mb-4">Liens</h2>
+
           <!-- YouTube Link -->
           <div class="form-group">
             <label for="song_youtube_link">Lien YouTube</label>
@@ -186,7 +210,7 @@
 
           <!-- Music Sheet Link -->
           <div class="form-group">
-            <label for="song_musicsheet_link">Lien vers la partition</label>
+            <label for="song_musicsheet_link">Lien MuseScore</label>
             <input
               id="song_musicsheet_link"
               v-model="formData.song_musicsheet_link"
@@ -196,23 +220,14 @@
             />
           </div>
 
-          <!-- Comments / BIE Comments -->
-          <div class="form-group">
-            <label for="song_bie_comments">Commentaires B.i.E</label>
-            <textarea
-              id="song_bie_comments"
-              v-model="formData.song_bie_comments"
-              rows="6"
-              placeholder="Entrez les commentaires sur ce chant..."
-              class="form-textarea"
-            ></textarea>
-          </div>
+
+          <h2 class="mb-4">Paroles</h2>
 
           <!-- Lyrics -->
           <div class="form-group">
-            <label for="lyrics_id">Paroles</label>
+            <label for="lyrics_id">Lier à une fiche de paroles</label>
             <select v-model="formData.lyrics_id" id="lyrics_id" class="form-input">
-              <option :value="null">-- Aucune parole --</option>
+              <option :value="null">-- Créer une nouvelle fiche --</option>
               <option
                 v-for="lyric in lyrics"
                 :key="lyric.id"
@@ -221,6 +236,60 @@
                 {{ lyric.main_lyrics.length > 50 ? lyric.main_lyrics.substring(0, 50) + '...' : lyric.main_lyrics }}
               </option>
             </select>
+          </div>
+
+          <fieldset v-if="formData.lyrics_id === null" class="form-fieldset">
+            <legend>Ou insérer les paroles</legend>
+            <div class="form-group">
+              <label for="newLyricsText">Paroles</label>
+              <textarea
+                v-model="newLyricsText"
+                id="newLyricsText"
+                class="form-textarea"
+                placeholder="Entrez les paroles"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="newLyricsLanguage">Code de langue</label>
+              <input
+                v-model="newLyricsLanguage"
+                id="newLyricsLanguage"
+                type="text"
+                maxlength="8"
+                class="form-input"
+                placeholder="ex: fr, en, de..."
+              />
+            </div>
+          </fieldset>
+
+          <!-- Sources -->
+          <div class="form-group">
+            <label>Sources</label>
+            <div v-for="(source, index) in formData.song_sources" :key="index" class="mb-2 flex items-center gap-2">
+              <input
+                v-model="formData.song_sources[index]"
+                type="text"
+                :aria-label="`Source ${index + 1}`"
+                placeholder="Ex: [Référence](https://www...)"
+                class="form-input flex-grow"
+              />
+              <button
+                type="button"
+                class="rounded border border-gray-300 px-3 py-2 text-sm"
+                :aria-label="`Supprimer la source ${index + 1}`"
+                @click="removeSource(index)"
+              >
+                −
+              </button>
+            </div>
+            <button
+              type="button"
+              class="rounded border border-gray-300 px-3 py-2 text-sm"
+              :disabled="formData.song_sources.length >= 6"
+              @click="addSource"
+            >
+              + Ajouter une source
+            </button>
           </div>
 
           <!-- Form Actions -->
@@ -245,6 +314,49 @@
             {{ successMessage }}
           </div>
         </form>
+
+        <div
+          v-if="showDeleteConfirmation"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          role="presentation"
+          @click.self="showDeleteConfirmation = false"
+        >
+          <section
+            class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-song-title"
+            aria-describedby="delete-song-description"
+          >
+            <h2 id="delete-song-title" class="text-xl font-semibold text-gray-900">
+              Supprimer ce chant ?
+            </h2>
+            <p id="delete-song-description" class="mt-3 text-sm text-gray-600">
+              Cette action est définitive. Le chant « {{ formData.song_title }} » sera supprimé.
+            </p>
+            <p v-if="deleteError" class="mt-3 text-sm text-red-700" role="alert">
+              {{ deleteError }}
+            </p>
+            <div class="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                class="rounded border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                :disabled="isDeleting"
+                @click="showDeleteConfirmation = false"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                class="rounded bg-red-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                :disabled="isDeleting"
+                @click="deleteSong"
+              >
+                {{ isDeleting ? 'Suppression…' : 'Supprimer définitivement' }}
+              </button>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   </main>
@@ -261,6 +373,9 @@ const isLoading = ref(false)
 const pageLoading = ref(true)
 const errorMessage = ref('')
 const successMessage = ref('')
+const showDeleteConfirmation = ref(false)
+const isDeleting = ref(false)
+const deleteError = ref('')
 
 const formData = ref({
   song_catalog_id: null,
@@ -278,11 +393,27 @@ const formData = ref({
   song_description_en: '',
   song_youtube_link: '',
   song_musicsheet_link: '',
+  song_sources: [''],
   lyrics_id: null
 })
 
 const lyrics = ref([])
 const originalLyricsId = ref(null)
+
+const addSource = () => {
+  if (formData.value.song_sources.length < 6) {
+    formData.value.song_sources.push('')
+  }
+}
+
+const removeSource = (index) => {
+  formData.value.song_sources.splice(index, 1)
+  if (formData.value.song_sources.length === 0) {
+    formData.value.song_sources.push('')
+  }
+}
+const newLyricsText = ref('')
+const newLyricsLanguage = ref('')
 
 const fetchLyrics = async () => {
   try {
@@ -308,7 +439,7 @@ const fetchSongLyricsId = async (songCatalogId) => {
       .single()
 
     if (error && error.code !== 'PGRST116') throw error
-    
+
     const lyricsId = data?.lyrics_id || null
     formData.value.lyrics_id = lyricsId
     originalLyricsId.value = lyricsId
@@ -350,6 +481,9 @@ const fetchSongData = async () => {
         song_description_en: data.song_description_en ?? '',
         song_youtube_link: data.song_youtube_link || '',
         song_musicsheet_link: data.song_musicsheet_link || '',
+        song_sources: Array.isArray(data.song_sources) && data.song_sources.length > 0
+          ? data.song_sources.slice(0, 6)
+          : [''],
         lyrics_id: null
       }
 
@@ -360,6 +494,27 @@ const fetchSongData = async () => {
     errorMessage.value = `Erreur lors du chargement: ${error.message}`
   } finally {
     pageLoading.value = false
+  }
+}
+
+const deleteSong = async () => {
+  isDeleting.value = true
+  deleteError.value = ''
+
+  try {
+    const { error } = await supabase
+      .from('bardsinexile_songs')
+      .delete()
+      .eq('song_catalog_id', formData.value.song_catalog_id)
+
+    if (error) throw error
+
+    await router.push('/admin')
+  } catch (error) {
+    console.error('Error deleting song:', error)
+    deleteError.value = `Erreur lors de la suppression: ${error.message}`
+  } finally {
+    isDeleting.value = false
   }
 }
 
@@ -375,11 +530,33 @@ const submitForm = async () => {
   successMessage.value = ''
 
   try {
+    // Handle creation of new lyrics if needed
+    if (formData.value.lyrics_id === null && newLyricsText.value.trim() && newLyricsLanguage.value.trim()) {
+      // Create new lyrics entry
+      const { data: newLyricsData, error: createLyricsError } = await supabase
+        .from('bardsinexile_lyrics')
+        .insert([
+          {
+            main_lyrics: newLyricsText.value,
+            main_lyrics_language: newLyricsLanguage.value
+          }
+        ])
+        .select('id')
+        .single()
+
+      if (createLyricsError) throw createLyricsError
+
+      // Set the new lyrics ID
+      formData.value.lyrics_id = newLyricsData.id
+    }
+
     // Prepare data for update (remove null values except for catalog_id)
     const dataToUpdate = {}
     for (const [key, value] of Object.entries(formData.value)) {
       if (key !== 'song_catalog_id' && key !== 'lyrics_id') {
-        if (key === 'song_description_fr' || key === 'song_description_en') {
+        if (key === 'song_sources') {
+          dataToUpdate[key] = value.map(source => source.trim()).filter(Boolean)
+        } else if (key === 'song_description_fr' || key === 'song_description_en') {
           dataToUpdate[key] = value || null
         } else if (value !== null && value !== '') {
           dataToUpdate[key] = value
@@ -507,6 +684,22 @@ onMounted(async () => {
   font-weight: 600;
   font-size: 14px;
   color: var(--ink);
+}
+
+.form-fieldset {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--paper);
+}
+
+.form-fieldset legend {
+  margin-bottom: 16px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink);
+  padding: 0 8px;
 }
 
 .form-input,

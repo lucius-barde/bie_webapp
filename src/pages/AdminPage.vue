@@ -3,16 +3,11 @@
     <div class="admin-container">
       <h1>Admin Dashboard</h1>
 
-      <div class="admin-user">
-        <span v-if="user">{{ user.email }}</span>
-        <router-link to="/bie-logout" class="logout-btn">Déconnexion</router-link>
-      </div>
-
       <!-- Toolbar -->
       <div class="admin-toolbar">
         <div class="toolbar-buttons">
           <router-link to="/admin/song/create" class="btn btn-primary">+ Nouveau chant</router-link>
-          <router-link to="/admin/lyrics" class="btn btn-primary">Gérer les paroles</router-link>
+          <router-link to="/admin/lyrics" class="btn btn-sort">Gérer les paroles</router-link>
         </div>
 
         <div class="sort-buttons">
@@ -37,7 +32,7 @@
         <table class="admin-table">
           <thead>
             <tr>
-              <th>Actions</th>
+              <th>Éditer</th>
               <th>ID</th>
               <th>St.</th>
               <th>Titre</th>
@@ -59,18 +54,29 @@
               :class="`row-status-${song.song_status}`"
             >
               <td class="actions">
-                <router-link :to="`/admin/song/${song.song_catalog_id}/edit`" class="action-link edit">✏️</router-link>
-                <button @click="deleteSong(song.song_catalog_id)" class="action-link delete">🗑️</button>
+                <router-link :to="`/admin/song/${song.song_catalog_id}/edit`" class="action-link edit">Éditer</router-link>
+
+                <router-link
+                  v-if="getLyricsId(song)"
+                  :to="`/admin/lyrics/${getLyricsId(song)}/edit`"
+                  class="action-link lyrics"
+                >
+                  Paroles
+                </router-link>
               </td>
               <td>{{ song.song_catalog_id }}</td>
               <td>{{ song.song_status }}</td>
-              <td class="text-truncate">{{ song.song_title }}</td>
+              <td class="text-truncate underline">
+                <router-link :to="`/musique/${song.song_catalog_id}-${generateSlug(song.song_title)}`">
+                  {{ song.song_title }}
+                </router-link>
+              </td>
               <td class="text-truncate">{{ song.song_collection_legacy || '-' }}</td>
               <td>{{ song.song_track_number || '-' }}</td>
               <td>{{ song.song_duration_sec || '-' }}</td>
               <td class="text-truncate">{{ song.song_bie_comments || '-' }}</td>
-              <td>{{ song.song_type_legacy || '-' }}</td>
-              <td>{{ song.song_origin_legacy || '-' }}</td>
+              <td class="text-truncate">{{ song.song_type_legacy || '-' }}</td>
+              <td class="text-truncate">{{ song.song_origin_legacy || '-' }}</td>
               <td class="text-truncate">{{ song.song_author_legacy || '-' }}</td>
               <td>{{ song.song_date_info || '-' }}</td>
               <td>{{ formatDateTime(song.edited_at) }}</td>
@@ -95,7 +101,6 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const songs = ref([])
 const loading = ref(true)
-const user = ref(null)
 const currentSort = ref('by_id')
 
 const sortOptions = [
@@ -130,7 +135,29 @@ const fetchSongs = async () => {
     const { data, error } = await query
 
     if (error) throw error
-    songs.value = data || []
+
+    // Fetch lyrics associations separately
+    const { data: lyricsData, error: lyricsError } = await supabase
+      .from('bardsinexile_songs_have_lyrics')
+      .select('song_catalog_id, lyrics_id')
+
+    if (lyricsError) console.error('Error fetching lyrics associations:', lyricsError)
+
+    // Create a map of song_catalog_id to lyrics_id
+    const lyricsMap = {}
+    if (lyricsData) {
+      lyricsData.forEach(entry => {
+        lyricsMap[entry.song_catalog_id] = entry.lyrics_id
+      })
+    }
+
+    // Add lyrics_id to each song
+    const songsWithLyrics = data.map(song => ({
+      ...song,
+      lyrics_id: lyricsMap[song.song_catalog_id] || null
+    }))
+
+    songs.value = songsWithLyrics || []
   } catch (error) {
     console.error('Error fetching songs:', error)
     songs.value = []
@@ -147,28 +174,17 @@ const formatDateTime = (dateString) => {
   return `${dateStr} ${timeStr}`
 }
 
-const truncateText = (text, maxLength = 64) => {
-  if (!text) return '-'
-  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
+const getLyricsId = (song) => {
+  return song.lyrics_id || null
 }
 
-const deleteSong = async (songId) => {
-  if (!confirm('Êtes-vous sûr de vouloir supprimer ce chant?')) return
-
-  try {
-    const { error } = await supabase
-      .from('bardsinexile_songs')
-      .delete()
-      .eq('song_catalog_id', songId)
-
-    if (error) throw error
-
-    // Refresh the list
-    await fetchSongs()
-  } catch (error) {
-    console.error('Error deleting song:', error)
-    alert('Erreur lors de la suppression')
-  }
+const generateSlug = (title) => {
+  return title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
 }
 
 // Watch for sort changes and re-fetch
@@ -177,15 +193,7 @@ watch(() => currentSort.value, async () => {
 })
 
 onMounted(async () => {
-  // Check auth
-  const { data } = await supabase.auth.getUser()
-  if (!data?.user) {
-    router.push('/bie-login')
-    return
-  }
-  user.value = data.user
-
-  // Fetch songs
+  // Fetch songs (auth is handled by router guard)
   await fetchSongs()
 })
 </script>
@@ -205,32 +213,6 @@ onMounted(async () => {
 .admin-container h1 {
   margin-bottom: 20px;
   font-size: 28px;
-}
-
-.admin-user {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  padding: 12px 16px;
-  background: rgb(200 220 255 / 10%);
-  border: 1px solid rgb(44 90 160 / 20%);
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.logout-btn {
-  padding: 6px 12px;
-  background: var(--blue);
-  color: white;
-  text-decoration: none;
-  border-radius: 3px;
-  font-size: 12px;
-  transition: background-color 160ms ease;
-}
-
-.logout-btn:hover {
-  background: var(--blue-dark);
 }
 
 .admin-toolbar {
@@ -302,7 +284,7 @@ onMounted(async () => {
   width: 100%;
   border-collapse: collapse;
   background: white;
-  font-size: 13px;
+  font-size: 16px;
   font-family: monospace;
   letter-spacing: -0.05em;
 }
@@ -321,7 +303,7 @@ onMounted(async () => {
 .admin-table td {
   padding: 12px 8px;
   border-bottom: 1px solid var(--line);
-  height: 44px;
+  height: 56px;
   white-space: nowrap;
   vertical-align: baseline;
 }
@@ -377,13 +359,14 @@ onMounted(async () => {
   color: white;
 }
 
-.action-link.delete {
-  color: #d32f2f;
-  border-color: #d32f2f;
+
+.action-link.lyrics {
+  color: #7c3aed;
+  border-color: #7c3aed;
 }
 
-.action-link.delete:hover {
-  background: #d32f2f;
+.action-link.lyrics:hover {
+  background: #7c3aed;
   color: white;
 }
 
