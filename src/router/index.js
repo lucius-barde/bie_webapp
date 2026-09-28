@@ -9,6 +9,9 @@ import LogoutPage from '../pages/LogoutPage.vue'
 import AdminPage from '../pages/AdminPage.vue'
 import SongCreatePage from '../pages/SongCreatePage.vue'
 import SongEditPage from '../pages/SongEditPage.vue'
+import AdminLyricsPage from '../pages/AdminLyricsPage.vue'
+import LyricsCreatePage from '../pages/LyricsCreatePage.vue'
+import LyricsEditPage from '../pages/LyricsEditPage.vue'
 
 const routes = [
   {
@@ -55,6 +58,21 @@ const routes = [
     path: '/admin/song/:songId/edit',
     name: 'song-edit',
     component: SongEditPage
+  },
+  {
+    path: '/admin/lyrics',
+    name: 'admin-lyrics',
+    component: AdminLyricsPage
+  },
+  {
+    path: '/admin/lyrics/create',
+    name: 'lyrics-create',
+    component: LyricsCreatePage
+  },
+  {
+    path: '/admin/lyrics/:lyricsId/edit',
+    name: 'lyrics-edit',
+    component: LyricsEditPage
   }
 ]
 

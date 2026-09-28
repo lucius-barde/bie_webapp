@@ -152,6 +152,7 @@
 
           <div class="flex">
               <div class="form-group w-1/2 pr-2">
+                <label for="song_description_fr">Description FR</label>
                 <textarea
                 id="song_description_fr"
                 v-model="formData.song_description_fr"
@@ -190,14 +191,14 @@
               id="song_musicsheet_link"
               v-model="formData.song_musicsheet_link"
               type="url"
-              placeholder="https://..."
+              placeholder="https://www.musescore.com..."
               class="form-input"
             />
           </div>
 
           <!-- Comments / BIE Comments -->
           <div class="form-group">
-            <label for="song_bie_comments">Commentaires</label>
+            <label for="song_bie_comments">Commentaires B.i.E</label>
             <textarea
               id="song_bie_comments"
               v-model="formData.song_bie_comments"
@@ -205,6 +206,21 @@
               placeholder="Entrez les commentaires sur ce chant..."
               class="form-textarea"
             ></textarea>
+          </div>
+
+          <!-- Lyrics -->
+          <div class="form-group">
+            <label for="lyrics_id">Paroles</label>
+            <select v-model="formData.lyrics_id" id="lyrics_id" class="form-input">
+              <option :value="null">-- Aucune parole --</option>
+              <option
+                v-for="lyric in lyrics"
+                :key="lyric.id"
+                :value="lyric.id"
+              >
+                {{ lyric.main_lyrics.length > 50 ? lyric.main_lyrics.substring(0, 50) + '...' : lyric.main_lyrics }}
+              </option>
+            </select>
           </div>
 
           <!-- Form Actions -->
@@ -261,8 +277,45 @@ const formData = ref({
   song_description_fr: '',
   song_description_en: '',
   song_youtube_link: '',
-  song_musicsheet_link: ''
+  song_musicsheet_link: '',
+  lyrics_id: null
 })
+
+const lyrics = ref([])
+const originalLyricsId = ref(null)
+
+const fetchLyrics = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('bardsinexile_lyrics')
+      .select('*')
+      .order('main_lyrics', { ascending: true })
+
+    if (error) throw error
+    lyrics.value = data || []
+  } catch (error) {
+    console.error('Error fetching lyrics:', error)
+    errorMessage.value = `Erreur lors du chargement des paroles: ${error.message}`
+  }
+}
+
+const fetchSongLyricsId = async (songCatalogId) => {
+  try {
+    const { data, error } = await supabase
+      .from('bardsinexile_songs_have_lyrics')
+      .select('lyrics_id')
+      .eq('song_catalog_id', songCatalogId)
+      .single()
+
+    if (error && error.code !== 'PGRST116') throw error
+    
+    const lyricsId = data?.lyrics_id || null
+    formData.value.lyrics_id = lyricsId
+    originalLyricsId.value = lyricsId
+  } catch (error) {
+    console.error('Error fetching song lyrics ID:', error)
+  }
+}
 
 const fetchSongData = async () => {
   pageLoading.value = true
@@ -296,8 +349,11 @@ const fetchSongData = async () => {
         song_description_fr: data.song_description_fr ?? '',
         song_description_en: data.song_description_en ?? '',
         song_youtube_link: data.song_youtube_link || '',
-        song_musicsheet_link: data.song_musicsheet_link || ''
+        song_musicsheet_link: data.song_musicsheet_link || '',
+        lyrics_id: null
       }
+
+      await fetchSongLyricsId(data.song_catalog_id)
     }
   } catch (error) {
     console.error('Error fetching song:', error)
@@ -322,7 +378,7 @@ const submitForm = async () => {
     // Prepare data for update (remove null values except for catalog_id)
     const dataToUpdate = {}
     for (const [key, value] of Object.entries(formData.value)) {
-      if (key !== 'song_catalog_id') {
+      if (key !== 'song_catalog_id' && key !== 'lyrics_id') {
         if (key === 'song_description_fr' || key === 'song_description_en') {
           dataToUpdate[key] = value || null
         } else if (value !== null && value !== '') {
@@ -340,6 +396,29 @@ const submitForm = async () => {
       .eq('song_catalog_id', formData.value.song_catalog_id)
 
     if (error) throw error
+
+    // Handle lyrics association
+    if (formData.value.lyrics_id !== originalLyricsId.value) {
+      if (formData.value.lyrics_id !== null) {
+        // Insert or update lyrics association
+        const { error: lyricsError } = await supabase
+          .from('bardsinexile_songs_have_lyrics')
+          .upsert({
+            song_catalog_id: formData.value.song_catalog_id,
+            lyrics_id: formData.value.lyrics_id
+          }, { onConflict: 'song_catalog_id' })
+
+        if (lyricsError) throw lyricsError
+      } else if (originalLyricsId.value !== null) {
+        // Delete lyrics association if it was previously set
+        const { error: deleteError } = await supabase
+          .from('bardsinexile_songs_have_lyrics')
+          .delete()
+          .eq('song_catalog_id', formData.value.song_catalog_id)
+
+        if (deleteError) throw deleteError
+      }
+    }
 
     successMessage.value = 'Chant mis à jour avec succès'
 
@@ -362,6 +441,9 @@ onMounted(async () => {
     router.push('/bie-login')
     return
   }
+
+  // Fetch lyrics first
+  await fetchLyrics()
 
   // Fetch song data
   await fetchSongData()

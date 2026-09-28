@@ -29,3 +29,44 @@ create table public.bardsinexile_songs (
 create trigger bardsinexile_songs_edited_at_trigger BEFORE
 update on bardsinexile_songs for EACH row
 execute FUNCTION bardsinexile_songs_set_edited_at ();
+
+
+create table public.bardsinexile_lyrics (
+  id uuid not null default gen_random_uuid (),
+  main_lyrics text not null,
+  main_lyrics_language character varying(8) not null,
+  translation_one text null,
+  translation_one_language character varying(8) null,
+  translation_two text null,
+  translation_two_language character varying(8) null,
+  translation_three text null,
+  translation_three_language character varying(8) null,
+  created_at timestamp with time zone not null default now(),
+  constraint bardsinexile_lyrics_pkey primary key (id),
+  constraint translation_one_pair check (
+    (
+      (translation_one is null) = (translation_one_language is null)
+    )
+  ),
+  constraint translation_three_pair check (
+    (
+      (translation_three is null) = (translation_three_language is null)
+    )
+  ),
+  constraint translation_two_pair check (
+    (
+      (translation_two is null) = (translation_two_language is null)
+    )
+  )
+) TABLESPACE pg_default;
+
+create table public.bardsinexile_songs_have_lyrics (
+  song_catalog_id integer not null,
+  lyrics_id uuid not null,
+  constraint bardsinexile_songs_have_lyrics_pkey primary key (song_catalog_id, lyrics_id),
+  constraint one_lyrics_set_per_song unique (song_catalog_id),
+  constraint songs_have_lyrics_lyrics_fk foreign KEY (lyrics_id) references bardsinexile_lyrics (id) on delete CASCADE,
+  constraint songs_have_lyrics_song_fk foreign KEY (song_catalog_id) references bardsinexile_songs (song_catalog_id) on delete CASCADE
+) TABLESPACE pg_default;
+
+create index IF not exists bardsinexile_songs_have_lyrics_lyrics_id_idx on public.bardsinexile_songs_have_lyrics using btree (lyrics_id) TABLESPACE pg_default;

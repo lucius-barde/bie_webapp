@@ -1,7 +1,7 @@
 <template>
   <main class="admin-main">
     <div class="admin-container">
-      <h1>Admin Dashboard</h1>
+      <h1>Admin - Paroles</h1>
 
       <div class="admin-user">
         <span v-if="user">{{ user.email }}</span>
@@ -10,10 +10,7 @@
 
       <!-- Toolbar -->
       <div class="admin-toolbar">
-        <div class="toolbar-buttons">
-          <router-link to="/admin/song/create" class="btn btn-primary">+ Nouveau chant</router-link>
-          <router-link to="/admin/lyrics" class="btn btn-primary">Gérer les paroles</router-link>
-        </div>
+        <router-link to="/admin/lyrics/create" class="btn btn-primary">+ Nouvelle parole</router-link>
 
         <div class="sort-buttons">
           <button
@@ -29,111 +26,99 @@
 
       <!-- Loading State -->
       <div v-if="loading" class="loading">
-        Chargement des chants...
+        Chargement des paroles...
       </div>
 
-      <!-- Songs Table -->
+      <!-- Error State -->
+      <div v-else-if="error" class="error-state">
+        <p>Erreur lors du chargement des paroles: {{ error }}</p>
+        <button @click="fetchLyrics" class="btn btn-primary">Réessayer</button>
+      </div>
+
+      <!-- Lyrics Table -->
       <div v-else class="table-wrapper">
         <table class="admin-table">
           <thead>
             <tr>
               <th>Actions</th>
               <th>ID</th>
-              <th>St.</th>
-              <th>Titre</th>
-              <th>Collection</th>
-              <th>N°</th>
-              <th>Durée (s)</th>
-              <th>Commentaires</th>
-              <th>Type</th>
-              <th>Origine</th>
-              <th>Auteur</th>
-              <th>Date</th>
-              <th>Édité le</th>
+              <th>Langue</th>
+              <th>Aperçu</th>
+              <th>Traductions</th>
+              <th>Date de création</th>
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="song in songs"
-              :key="song.song_catalog_id"
-              :class="`row-status-${song.song_status}`"
-            >
+            <tr v-for="lyric in lyrics" :key="lyric.id">
               <td class="actions">
-                <router-link :to="`/admin/song/${song.song_catalog_id}/edit`" class="action-link edit">✏️</router-link>
-                <button @click="deleteSong(song.song_catalog_id)" class="action-link delete">🗑️</button>
+                <router-link :to="`/admin/lyrics/${lyric.id}/edit`" class="action-link edit">✏️</router-link>
+                <button @click="deleteLyric(lyric.id)" class="action-link delete">🗑️</button>
               </td>
-              <td>{{ song.song_catalog_id }}</td>
-              <td>{{ song.song_status }}</td>
-              <td class="text-truncate">{{ song.song_title }}</td>
-              <td class="text-truncate">{{ song.song_collection_legacy || '-' }}</td>
-              <td>{{ song.song_track_number || '-' }}</td>
-              <td>{{ song.song_duration_sec || '-' }}</td>
-              <td class="text-truncate">{{ song.song_bie_comments || '-' }}</td>
-              <td>{{ song.song_type_legacy || '-' }}</td>
-              <td>{{ song.song_origin_legacy || '-' }}</td>
-              <td class="text-truncate">{{ song.song_author_legacy || '-' }}</td>
-              <td>{{ song.song_date_info || '-' }}</td>
-              <td>{{ formatDateTime(song.edited_at) }}</td>
+              <td class="text-truncate">{{ truncateText(lyric.id, 12) }}</td>
+              <td>{{ lyric.main_lyrics_language || '-' }}</td>
+              <td class="text-truncate">{{ truncateText(lyric.main_lyrics, 50) }}</td>
+              <td>{{ countTranslations(lyric) }}</td>
+              <td>{{ formatDateTime(lyric.created_at) }}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <!-- Empty State -->
-      <div v-if="!loading && songs.length === 0" class="empty-state">
-        Aucun chant trouvé.
+      <div v-if="!loading && !error && lyrics.length === 0" class="empty-state">
+        Aucune parole trouvée.
       </div>
     </div>
   </main>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { supabase } from '../lib/supabase'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const songs = ref([])
+const lyrics = ref([])
 const loading = ref(true)
+const error = ref(null)
 const user = ref(null)
 const currentSort = ref('by_id')
 
 const sortOptions = [
-  { label: 'Tri par ID', value: 'by_id', query: 'order by song_catalog_id ASC' },
-  { label: 'Tri par ID inv.', value: 'by_id_desc', query: 'order by song_catalog_id DESC' },
-  { label: 'Tri par album', value: 'by_album', query: 'order by song_collection_legacy ASC, song_track_number ASC, song_catalog_id ASC' },
-  { label: 'Tri par statut', value: 'by_status', query: 'order by song_status DESC, song_catalog_id ASC' },
+  { label: 'Tri par ID', value: 'by_id' },
+  { label: 'Tri par ID inv.', value: 'by_id_desc' },
+  { label: 'Tri par langue', value: 'by_language' },
+  { label: 'Tri par date', value: 'by_date_desc' },
 ]
 
-const fetchSongs = async () => {
+const fetchLyrics = async () => {
   loading.value = true
+  error.value = null
   try {
     let query = supabase
-      .from('bardsinexile_songs')
+      .from('bardsinexile_lyrics')
       .select('*')
 
     // Apply sorting
-    const sortOption = sortOptions.find(s => s.value === currentSort.value)
-    if (sortOption.value === 'by_id') {
-      query = query.order('song_catalog_id', { ascending: true })
-    } else if (sortOption.value === 'by_id_desc') {
-      query = query.order('song_catalog_id', { ascending: false })
-    } else if (sortOption.value === 'by_album') {
-      query = query.order('song_collection_legacy', { ascending: true })
-        .order('song_track_number', { ascending: true })
-        .order('song_catalog_id', { ascending: true })
-    } else if (sortOption.value === 'by_status') {
-      query = query.order('song_status', { ascending: false })
-        .order('song_catalog_id', { ascending: true })
+    if (currentSort.value === 'by_id') {
+      query = query.order('id', { ascending: true })
+    } else if (currentSort.value === 'by_id_desc') {
+      query = query.order('id', { ascending: false })
+    } else if (currentSort.value === 'by_language') {
+      query = query.order('main_lyrics_language', { ascending: true })
+        .order('id', { ascending: true })
+    } else if (currentSort.value === 'by_date_desc') {
+      query = query.order('created_at', { ascending: false })
     }
 
-    const { data, error } = await query
+    const { data, error: fetchError } = await query
 
-    if (error) throw error
-    songs.value = data || []
-  } catch (error) {
-    console.error('Error fetching songs:', error)
-    songs.value = []
+    if (fetchError) throw fetchError
+    lyrics.value = data || []
+  } catch (err) {
+    console.error('Error fetching lyrics:', err)
+    error.value = err.message || 'Erreur inconnue'
+    lyrics.value = []
   } finally {
     loading.value = false
   }
@@ -152,28 +137,36 @@ const truncateText = (text, maxLength = 64) => {
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 }
 
-const deleteSong = async (songId) => {
-  if (!confirm('Êtes-vous sûr de vouloir supprimer ce chant?')) return
+const countTranslations = (lyric) => {
+  let count = 0
+  if (lyric.translation_one && lyric.translation_one_language) count++
+  if (lyric.translation_two && lyric.translation_two_language) count++
+  if (lyric.translation_three && lyric.translation_three_language) count++
+  return count
+}
+
+const deleteLyric = async (lyricId) => {
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cette parole?')) return
 
   try {
-    const { error } = await supabase
-      .from('bardsinexile_songs')
+    const { error: deleteError } = await supabase
+      .from('bardsinexile_lyrics')
       .delete()
-      .eq('song_catalog_id', songId)
+      .eq('id', lyricId)
 
-    if (error) throw error
+    if (deleteError) throw deleteError
 
     // Refresh the list
-    await fetchSongs()
-  } catch (error) {
-    console.error('Error deleting song:', error)
+    await fetchLyrics()
+  } catch (err) {
+    console.error('Error deleting lyric:', err)
     alert('Erreur lors de la suppression')
   }
 }
 
 // Watch for sort changes and re-fetch
 watch(() => currentSort.value, async () => {
-  await fetchSongs()
+  await fetchLyrics()
 })
 
 onMounted(async () => {
@@ -185,8 +178,8 @@ onMounted(async () => {
   }
   user.value = data.user
 
-  // Fetch songs
-  await fetchSongs()
+  // Fetch lyrics
+  await fetchLyrics()
 })
 </script>
 
@@ -242,12 +235,6 @@ onMounted(async () => {
   flex-wrap: wrap;
 }
 
-.toolbar-buttons {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
 .btn {
   padding: 10px 16px;
   border: none;
@@ -292,6 +279,19 @@ onMounted(async () => {
   font-size: 16px;
 }
 
+.error-state {
+  text-align: center;
+  padding: 40px;
+  color: #d32f2f;
+  background: #ffebee;
+  border: 1px solid #d32f2f;
+  border-radius: 4px;
+}
+
+.error-state p {
+  margin-bottom: 20px;
+}
+
 .table-wrapper {
   overflow-x: auto;
   border: 1px solid var(--line);
@@ -324,27 +324,6 @@ onMounted(async () => {
   height: 44px;
   white-space: nowrap;
   vertical-align: baseline;
-}
-
-/* Row status colors */
-.admin-table tbody tr.row-status-0 {
-  background-color: #fff;
-}
-
-.admin-table tbody tr.row-status-1 {
-  background-color: #fef3c7;
-}
-
-.admin-table tbody tr.row-status-2 {
-  background-color: #fee2e2;
-}
-
-.admin-table tbody tr.row-status-3 {
-  background-color: #dcfce7;
-}
-
-.admin-table tbody tr.row-status-4 {
-  background-color: #dbeafe;
 }
 
 .actions {
@@ -436,7 +415,5 @@ onMounted(async () => {
     padding: 3px 6px;
     font-size: 11px;
   }
-
-
 }
 </style>

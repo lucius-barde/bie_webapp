@@ -47,6 +47,10 @@
                 <strong>Collection:</strong>
                 <span>{{ song.song_collection_legacy }}</span>
               </div>
+              <div v-if="lyrics && lyrics.main_lyrics_language" class="info-row">
+                <strong>Langue:</strong>
+                <span>{{ getLanguageName(lyrics.main_lyrics_language) }}</span>
+              </div>
             </div>
             <div class="info-right">
               <div class="info-row">
@@ -65,25 +69,33 @@
           <!-- Description Section -->
           <section class="song-section">
             <h2>Description</h2>
-            <p>Description du chant bientôt disponible</p>
+            <div class="flex">
+                <div class="w-1/2 pr-2"><p class="song-description-fr">Description française</p></div>
+                <div class="w-1/2 pl-2" style="font-style: italic;"><p class="song-description-en">English description</p></div>
+            </div>
+
           </section>
 
           <!-- Lyrics Section -->
-          <section class="song-section">
+          <section v-if="lyrics && lyrics.main_lyrics" class="song-section">
             <h2>Paroles</h2>
-            <div class="bie-lyrics">Paroles bientôt disponibles</div>
+            <div class="bie-lyrics text-2xl">{{ lyrics.main_lyrics }}</div>
           </section>
 
           <!-- Translations Section -->
-          <section class="song-section">
+          <section v-if="lyrics && (lyrics.translation_one || lyrics.translation_two || lyrics.translation_three)" class="song-section">
             <h2>Traductions</h2>
-            <details class="translation-details">
-              <summary>Langue 1</summary>
-              <div>Langue 1 bientôt disponible</div>
+            <details v-if="lyrics.translation_one && lyrics.translation_one_language" class="translation-details">
+              <summary>{{ getLanguageName(lyrics.translation_one_language) }}</summary>
+              <div class="bie-lyrics">{{ lyrics.translation_one }}</div>
             </details>
-            <details class="translation-details">
-              <summary>Langue 2</summary>
-              <div>Langue 2 bientôt disponible</div>
+            <details v-if="lyrics.translation_two && lyrics.translation_two_language" class="translation-details">
+              <summary>{{ getLanguageName(lyrics.translation_two_language) }}</summary>
+              <div class="bie-lyrics">{{ lyrics.translation_two }}</div>
+            </details>
+            <details v-if="lyrics.translation_three && lyrics.translation_three_language" class="translation-details">
+              <summary>{{ getLanguageName(lyrics.translation_three_language) }}</summary>
+              <div class="bie-lyrics">{{ lyrics.translation_three }}</div>
             </details>
           </section>
 
@@ -123,9 +135,44 @@ import { supabase } from '../lib/supabase'
 
 const route = useRoute()
 const song = ref(null)
+const lyrics = ref(null)
 const previousSong = ref(null)
 const nextSong = ref(null)
 const loading = ref(true)
+
+// Codes de langues définis arbitraiement par B.i.E - Pour les traductions
+const languageLabels = {
+  "en": {
+    "arp": "Arpitan (Francoprovencal)",
+    "fr": "French",
+    "fr-old": "Ancient French",
+    "en": "English",
+    "en-old": "Middle English",
+    "de": "German",
+    "de-old": "Middle High German",
+    "it": "Italian",
+    "hu": "Hungarian",
+    "pho": "Phonetic alphabet"
+  },
+  "fr": {
+    "arp": "Arpitan (patois, franco-provençal)",
+    "fr": "Français",
+    "fr-old": "Ancien français",
+    "en": "Anglais",
+    "en-old": "Moyen anglais",
+    "de": "Allemand",
+    "de-old": "Moyen / Haut allemand",
+    "it": "Italien",
+    "hu": "Hongrois",
+    "pho": "Alphabet phonétique"
+  }
+}
+
+// Fonction pour convertir le code de langue en nom de langue
+const getLanguageName = (languageCode) => {
+  if (!languageCode) return null
+  return languageLabels.fr[languageCode] || languageCode
+}
 
 const previousSongLink = computed(() => {
   if (!previousSong.value) return '#'
@@ -182,8 +229,32 @@ const fetchSongData = async () => {
     if (songError) {
       console.error('Error fetching song:', songError)
       song.value = null
+      lyrics.value = null
     } else {
       song.value = songData
+
+      // Fetch lyrics for this song
+      try {
+        const { data: lyricData, error: lyricError } = await supabase
+          .from('bardsinexile_songs_have_lyrics')
+          .select('lyrics_id')
+          .eq('song_catalog_id', songCatalogId)
+          .single()
+
+        if (!lyricError && lyricData) {
+          // Fetch the full lyrics data
+          const { data: fullLyricData } = await supabase
+            .from('bardsinexile_lyrics')
+            .select('*')
+            .eq('id', lyricData.lyrics_id)
+            .single()
+          lyrics.value = fullLyricData || null
+        } else {
+          lyrics.value = null
+        }
+      } catch (error) {
+        lyrics.value = null
+      }
 
       // Fetch previous song (lower catalog_id)
       const { data: prevData } = await supabase
