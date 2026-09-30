@@ -250,15 +250,18 @@
               ></textarea>
             </div>
             <div class="form-group">
-              <label for="newLyricsLanguage">Code de langue</label>
-              <input
+              <label for="newLyricsLanguage">Langue des paroles *</label>
+              <select
                 v-model="newLyricsLanguage"
                 id="newLyricsLanguage"
-                type="text"
-                maxlength="8"
                 class="form-input"
-                placeholder="ex: fr, en, de..."
-              />
+                required
+              >
+                <option value="">-- Sélectionner une langue --</option>
+                <option v-for="language in lyricLanguages" :key="language.code" :value="language.code">
+                  {{ language.name }}
+                </option>
+              </select>
             </div>
           </fieldset>
 
@@ -366,6 +369,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import { lyricLanguages } from '../lib/languages'
 
 const router = useRouter()
 const route = useRoute()

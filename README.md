@@ -1,6 +1,7 @@
-# Bards in Exile - Application Web
+# Bards in Exile (B.i.E) - Web App
 
-Une application web moderne pour explorer un répertoire de chants folk, médiévaux et traditionnels d'Europe.
+FR: Projet de migration d'un répertoire de chants folk, médiévaux et traditionnels d'Europe, de WordPress vers une base de données personnalisée avec des fonctionnalités de recherche avancées.
+EN: A modern web app to migrate a European folk, medieval and traditional song repository, from WordPress to a custom database with advanced search features.
 
 ## 🚀 Technologies
 
@@ -114,7 +115,7 @@ La table `bardsinexile_songs` contient les chants avec les champs:
 - `song_duration_sec` - Durée en secondes
 - `song_youtube_link` - Lien YouTube
 - `song_musicsheet_link` - Lien vers la partition
-- `song_bie_comments` - Commentaires/description
+- `song_bie_comments` - Commentaires internes B.i.E (infos contenu IA, paroles explicites, etc.)
 - `song_collection_legacy` - Collection
 
 ## 📝 Notes

@@ -1,7 +1,6 @@
 <template>
   <main class="song-form-main">
     <div class="song-form-container">
-      <!-- Form -->
       <div>
         <div class="song-form-header">
           <router-link to="/admin/lyrics" class="back-link">← Retour à la gestion des paroles</router-link>
@@ -9,8 +8,6 @@
         </div>
 
         <form @submit.prevent="submitForm" class="song-form">
-
-          <!-- Main Lyrics (Required) -->
           <div class="form-group">
             <label for="main_lyrics">Paroles principales *</label>
             <textarea
@@ -24,136 +21,50 @@
             ></textarea>
           </div>
 
-          <!-- Main Language (Required) -->
           <div class="form-group">
             <label for="main_lyrics_language">Langue des paroles principales *</label>
             <select v-model="formData.main_lyrics_language" id="main_lyrics_language" class="form-input" required>
               <option value="">-- Sélectionner une langue --</option>
-              <option value="fr">Français</option>
-              <option value="fr-old">Ancien français</option>
-              <option value="en">Anglais</option>
-              <option value="en-old">Moyen anglais</option>
-              <option value="de">Allemand</option>
-              <option value="de-old">Moyen / Haut allemand</option>
-              <option value="it">Italien</option>
-              <option value="la">Latin</option>
-              <option value="hu">Hongrois</option>
-              <option value="arp">Arpitan (patois, franco-provençal)</option>
-              <option value="pho">Alphabet phonétique</option>
+              <option v-for="language in lyricLanguages" :key="language.code" :value="language.code">
+                {{ language.name }}
+              </option>
             </select>
           </div>
 
-          <!-- Translation One -->
-          <div class="form-group">
-            <label for="translation_one">Traduction 1</label>
-            <textarea
-              id="translation_one"
-              v-model="formData.translation_one"
-              placeholder="Entrez la première traduction (optionnel)..."
-              class="form-textarea"
-              rows="8"
-            ></textarea>
+          <div v-for="(translation, index) in translations" :key="translation.textField">
+            <div class="form-group">
+              <label :for="translation.textField">Traduction {{ index + 1 }}</label>
+              <textarea
+                :id="translation.textField"
+                v-model="formData[translation.textField]"
+                :placeholder="`Entrez la ${index === 0 ? 'première' : index === 1 ? 'deuxième' : 'troisième'} traduction (optionnel)...`"
+                class="form-textarea"
+                rows="8"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label :for="translation.languageField">Langue de la traduction {{ index + 1 }}</label>
+              <select v-model="formData[translation.languageField]" :id="translation.languageField" class="form-input">
+                <option value="">-- Aucune (laisser vide si pas de traduction) --</option>
+                <option v-for="language in lyricLanguages" :key="language.code" :value="language.code">
+                  {{ language.name }}
+                </option>
+              </select>
+            </div>
           </div>
 
-          <!-- Translation One Language -->
-          <div class="form-group">
-            <label for="translation_one_language">Langue de la traduction 1</label>
-            <select v-model="formData.translation_one_language" id="translation_one_language" class="form-input">
-              <option value="">-- Aucune (laisser vide si pas de traduction) --</option>
-              <option value="fr">Français</option>
-              <option value="fr-old">Ancien français</option>
-              <option value="en">Anglais</option>
-              <option value="en-old">Moyen anglais</option>
-              <option value="de">Allemand</option>
-              <option value="de-old">Moyen / Haut allemand</option>
-              <option value="it">Italien</option>
-              <option value="la">Latin</option>
-              <option value="hu">Hongrois</option>
-              <option value="arp">Arpitan (patois, franco-provençal)</option>
-              <option value="pho">Alphabet phonétique</option>
-            </select>
-          </div>
-
-          <!-- Translation Two -->
-          <div class="form-group">
-            <label for="translation_two">Traduction 2</label>
-            <textarea
-              id="translation_two"
-              v-model="formData.translation_two"
-              placeholder="Entrez la deuxième traduction (optionnel)..."
-              class="form-textarea"
-              rows="8"
-            ></textarea>
-          </div>
-
-          <!-- Translation Two Language -->
-          <div class="form-group">
-            <label for="translation_two_language">Langue de la traduction 2</label>
-            <select v-model="formData.translation_two_language" id="translation_two_language" class="form-input">
-              <option value="">-- Aucune (laisser vide si pas de traduction) --</option>
-              <option value="fr">Français</option>
-              <option value="fr-old">Ancien français</option>
-              <option value="en">Anglais</option>
-              <option value="en-old">Moyen anglais</option>
-              <option value="de">Allemand</option>
-              <option value="de-old">Moyen / Haut allemand</option>
-              <option value="it">Italien</option>
-              <option value="la">Latin</option>
-              <option value="hu">Hongrois</option>
-              <option value="arp">Arpitan (patois, franco-provençal)</option>
-              <option value="pho">Alphabet phonétique</option>
-            </select>
-          </div>
-
-          <!-- Translation Three -->
-          <div class="form-group">
-            <label for="translation_three">Traduction 3</label>
-            <textarea
-              id="translation_three"
-              v-model="formData.translation_three"
-              placeholder="Entrez la troisième traduction (optionnel)..."
-              class="form-textarea"
-              rows="8"
-            ></textarea>
-          </div>
-
-          <!-- Translation Three Language -->
-          <div class="form-group">
-            <label for="translation_three_language">Langue de la traduction 3</label>
-            <select v-model="formData.translation_three_language" id="translation_three_language" class="form-input">
-              <option value="">-- Aucune (laisser vide si pas de traduction) --</option>
-              <option value="fr">Français</option>
-              <option value="fr-old">Ancien français</option>
-              <option value="en">Anglais</option>
-              <option value="en-old">Moyen anglais</option>
-              <option value="de">Allemand</option>
-              <option value="de-old">Moyen / Haut allemand</option>
-              <option value="it">Italien</option>
-              <option value="la">Latin</option>
-              <option value="hu">Hongrois</option>
-              <option value="arp">Arpitan (patois, franco-provençal)</option>
-              <option value="pho">Alphabet phonétique</option>
-            </select>
-          </div>
-
-          <!-- Form Actions -->
           <div class="form-actions">
-            <button
-              type="submit"
-              :disabled="isLoading"
-              class="btn btn-primary"
-            >
+            <button type="submit" :disabled="isLoading" class="btn btn-primary">
               {{ isLoading ? 'Création en cours...' : 'Créer la parole' }}
             </button>
             <router-link to="/admin/lyrics" class="btn btn-secondary">Annuler</router-link>
           </div>
 
-          <!-- Error Message -->
           <div v-if="errorMessage" class="error-message">
             {{ errorMessage }}
           </div>
 
-          <!-- Success Message -->
           <div v-if="successMessage" class="success-message">
             {{ successMessage }}
           </div>
@@ -164,14 +75,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import { lyricLanguages } from '../lib/languages'
 
 const router = useRouter()
 const isLoading = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
+const translations = [
+  { textField: 'translation_one', languageField: 'translation_one_language' },
+  { textField: 'translation_two', languageField: 'translation_two_language' },
+  { textField: 'translation_three', languageField: 'translation_three_language' },
+]
 
 const formData = ref({
   main_lyrics: '',
@@ -185,7 +102,6 @@ const formData = ref({
 })
 
 const submitForm = async () => {
-  // Validate required fields
   if (!formData.value.main_lyrics.trim()) {
     errorMessage.value = 'Les paroles principales sont obligatoires'
     return
@@ -201,7 +117,6 @@ const submitForm = async () => {
   successMessage.value = ''
 
   try {
-    // Prepare data for insertion
     const dataToInsert = {
       main_lyrics: formData.value.main_lyrics,
       main_lyrics_language: formData.value.main_lyrics_language,
@@ -221,7 +136,6 @@ const submitForm = async () => {
 
     successMessage.value = 'Parole créée avec succès'
 
-    // Redirect to admin page after 1 second
     setTimeout(() => {
       router.push('/admin/lyrics')
     }, 1000)
@@ -233,13 +147,10 @@ const submitForm = async () => {
   }
 }
 
-// Check authentication on mount
-import { onMounted } from 'vue'
 onMounted(async () => {
   const { data } = await supabase.auth.getUser()
   if (!data?.user) {
-    router.push('/bie-login')
-    return
+    router.push('/admin/login')
   }
 })
 </script>
@@ -299,7 +210,7 @@ onMounted(async () => {
 
 .form-input,
 .form-textarea {
-  padding: 12px 12px;
+  padding: 12px;
   border: 1px solid var(--line);
   border-radius: 4px;
   font-family: var(--sans);
@@ -316,21 +227,9 @@ onMounted(async () => {
   box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
 }
 
-.form-input:disabled {
-  background: var(--paper-deep);
-  color: rgb(34 34 34 / 50%);
-  cursor: not-allowed;
-}
-
-.form-input::placeholder,
-.form-textarea::placeholder {
-  color: rgb(34 34 34 / 50%);
-}
-
 .form-textarea {
   resize: vertical;
   min-height: 120px;
-  font-family: monospace;
 }
 
 .form-actions {
@@ -340,20 +239,20 @@ onMounted(async () => {
 }
 
 .btn {
+  display: inline-block;
   padding: 12px 24px;
   border: none;
   border-radius: 4px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 160ms ease;
   text-decoration: none;
-  display: inline-block;
+  transition: all 160ms ease;
 }
 
 .btn-primary {
-  background: var(--blue);
   color: white;
+  background: var(--blue);
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -366,8 +265,8 @@ onMounted(async () => {
 }
 
 .btn-secondary {
-  background: var(--paper-deep);
   color: var(--ink);
+  background: var(--paper-deep);
   border: 1px solid var(--line);
 }
 
@@ -375,24 +274,25 @@ onMounted(async () => {
   background: var(--line);
 }
 
-.error-message {
-  margin-top: 20px;
-  padding: 12px 16px;
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  border-radius: 4px;
-  color: #dc2626;
-  font-size: 14px;
-}
-
+.error-message,
 .success-message {
   margin-top: 20px;
   padding: 12px 16px;
-  background: #dcfce7;
-  border: 1px solid #86efac;
+  border: 1px solid;
   border-radius: 4px;
-  color: #16a34a;
   font-size: 14px;
+}
+
+.error-message {
+  color: #dc2626;
+  background: #fee2e2;
+  border-color: #fecaca;
+}
+
+.success-message {
+  color: #16a34a;
+  background: #dcfce7;
+  border-color: #86efac;
 }
 
 @media (max-width: 760px) {

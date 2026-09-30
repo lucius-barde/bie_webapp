@@ -65,11 +65,6 @@
             </div>
           </div>
 
-          <!-- Description -->
-          <div v-if="song.song_bie_comments" class="song-description">
-            <h2>À propos de ce chant</h2>
-            <p>{{ song.song_bie_comments }}</p>
-          </div>
 
           <!-- Description Section -->
           <section v-if="song.song_description_fr || song.song_description_en" class="song-section">
@@ -150,6 +145,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import { getLanguageName } from '../lib/languages'
 
 const route = useRoute()
 const song = ref(null)
@@ -158,39 +154,6 @@ const previousSong = ref(null)
 const nextSong = ref(null)
 const loading = ref(true)
 
-// Codes de langues définis arbitraiement par B.i.E - Pour les traductions
-const languageLabels = {
-  "en": {
-    "arp": "Arpitan (Francoprovencal)",
-    "fr": "French",
-    "fr-old": "Ancient French",
-    "en": "English",
-    "en-old": "Middle English",
-    "de": "German",
-    "de-old": "Middle High German",
-    "it": "Italian",
-    "hu": "Hungarian",
-    "pho": "Phonetic alphabet"
-  },
-  "fr": {
-    "arp": "Arpitan (patois, franco-provençal)",
-    "fr": "Français",
-    "fr-old": "Ancien français",
-    "en": "Anglais",
-    "en-old": "Moyen anglais",
-    "de": "Allemand",
-    "de-old": "Moyen / Haut allemand",
-    "it": "Italien",
-    "hu": "Hongrois",
-    "pho": "Phonétique"
-  }
-}
-
-// Fonction pour convertir le code de langue en nom de langue
-const getLanguageName = (languageCode) => {
-  if (!languageCode) return null
-  return languageLabels.fr[languageCode] || languageCode
-}
 
 const getYoutubeVideoId = (value) => {
   if (!value) return null
