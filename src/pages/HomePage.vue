@@ -21,10 +21,12 @@
         </form>
 
         <div class="topic-list" aria-label="Thèmes populaires">
-          <a href="/musique">Chants médiévaux</a>
-          <a href="/musique">Chants militaires</a>
-          <a href="/musique">Chants traditionnels</a>
-          <a href="#partitions">Partitions</a>
+          <router-link to="/categorie/chants">Chants traditionnels</router-link>
+          <router-link to="/recherche?q=médiéval">Chants médiévaux</router-link>
+          <router-link to="/recherche?q=militaire">Chants militaires</router-link>
+          <router-link to="/recherche?q=royaliste">Chants royalistes</router-link>
+          <router-link to="/partitions-chants-folk">Partitions</router-link>
+          <router-link to="/categorie/compositions-personnelles">Compositions personnelles</router-link>
         </div>
       </div>
     </section>
@@ -50,7 +52,7 @@
           <span class="feature-icon" aria-hidden="true">♫</span>
           <h3>Partitions & traductions</h3>
           <p>Explorez les ressources disponibles pour apprendre les mélodies et comprendre les textes d'autres langues.</p>
-          <a href="#" class="text-link">Voir les ressources →</a>
+          <router-link to="/partitions-chants-folk" class="text-link">Voir les partitions →</router-link>
         </article>
 
         <article class="feature-card">
@@ -67,25 +69,33 @@
       <div class="container">
         <div class="section-heading">
           <div>
-            <h2 id="latest-title">À découvrir</h2>
-            <p>Une sélection de chants et de compositions récemment publiés dans le répertoire.</p>
+            <h2 id="latest-title">Découvrez les nouveaux chants</h2>
+            <p>Retrouvez ici les chants publiés récemment dans le répertoire.</p>
           </div>
           <router-link to="/musique" class="text-link">Tous les chants →</router-link>
         </div>
 
         <div class="chant-grid">
           <article v-for="song in latestSongs" :key="song.id" class="chant-card">
-            <img
-              :src="getPlaceholderImage(song.song_catalog_id)"
-              :alt="`Illustration pour ${song.song_title}`"
-              loading="lazy"
-            >
+            <router-link :to="songDetailLink(song)" class="chant-card-image-link" :aria-label="`Lire ${song.song_title}`">
+              <img
+                :src="getSongImage(song.song_image)"
+                :alt="song.song_image || ''"
+                loading="lazy"
+              >
+            </router-link>
             <div class="chant-card-body">
-              <p v-if="song.song_origin_legacy" class="chant-meta">{{ song.song_origin_legacy }}</p>
-              <h3>{{ song.song_title }}</h3>
+              <router-link
+                v-if="song.song_origin_legacy"
+                :to="originLink(song.song_origin_legacy)"
+                class="song-origin"
+              >{{ song.song_origin_legacy }}</router-link>
+              <router-link :to="songDetailLink(song)" class="song-title-link">
+                <h3>{{ song.song_title }}</h3>
+              </router-link>
               <p v-if="song.song_type_legacy">{{ song.song_type_legacy }}</p>
               <router-link
-                :to="`/musique/${song.song_catalog_id}-${generateSlug(song.song_title)}`"
+                :to="songDetailLink(song)"
                 class="button"
               >
                 Lire la suite...
@@ -106,13 +116,38 @@
       </div>
 
       <nav class="country-list" aria-label="Explorer par pays ou région">
-        <a href="#france">🇫🇷 France</a>
-        <a href="#switzerland">🇨🇭 Suisse</a>
-        <a href="#spain">🇪🇸 Espagne</a>
-        <a href="#occitanie">Occitanie</a>
-        <a href="#catalogne">Catalogne</a>
-        <a href="#europe">Toute l'Europe</a>
+        <router-link
+          v-for="origin in topOrigins"
+          :key="origin.name"
+          :to="originLink(origin.name)"
+        >
+          {{ origin.name }} ({{ origin.count }})
+        </router-link>
+        <router-link to="/musique">Toute l'Europe</router-link>
       </nav>
+    </section>
+
+    <!-- Albums and Bardic Club Section -->
+    <section class="section community-section" aria-label="Albums et communauté">
+      <div class="container community-grid">
+        <div id="albums" class="community-column" aria-labelledby="albums-title">
+          <h2 id="albums-title">Obtenez les albums</h2>
+          <p>Soutenez le projet en achetant les albums ou en écoutant les titres sur les plateformes suivantes:</p>
+          <nav class="platform-list" aria-label="Plateformes musicales">
+            <a class="button" href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Spotify</a>
+            <a class="button button-secondary" href="https://music.apple.com/" target="_blank" rel="noopener noreferrer">Apple Music</a>
+            <a class="button button-secondary" href="https://www.deezer.com/" target="_blank" rel="noopener noreferrer">Deezer</a>
+            <a class="button button-secondary" href="https://music.amazon.com/" target="_blank" rel="noopener noreferrer">Amazon</a>
+            <a class="button button-secondary" href="https://bardsinexile.bandcamp.com/" target="_blank" rel="noopener noreferrer">Bandcamp</a>
+          </nav>
+        </div>
+
+        <div class="community-column" aria-labelledby="bardic-club-title">
+          <h2 id="bardic-club-title">Rejoignez le Bardic Club</h2>
+          <p>Obtenez l'accès aux futurs chants et à des livres audio bonus en rejoignant l'espace Membres de la chaîne.</p>
+          <a class="button" href="https://www.youtube.com/@BardsInExileFolkRevival/join" target="_blank" rel="noopener noreferrer">Rejoindre...</a>
+        </div>
+      </div>
     </section>
 
     <!-- About Section -->
@@ -122,7 +157,7 @@
           <p class="eyebrow">Le projet</p>
           <h2 id="about-title">Un chansonnier européen vivant</h2>
           <p>
-            Bards in Exile fait revivre des chants de toute l'Europe et propose
+            Bards in Exile (Bardes en Exil) fait revivre des chants de toute l'Europe et propose
             aussi des compositions originales. Lancé en 2019 par Lucius Barde,
             le projet met à disposition un répertoire pensé pour être découvert,
             écouté et chanté à plusieurs voix.
@@ -131,7 +166,7 @@
         <aside class="about-note">
           <strong>Pour les curieux et les interprètes</strong>
           <p>Paroles, contexte historique, traductions et partitions selon les chants.</p>
-          <a href="#" class="text-link">En savoir plus →</a>
+          <router-link to="/le-projet" class="text-link">En savoir plus →</router-link>
         </aside>
       </div>
     </section>
@@ -140,12 +175,15 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
 
+const router = useRouter()
 const searchQuery = ref('')
 const latestSongs = ref([])
+const topOrigins = ref([])
 
-// Fetch latest 3 songs for the homepage
+// Load the latest songs and count published origins for the homepage.
 onMounted(async () => {
   try {
     const { data, error } = await supabase
@@ -157,8 +195,27 @@ onMounted(async () => {
 
     if (error) throw error
     latestSongs.value = data || []
+
+    const { data: originRows, error: originsError } = await supabase
+      .from('bardsinexile_songs')
+      .select('song_origin_legacy')
+      .gte('song_status', 3)
+      .not('song_origin_legacy', 'is', null)
+      .range(0, 9999)
+
+    if (originsError) throw originsError
+
+    const counts = new Map()
+    for (const row of originRows || []) {
+      const origin = row.song_origin_legacy?.trim()
+      if (origin) counts.set(origin, (counts.get(origin) || 0) + 1)
+    }
+    topOrigins.value = [...counts.entries()]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+      .slice(0, 6)
   } catch (error) {
-    console.error('Error fetching latest songs:', error)
+    console.error('Error fetching homepage songs and origins:', error)
   }
 })
 
@@ -171,18 +228,17 @@ const generateSlug = (title) => {
     .replace(/(^-|-$)/g, '')
 }
 
-const getPlaceholderImage = (catalogId) => {
-  const placeholderImages = [
-    'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=80',
-    'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=80',
-    'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=900&q=80',
-  ]
-  return placeholderImages[catalogId % placeholderImages.length]
-}
+const getSongImage = (image) => `/supabase-url-here/${image || ''}`
+
+const songDetailLink = (song) => `/musique/${song.song_catalog_id}-${generateSlug(song.song_title)}`
+
+const originLink = (origin) => origin === '[B.i.E]'
+  ? '/categorie/compositions-personnelles'
+  : `/categorie/chants/${encodeURIComponent(origin)}`
 
 const handleSearch = () => {
-  // Placeholder for search functionality
-  console.log('Searching for:', searchQuery.value)
+  const query = searchQuery.value.trim()
+  if (query) router.push({ path: '/recherche', query: { q: query } })
 }
 </script>
 
@@ -390,13 +446,19 @@ const handleSearch = () => {
   padding: 18px;
 }
 
-.chant-meta {
+.song-origin {
+  display: inline-block;
   margin: 0 0 7px;
   color: var(--blue-dark);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
+  text-decoration: none;
   text-transform: uppercase;
+}
+
+.song-origin:hover {
+  text-decoration: underline;
 }
 
 .chant-card h3 {
@@ -404,7 +466,7 @@ const handleSearch = () => {
   font-size: 19px;
 }
 
-.chant-card-body > p:not(.chant-meta) {
+.chant-card-body > p:not(.song-origin) {
   min-height: 48px;
   margin: 0 0 16px;
   font-size: 14px;
@@ -433,6 +495,47 @@ const handleSearch = () => {
   border-color: var(--blue);
   color: var(--blue);
 }
+
+.community-section {
+  background: rgb(228 216 201 / 35%);
+}
+
+.community-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 36px;
+}
+
+.community-column {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.community-column p {
+  margin: 10px 0 20px;
+}
+
+.platform-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.button-secondary {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: transparent;
+}
+
+.button-secondary:hover,
+.button-secondary:active {
+  border-color: var(--blue-dark);
+  color: var(--blue-dark);
+  background: transparent;
+}
+
 
 .about-panel {
   display: grid;
@@ -482,6 +585,11 @@ const handleSearch = () => {
   .about-panel {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+
+  .community-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
   }
 }
 

@@ -5,27 +5,28 @@
         <div class="footer-col">
           <h4>Explorez</h4>
           <nav>
-            <a href="#chants">Tous les chants</a>
-            <a href="#albums">Discographie</a>
-            <a href="#partitions">Partitions</a>
+            <router-link to="/musique">Tous les chants</router-link>
+            <a href="https://linktr.ee/bardsinexile" target="_blank" rel="noopener noreferrer">Discographie</a>
+            <router-link to="/partitions-chants-folk">Partitions</router-link>
           </nav>
         </div>
 
         <div class="footer-col">
           <h4>À propos</h4>
           <nav>
-            <a href="#project">Le projet</a>
-            <a href="#contact">Contact</a>
-            <a href="#legal">Mentions légales</a>
+            <router-link to="/le-projet">Le projet</router-link>
+            <router-link to="/contact">Contact</router-link>
+            <router-link to="/liens">Liens et sources</router-link>
           </nav>
         </div>
 
         <div class="footer-col">
-          <h4>Ressources</h4>
+          <h4>Réseaux sociaux</h4>
           <nav>
-            <a href="#community">Communauté</a>
-            <a href="#blog">Blog</a>
-            <a href="#social">Réseaux sociaux</a>
+            <a href="https://www.youtube.com/@bardsinexile" target="_blank" rel="noopener noreferrer">YouTube</a>
+            <a href="https://t.me/bardsinexile" target="_blank" rel="noopener noreferrer">Telegram</a>
+            <a href="https://x.com/bardsinexile" target="_blank" rel="noopener noreferrer">X (Twitter)</a>
+            <a href="https://linktr.ee/bardsinexile" target="_blank" rel="noopener noreferrer">Linktr.ee</a>
           </nav>
         </div>
       </div>

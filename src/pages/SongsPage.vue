@@ -3,8 +3,8 @@
     <!-- Hero Section -->
     <section class="hero hero-simple" aria-labelledby="songs-title">
       <div class="hero-content">
-        <h1 id="songs-title">Le répertoire de chants</h1>
-        <p class="hero-copy">Explorez notre sélection de chants folk, médiévaux et traditionnels d'Europe</p>
+        <h1 id="songs-title">{{ pageTitle }}</h1>
+        <p class="hero-copy">{{ pageSubtitle }}</p>
       </div>
     </section>
 
@@ -15,32 +15,10 @@
       </div>
 
       <div v-else>
-        <div class="chant-grid">
-          <article v-for="song in songs" :key="song.id" class="chant-card">
-            <img
-              :src="getPlaceholderImage(song.song_catalog_id)"
-              :alt="`Illustration pour ${song.song_title}`"
-              loading="lazy"
-            >
-            <div class="chant-card-body">
-              <p v-if="song.song_origin_legacy" class="chant-meta">{{ song.song_origin_legacy }}</p>
-              <h2>{{ song.song_catalog_id }}. {{ song.song_title }}</h2>
-              <p v-if="song.song_type_legacy">{{ song.song_type_legacy }}</p>
-              <router-link
-                :to="`/musique/${song.song_catalog_id}-${generateSlug(song.song_title)}`"
-                class="button"
-              >
-                Lire la suite...
-              </router-link>
-            </div>
-          </article>
-        </div>
-
-        <!-- Pagination -->
         <div class="pagination">
           <router-link
             v-if="currentPage > 1"
-            :to="`/musique/page/${currentPage - 1}`"
+            :to="pageLink(currentPage - 1)"
             class="pagination-link pagination-prev"
           >
             ← Précédent
@@ -53,7 +31,68 @@
 
           <router-link
             v-if="currentPage < totalPages"
-            :to="`/musique/page/${currentPage + 1}`"
+            :to="pageLink(currentPage + 1)"
+            class="pagination-link pagination-next"
+          >
+            Suivant →
+          </router-link>
+        </div>
+
+        <div class="chant-grid">
+          <article v-for="song in songs" :key="song.id" class="chant-card">
+            <router-link :to="songDetailLink(song)" class="chant-card-image-link" :aria-label="`Lire ${song.song_title}`">
+              <img
+                :src="getSongImage(song.song_image)"
+                :alt="song.song_image || ''"
+                loading="lazy"
+              >
+            </router-link>
+            <div class="chant-card-body">
+              <router-link
+                v-if="song.song_origin_legacy"
+                :to="originLink(song.song_origin_legacy)"
+                class="song-origin"
+              >{{ song.song_origin_legacy }}</router-link>
+              <router-link :to="songDetailLink(song)" class="song-title-link">
+                <h2>{{ song.song_catalog_id }}. {{ song.song_title }}</h2>
+              </router-link>
+              <p v-if="song.song_type_legacy">{{ song.song_type_legacy }}</p>
+              <a
+                v-if="isSheetList"
+                :href="song.song_musicsheet_link"
+                class="button"
+                target="_blank"
+                rel="noopener noreferrer"
+              >Voir la partition...</a>
+              &nbsp;
+              <router-link
+                :to="songDetailLink(song)"
+                :class="['button', { 'button-secondary': isSheetList }]"
+              >
+                Lire la suite...
+              </router-link>
+            </div>
+          </article>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+          <router-link
+            v-if="currentPage > 1"
+            :to="pageLink(currentPage - 1)"
+            class="pagination-link pagination-prev"
+          >
+            ← Précédent
+          </router-link>
+
+          <div class="pagination-info">
+            Page {{ currentPage }} sur {{ totalPages }}
+            ({{ totalSongs }} chants)
+          </div>
+
+          <router-link
+            v-if="currentPage < totalPages"
+            :to="pageLink(currentPage + 1)"
             class="pagination-link pagination-next"
           >
             Suivant →
@@ -76,32 +115,71 @@ const loading = ref(true)
 
 const SONGS_PER_PAGE = 30
 
-const currentPage = computed(() => {
-  const page = parseInt(route.params.page) || 1
-  return Math.max(1, page)
-})
+const currentPage = computed(() => Math.min(requestedPage.value, totalPages.value))
 
-const totalPages = computed(() => {
-  return Math.ceil(totalSongs.value / SONGS_PER_PAGE)
+const totalPages = computed(() => Math.ceil(totalSongs.value / SONGS_PER_PAGE) || 1)
+const searchTerm = computed(() => String(route.query.q || '').trim())
+const requestedPage = computed(() => Math.max(1, parseInt(route.params.page || route.query.page) || 1))
+const isSheetList = computed(() => route.path === '/partitions-chants-folk')
+const pageTitle = computed(() => {
+  if (route.path === '/partitions-chants-folk') return 'Partitions de chants traditionnels'
+  if (route.path === '/categorie/compositions-personnelles') return 'Compositions personnelles'
+  if (route.path === '/categorie/chants') return 'Chants traditionnels'
+  if (route.params.origin) return String(route.params.origin)
+  if (route.path === '/recherche') return 'Résultats de recherche'
+  return 'Tous les chants'
+})
+const pageSubtitle = computed(() => {
+  if (route.path === '/partitions-chants-folk') return "Parcourez un répertoire de partitions de chants anciens et populaires de France, de Suisse et d'ailleurs, disponibles sur MuseScore."
+  if (route.path === '/categorie/compositions-personnelles') return 'Découvrez les compositions exclusives des projets du label Bards in Exile'
+  if (route.path === '/categorie/chants') return "Explorez notre sélection de chants folk, médiévaux et traditionnels d'Europe"
+  if (route.params.origin) return 'Paroles de chansons folk et traditionnelles, triés par pays'
+  if (route.path === '/recherche') return `Résultats pour « ${searchTerm.value} »`
+  return 'Explorez le répertoire complet du projet Bards in Exile'
 })
 
 const fetchSongs = async () => {
   loading.value = true
   try {
-    // Get total count
-    const { count } = await supabase
-      .from('bardsinexile_songs')
-      .select('*', { count: 'exact', head: true })
-      .gte('song_status', 3)
+    const applyFilters = (query) => {
+      query = query.gte('song_status', 3)
 
+      if (route.path === '/categorie/compositions-personnelles') {
+        query = query.eq('song_origin_legacy', '[B.i.E]')
+      } else if (route.path === '/categorie/chants' && !route.params.origin) {
+        query = query.neq('song_origin_legacy', '[B.i.E]')
+      } else if (route.params.origin) {
+        query = query.eq('song_origin_legacy', String(route.params.origin))
+      }
+
+      if (isSheetList.value) query = query.not('song_musicsheet_link', 'is', null).neq('song_musicsheet_link', '')
+
+      if (route.path === '/recherche' && searchTerm.value) {
+        const escaped = searchTerm.value.replace(/[\\%,()]/g, ' ').trim()
+        if (!escaped) return query
+        query = query.or([
+          'song_title',
+          'song_origin_legacy',
+          'song_type_legacy',
+          'song_author_legacy',
+          'song_description_fr',
+          'song_description_en'
+        ].map((field) => `${field}.ilike.%${escaped}%`).join(','))
+      }
+
+      return query
+    }
+
+    const { count, error: countError } = await applyFilters(supabase
+      .from('bardsinexile_songs')
+      .select('*', { count: 'exact', head: true }))
+    if (countError) throw countError
     totalSongs.value = count || 0
 
-    // Get paginated songs
     const offset = (currentPage.value - 1) * SONGS_PER_PAGE
-    const { data, error } = await supabase
+    const { data, error } = await applyFilters(supabase
       .from('bardsinexile_songs')
-      .select('*')
-      .gte('song_status', 3)
+      .select('*'))
       .order('song_catalog_id', { ascending: false })
       .range(offset, offset + SONGS_PER_PAGE - 1)
 
@@ -123,20 +201,23 @@ const generateSlug = (title) => {
     .replace(/(^-|-$)/g, '')
 }
 
-const getPlaceholderImage = (catalogId) => {
-  const placeholderImages = [
-    'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=80',
-    'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=80',
-    'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=900&q=80',
-  ]
-  return placeholderImages[catalogId % placeholderImages.length]
-}
+const getSongImage = (image) => `/supabase-url-here/${image || ''}`
+
+const songDetailLink = (song) => `/musique/${song.song_catalog_id}-${generateSlug(song.song_title)}`
+
+const originLink = (origin) => origin === '[B.i.E]'
+  ? '/categorie/compositions-personnelles'
+  : `/categorie/chants/${encodeURIComponent(origin)}`
+
+const pageLink = (page) => route.path === '/musique' || route.path.startsWith('/musique/page/')
+  ? `/musique/page/${page}`
+  : { path: route.path, query: { ...route.query, page: String(page) } }
 
 onMounted(() => {
   fetchSongs()
 })
 
-watch(() => route.params.page, () => {
+watch(() => [route.path, route.params.page, route.params.origin, route.query.page, route.query.q], () => {
   fetchSongs()
 })
 </script>
@@ -217,21 +298,42 @@ watch(() => route.params.page, () => {
   padding: 18px;
 }
 
-.chant-meta {
+.song-origin {
+  display: inline-block;
   margin: 0 0 7px;
   color: var(--blue-dark);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
+  text-decoration: none;
   text-transform: uppercase;
 }
 
+.song-origin:hover {
+  text-decoration: underline;
+}
+
+.chant-card h2,
 .chant-card h3 {
   margin: 0 0 9px;
   font-size: 19px;
 }
 
-.chant-card-body > p:not(.chant-meta) {
+.song-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.song-title-link:hover {
+  color: var(--blue-dark);
+}
+
+.chant-card-image-link {
+  display: block;
+}
+
+
+.chant-card-body > p:not(.song-origin) {
   min-height: 48px;
   margin: 0 0 16px;
   font-size: 14px;
@@ -258,6 +360,14 @@ watch(() => route.params.page, () => {
 .chant-card .button:active {
   border-color: var(--blue-dark);
   background: var(--blue-dark);
+}
+
+.chant-card .button.button-secondary,
+.chant-card .button.button-secondary:hover,
+.chant-card .button.button-secondary:active {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: transparent;
 }
 
 .pagination {

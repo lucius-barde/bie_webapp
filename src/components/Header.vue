@@ -11,9 +11,9 @@
 
       <nav class="main-nav" aria-label="Navigation principale">
         <router-link to="/musique">Les chants</router-link>
-        <a href="#albums">Albums</a>
-        <a href="#partitions">Partitions</a>
-        <a href="#apropos">À propos</a>
+        <router-link to="/#albums">Albums</router-link>
+        <router-link to="/partitions-chants-folk">Partitions</router-link>
+        <router-link to="/le-projet">À propos</router-link>
         <router-link to="/musique" class="button">Explorer le répertoire</router-link>
       </nav>
     </div>

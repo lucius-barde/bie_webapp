@@ -13,6 +13,9 @@ import SongEditPage from '../pages/SongEditPage.vue'
 import AdminLyricsPage from '../pages/AdminLyricsPage.vue'
 import LyricsCreatePage from '../pages/LyricsCreatePage.vue'
 import LyricsEditPage from '../pages/LyricsEditPage.vue'
+import AboutPage from '../pages/AboutPage.vue'
+import ContactPage from '../pages/ContactPage.vue'
+import LinksPage from '../pages/LinksPage.vue'
 
 const routes = [
   {
@@ -29,6 +32,46 @@ const routes = [
     path: '/musique/page/:page',
     name: 'songs-page',
     component: SongsPage
+  },
+  {
+    path: '/categorie/chants',
+    name: 'traditional-songs',
+    component: SongsPage
+  },
+  {
+    path: '/categorie/chants/:origin',
+    name: 'songs-by-origin',
+    component: SongsPage
+  },
+  {
+    path: '/categorie/compositions-personnelles',
+    name: 'original-compositions',
+    component: SongsPage
+  },
+  {
+    path: '/partitions-chants-folk',
+    name: 'folk-sheets',
+    component: SongsPage
+  },
+  {
+    path: '/recherche',
+    name: 'search',
+    component: SongsPage
+  },
+  {
+    path: '/le-projet',
+    name: 'about',
+    component: AboutPage
+  },
+  {
+    path: '/contact',
+    name: 'contact',
+    component: ContactPage
+  },
+  {
+    path: '/liens',
+    name: 'links',
+    component: LinksPage
   },
   {
     path: '/musique/:songId-:slug',
