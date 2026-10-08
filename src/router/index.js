@@ -16,6 +16,7 @@ import LyricsEditPage from '../pages/LyricsEditPage.vue'
 import AboutPage from '../pages/AboutPage.vue'
 import ContactPage from '../pages/ContactPage.vue'
 import LinksPage from '../pages/LinksPage.vue'
+import { useHead } from '@vueuse/head'
 
 const routes = [
   {
@@ -128,10 +129,30 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition
+    if (to.hash) return { el: to.hash, behavior: 'smooth' }
+    return { top: 0, left: 0 }
+  }
 })
 
 // Protect admin routes from unauthenticated users
+const defaultPageMeta = {
+  title: 'Bards in Exile - Paroles, partitions et arrangements de chants traditionnels',
+  description: 'Explorez les paroles, traductions et partitions de chants folk, médiévaux et traditionnels de France, de Suisse et d’Europe avec Bards in Exile.'
+}
+
+router.afterEach((to) => {
+  if (['home', 'songs', 'songs-page', 'traditional-songs', 'songs-by-origin', 'original-compositions', 'folk-sheets', 'search', 'song-detail'].includes(to.name)) return
+
+  const title = to.name === 'about' ? 'Le projet' : to.name === 'contact' ? 'Contact' : to.name === 'links' ? 'Liens' : 'Espace membre'
+  const description = to.name === 'about'
+    ? 'Découvrez le projet Bards in Exile et son répertoire de chants folk, médiévaux et traditionnels.'
+    : defaultPageMeta.description
+  useHead({ title: `${title} | Bards in Exile`, meta: [{ name: 'description', content: description }] })
+})
+
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     const { data: { session } } = await supabase.auth.getSession()

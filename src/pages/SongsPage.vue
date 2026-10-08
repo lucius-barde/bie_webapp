@@ -8,10 +8,20 @@
       </div>
     </section>
 
+    <Breadcrumbs :items="breadcrumbItems" />
+
     <!-- Songs Grid Section -->
     <section class="section container">
-      <div v-if="loading" class="loading">
+      <div v-if="loading" class="loading" aria-live="polite">
         Chargement des chants...
+      </div>
+
+      <div v-else-if="errorMessage" class="loading" role="alert">
+        {{ errorMessage }}
+      </div>
+
+      <div v-else-if="songs.length === 0" class="loading">
+        Aucun chant trouvé.
       </div>
 
       <div v-else>
@@ -42,23 +52,31 @@
           <article v-for="song in songs" :key="song.id" class="chant-card">
             <router-link :to="songDetailLink(song)" class="chant-card-image-link" :aria-label="`Lire ${song.song_title}`">
               <img
-                :src="getSongImage(song.song_image)"
-                :alt="song.song_image || ''"
+                v-if="song.song_image || song.song_image_gallery?.[0]"
+                :src="getSongImage(song.song_image || song.song_image_gallery[0])"
+                :alt="`Illustration de : ${song.song_title}`"
                 loading="lazy"
+                decoding="async"
+                width="640"
+                height="360"
               >
+              <div v-else class="chant-card-image-placeholder" aria-hidden="true"></div>
             </router-link>
             <div class="chant-card-body">
-              <router-link
-                v-if="song.song_origin_legacy"
-                :to="originLink(song.song_origin_legacy)"
-                class="song-origin"
-              >{{ song.song_origin_legacy }}</router-link>
+              <div class="song-card-meta">
+                <span class="song-number">N° {{ song.song_catalog_id }}</span>
+                <router-link
+                  v-if="song.song_origin_legacy"
+                  :to="originLink(song.song_origin_legacy)"
+                  class="song-origin"
+                >{{ song.song_origin_legacy }}</router-link>
+              </div>
               <router-link :to="songDetailLink(song)" class="song-title-link">
-                <h2>{{ song.song_catalog_id }}. {{ song.song_title }}</h2>
+                <h2>{{ song.song_title }}</h2>
               </router-link>
               <p v-if="song.song_type_legacy">{{ song.song_type_legacy }}</p>
               <a
-                v-if="isSheetList"
+                v-if="isSheetList && song.song_musicsheet_link"
                 :href="song.song_musicsheet_link"
                 class="button"
                 target="_blank"
@@ -107,11 +125,13 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import Breadcrumbs from '../components/Breadcrumbs.vue'
 
 const route = useRoute()
 const songs = ref([])
 const totalSongs = ref(0)
 const loading = ref(true)
+const errorMessage = ref('')
 
 const SONGS_PER_PAGE = 30
 
@@ -129,6 +149,33 @@ const pageTitle = computed(() => {
   if (route.path === '/recherche') return 'Résultats de recherche'
   return 'Tous les chants'
 })
+const pageMetaTitle = computed(() => {
+  const title = pageTitle.value
+  if (route.path === '/recherche') return `${title} « ${searchTerm.value} » | Paroles de chants - Bards in Exile`
+  return `${title} | Paroles${isSheetList.value ? ' et partitions' : ''} de chants - Bards in Exile`
+})
+const pageMetaDescription = computed(() => {
+  if (isSheetList.value) return 'Parcourez les partitions de chants folk et traditionnels de France, de Suisse et d’Europe proposées par Bards in Exile.'
+  if (route.path === '/recherche') return `Résultats de recherche pour « ${searchTerm.value} » dans le répertoire de chants Bards in Exile.`
+  if (route.params.origin) return `Découvrez les paroles et les histoires de chants folk et traditionnels originaires de ${String(route.params.origin)}.`
+  if (route.path === '/categorie/compositions-personnelles') return 'Découvrez les paroles et arrangements des compositions originales de Bards in Exile.'
+  if (route.path === '/categorie/chants') return 'Explorez des paroles de chants folk, médiévaux et traditionnels d’Europe.'
+  return 'Explorez le répertoire de paroles de chants folk, médiévaux et traditionnels de Bards in Exile.'
+})
+const breadcrumbItems = computed(() => {
+  const home = { label: 'Accueil', to: '/' }
+  const title = route.path === '/recherche' ? 'Résultats de recherche' : pageTitle.value
+  const items = [home]
+
+  if (route.params.origin) {
+    items.push({ label: 'Chants traditionnels', to: '/categorie/chants' })
+    items.push({ label: String(route.params.origin) })
+  } else {
+    items.push({ label: title })
+  }
+
+  return items
+})
 const pageSubtitle = computed(() => {
   if (route.path === '/partitions-chants-folk') return "Parcourez un répertoire de partitions de chants anciens et populaires de France, de Suisse et d'ailleurs, disponibles sur MuseScore."
   if (route.path === '/categorie/compositions-personnelles') return 'Découvrez les compositions exclusives des projets du label Bards in Exile'
@@ -140,14 +187,15 @@ const pageSubtitle = computed(() => {
 
 const fetchSongs = async () => {
   loading.value = true
+  errorMessage.value = ''
   try {
     const applyFilters = (query) => {
       query = query.gte('song_status', 3)
 
       if (route.path === '/categorie/compositions-personnelles') {
-        query = query.eq('song_origin_legacy', '[B.i.E]')
+        query = query.eq('song_origin_legacy', 'B.i.E')
       } else if (route.path === '/categorie/chants' && !route.params.origin) {
-        query = query.neq('song_origin_legacy', '[B.i.E]')
+        query = query.neq('song_origin_legacy', 'B.i.E')
       } else if (route.params.origin) {
         query = query.eq('song_origin_legacy', String(route.params.origin))
       }
@@ -187,6 +235,8 @@ const fetchSongs = async () => {
     songs.value = data || []
   } catch (error) {
     console.error('Error fetching songs:', error)
+    songs.value = []
+    errorMessage.value = 'Impossible de charger les chants pour le moment.'
   } finally {
     loading.value = false
   }
@@ -201,17 +251,24 @@ const generateSlug = (title) => {
     .replace(/(^-|-$)/g, '')
 }
 
-const getSongImage = (image) => `/supabase-url-here/${image || ''}`
+const getSongImage = (image) => image?.startsWith('http') ? image : `/supabase-url-here/${image || ''}`
 
 const songDetailLink = (song) => `/musique/${song.song_catalog_id}-${generateSlug(song.song_title)}`
 
-const originLink = (origin) => origin === '[B.i.E]'
+const originLink = (origin) => origin === 'B.i.E'
   ? '/categorie/compositions-personnelles'
   : `/categorie/chants/${encodeURIComponent(origin)}`
 
 const pageLink = (page) => route.path === '/musique' || route.path.startsWith('/musique/page/')
   ? `/musique/page/${page}`
   : { path: route.path, query: { ...route.query, page: String(page) } }
+
+import { useHead } from '@vueuse/head'
+
+useHead(() => ({
+  title: pageMetaTitle.value,
+  meta: [{ name: 'description', content: pageMetaDescription.value }]
+}))
 
 onMounted(() => {
   fetchSongs()
@@ -267,10 +324,37 @@ watch(() => [route.path, route.params.page, route.params.origin, route.query.pag
 }
 
 .loading {
+  min-height: 440px;
+  display: grid;
+  place-content: center;
   text-align: center;
   padding: 40px;
   font-size: 16px;
   color: rgb(34 34 34 / 66%);
+}
+
+.chant-card-image-placeholder {
+  height: 190px;
+  background: var(--paper-deep);
+}
+
+.song-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 22px;
+  margin-bottom: 7px;
+}
+
+.song-number {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  color: #e5e7eb;
+  background: var(--ink);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .chant-grid {
@@ -300,7 +384,7 @@ watch(() => [route.path, route.params.page, route.params.origin, route.query.pag
 
 .song-origin {
   display: inline-block;
-  margin: 0 0 7px;
+  margin: 0;
   color: var(--blue-dark);
   font-size: 11px;
   font-weight: 700;

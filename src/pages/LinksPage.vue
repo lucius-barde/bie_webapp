@@ -1,9 +1,16 @@
 <template>
-  <main class="container construction-page">
+  <main>
+    <Breadcrumbs :items="[{ label: 'Accueil', to: '/' }, { label: 'Liens et sources' }]" />
+    <section class="container construction-page">
     <h1>Liens et sources</h1>
     <p>Cette page est en construction. Une sélection de liens et de sources sera bientôt disponible.</p>
+    </section>
   </main>
 </template>
+
+<script setup>
+import Breadcrumbs from '../components/Breadcrumbs.vue'
+</script>
 
 <style scoped>
 .container {

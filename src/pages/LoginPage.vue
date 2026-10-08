@@ -1,5 +1,6 @@
 <template>
   <main>
+    <Breadcrumbs :items="[{ label: 'Accueil', to: '/' }, { label: 'Connexion' }]" />
     <div class="login-container">
       <div class="login-panel">
         <h1>Connexion - Bards in Exile</h1>
@@ -51,6 +52,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import Breadcrumbs from '../components/Breadcrumbs.vue'
 
 const router = useRouter()
 

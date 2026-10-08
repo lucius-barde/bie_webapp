@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
+    "@vueuse/head": "^2.0.0",
     "vercel": "^62.0.0",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5"

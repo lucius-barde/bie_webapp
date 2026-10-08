@@ -8,18 +8,26 @@
       <!-- Hero Section with Song Image -->
       <section class="song-hero">
         <img
-          :src="getPlaceholderImage(song.song_catalog_id)"
+          :src="getSongImage(song.song_image_gallery?.[0], song.song_catalog_id)"
           :alt="`Illustration pour ${song.song_title}`"
           class="song-hero-image"
+          fetchpriority="high"
+          width="1600"
+          height="900"
         >
         <div class="song-hero-overlay">
           <div class="container song-hero-content">
             <router-link to="/musique" class="back-link">← Retour aux chants</router-link>
             <h1>{{ song.song_title }}</h1>
-            <p v-if="song.song_origin_legacy" class="song-meta">{{ song.song_origin_legacy }}</p>
+            <p class="song-meta">
+              <span class="song-number">N° {{ song.song_catalog_id }}</span>
+              <span v-if="song.song_origin_legacy">{{ song.song_origin_legacy }}</span>
+            </p>
           </div>
         </div>
       </section>
+
+      <Breadcrumbs :items="breadcrumbItems" />
 
       <!-- Song Content -->
       <section class="container song-content">
@@ -103,6 +111,11 @@
           </section>
 
           <!-- Sources Section -->
+          <section v-if="song.song_musicsheet_link" class="song-section">
+            <h2>Partition musicale</h2>
+            <ul style="list-style: square inside;"><li><a class="underline" :href="song.song_musicsheet_link" target="_blank" rel="noopener noreferrer">Voir la partition de {{ song.song_title }}</a></li></ul>
+          </section>
+
           <section v-if="song.song_sources?.length" class="song-section">
             <h2>Sources</h2>
             <ul style="list-style: square inside;">
@@ -146,6 +159,8 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabase'
 import { getLanguageName } from '../lib/languages'
+import { useHead } from '@vueuse/head'
+import Breadcrumbs from '../components/Breadcrumbs.vue'
 
 const route = useRoute()
 const song = ref(null)
@@ -153,6 +168,29 @@ const lyrics = ref(null)
 const previousSong = ref(null)
 const nextSong = ref(null)
 const loading = ref(true)
+
+const cleanMetaText = (value, maxLength = 155) => String(value || '')
+  .replace(/\s+/g, ' ')
+  .trim()
+  .slice(0, maxLength)
+
+const songMetaTitle = computed(() => {
+  const title = song.value?.song_title || 'Chant'
+  const hasSheet = Boolean(song.value?.song_musicsheet_link)
+  return `${title} - Paroles${hasSheet ? ' et partitions' : ''} | Bards in Exile`
+})
+const songMetaDescription = computed(() => {
+  if (!song.value) return 'Paroles et ressources autour des chants folk et traditionnels de Bards in Exile.'
+  const description = song.value.song_description_fr || song.value.song_bie_comments || ''
+  const fallback = `Découvrez les paroles${lyrics.value?.main_lyrics ? ` et les traductions` : ''} de « ${song.value.song_title} »${song.value.song_origin_legacy ? `, chant ${song.value.song_origin_legacy}` : ''}${song.value.song_musicsheet_link ? ', avec partition disponible' : ''}.`
+  return cleanMetaText(description || fallback)
+})
+
+useHead(() => ({
+  title: songMetaTitle.value,
+  meta: [{ name: 'description', content: songMetaDescription.value }],
+  link: song.value ? [{ rel: 'canonical', href: `${window.location.origin}/musique/${song.value.song_catalog_id}-${generateSlug(song.value.song_title)}` }] : []
+}))
 
 
 const getYoutubeVideoId = (value) => {
@@ -200,6 +238,24 @@ const getSourceLink = (source) => {
   }
 }
 
+const breadcrumbItems = computed(() => {
+  const items = [{ label: 'Accueil', to: '/' }]
+  const isOriginalComposition = song.value?.song_origin_legacy === 'B.i.E'
+
+  if (isOriginalComposition) {
+    items.push({ label: 'Compositions personnelles', to: '/categorie/compositions-personnelles' })
+  } else {
+    items.push({ label: 'Chants traditionnels', to: '/categorie/chants' })
+    if (song.value?.song_origin_legacy) items.push({
+      label: song.value.song_origin_legacy,
+      to: `/categorie/chants/${encodeURIComponent(song.value.song_origin_legacy)}`
+    })
+  }
+
+  if (song.value?.song_title) items.push({ label: song.value.song_title })
+  return items
+})
+
 const previousSongLink = computed(() => {
   if (!previousSong.value) return '#'
   return `/musique/${previousSong.value.song_catalog_id}-${generateSlug(previousSong.value.song_title)}`
@@ -219,7 +275,8 @@ const generateSlug = (title) => {
     .replace(/(^-|-$)/g, '')
 }
 
-const getPlaceholderImage = (catalogId) => {
+const getSongImage = (image, catalogId) => {
+  if (image) return image.startsWith('http') ? image : `/supabase-url-here/${image}`
   const placeholderImages = [
     'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=80',
     'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=80',
@@ -379,9 +436,24 @@ watch(() => route.params.songId, () => {
 }
 
 .song-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
   margin: 12px 0 0;
   font-size: 14px;
   color: rgba(255, 255, 255, 0.8);
+}
+
+.song-number {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  color: #e5e7eb;
+  background: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-shadow: none;
 }
 
 .container {

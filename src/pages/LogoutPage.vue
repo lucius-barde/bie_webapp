@@ -1,5 +1,6 @@
 <template>
   <main>
+    <Breadcrumbs :items="[{ label: 'Accueil', to: '/' }, { label: 'Déconnexion' }]" />
     <div class="logout-container">
       <div class="logout-message">
         <p>Déconnexion en cours...</p>
@@ -12,6 +13,7 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import Breadcrumbs from '../components/Breadcrumbs.vue'
 
 const router = useRouter()
 

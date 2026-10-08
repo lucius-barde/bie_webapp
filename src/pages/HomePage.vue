@@ -79,17 +79,23 @@
           <article v-for="song in latestSongs" :key="song.id" class="chant-card">
             <router-link :to="songDetailLink(song)" class="chant-card-image-link" :aria-label="`Lire ${song.song_title}`">
               <img
-                :src="getSongImage(song.song_image)"
-                :alt="song.song_image || ''"
+                :src="getSongImage(song.song_image || song.song_image_gallery?.[0])"
+                :alt="`Illustration de ${song.song_title}`"
                 loading="lazy"
+                decoding="async"
+                width="640"
+                height="360"
               >
             </router-link>
             <div class="chant-card-body">
-              <router-link
-                v-if="song.song_origin_legacy"
-                :to="originLink(song.song_origin_legacy)"
-                class="song-origin"
-              >{{ song.song_origin_legacy }}</router-link>
+              <div class="song-card-meta">
+                <span class="song-number">N° {{ song.song_catalog_id }}</span>
+                <router-link
+                  v-if="song.song_origin_legacy"
+                  :to="originLink(song.song_origin_legacy)"
+                  class="song-origin"
+                >{{ song.song_origin_legacy }}</router-link>
+              </div>
               <router-link :to="songDetailLink(song)" class="song-title-link">
                 <h3>{{ song.song_title }}</h3>
               </router-link>
@@ -184,6 +190,17 @@ const latestSongs = ref([])
 const topOrigins = ref([])
 
 // Load the latest songs and count published origins for the homepage.
+import { useHead } from '@vueuse/head'
+
+useHead({
+  link: [{ rel: 'canonical', href: `${window.location.origin}/` }],
+  title: 'Bards in Exile - Paroles, partitions et arrangements de chants traditionnels',
+  meta: [{
+    name: 'description',
+    content: 'Explorez les paroles, traductions et partitions de chants folk, médiévaux et traditionnels de France, de Suisse et d’Europe avec Bards in Exile.'
+  }]
+})
+
 onMounted(async () => {
   try {
     const { data, error } = await supabase
@@ -228,11 +245,11 @@ const generateSlug = (title) => {
     .replace(/(^-|-$)/g, '')
 }
 
-const getSongImage = (image) => `/supabase-url-here/${image || ''}`
+const getSongImage = (image) => image?.startsWith('http') ? image : `/supabase-url-here/${image || ''}`
 
 const songDetailLink = (song) => `/musique/${song.song_catalog_id}-${generateSlug(song.song_title)}`
 
-const originLink = (origin) => origin === '[B.i.E]'
+const originLink = (origin) => origin === 'B.i.E'
   ? '/categorie/compositions-personnelles'
   : `/categorie/chants/${encodeURIComponent(origin)}`
 
@@ -446,9 +463,28 @@ const handleSearch = () => {
   padding: 18px;
 }
 
+.song-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 22px;
+  margin-bottom: 7px;
+}
+
+.song-number {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  color: #e5e7eb;
+  background: var(--ink);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .song-origin {
   display: inline-block;
-  margin: 0 0 7px;
+  margin: 0;
   color: var(--blue-dark);
   font-size: 11px;
   font-weight: 700;
