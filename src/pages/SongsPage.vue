@@ -81,7 +81,7 @@
                 class="button"
                 target="_blank"
                 rel="noopener noreferrer"
-              >Voir la partition...</a>
+              >♫&nbsp; Voir la partition...</a>
               &nbsp;
               <router-link
                 :to="songDetailLink(song)"
@@ -347,13 +347,9 @@ watch(() => [route.path, route.params.page, route.params.origin, route.query.pag
 }
 
 .song-number {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 4px;
-  color: #e5e7eb;
-  background: var(--ink);
+  color: rgb(34 34 34 / 62%);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.4;
 }
 

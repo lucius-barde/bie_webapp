@@ -181,9 +181,17 @@ const songMetaTitle = computed(() => {
 })
 const songMetaDescription = computed(() => {
   if (!song.value) return 'Paroles et ressources autour des chants folk et traditionnels de Bards in Exile.'
-  const description = song.value.song_description_fr || song.value.song_bie_comments || ''
-  const fallback = `Découvrez les paroles${lyrics.value?.main_lyrics ? ` et les traductions` : ''} de « ${song.value.song_title} »${song.value.song_origin_legacy ? `, chant ${song.value.song_origin_legacy}` : ''}${song.value.song_musicsheet_link ? ', avec partition disponible' : ''}.`
-  return cleanMetaText(description || fallback)
+
+  const metadata = [
+    song.value.song_type_legacy,
+    song.value.song_origin_legacy,
+    [song.value.song_author_legacy, song.value.song_date_info]
+      .filter(Boolean)
+      .join(' ')
+  ].filter(Boolean)
+  const description = cleanMetaText(song.value.song_description_fr, 100)
+
+  return cleanMetaText([...metadata, description].filter(Boolean).join('. '))
 })
 
 useHead(() => ({
@@ -445,13 +453,9 @@ watch(() => route.params.songId, () => {
 }
 
 .song-number {
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 4px;
-  color: #e5e7eb;
-  background: var(--ink);
+  color: rgb(229 231 235 / 78%);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.4;
   text-shadow: none;
 }

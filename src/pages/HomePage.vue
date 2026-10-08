@@ -42,21 +42,18 @@
 
       <div class="feature-grid">
         <article class="feature-card">
-          <span class="feature-icon" aria-hidden="true">♬</span>
-          <h3>Paroles de chants</h3>
+          <h3>Paroles de chants et traductions</h3>
           <p>Découvrez des chants folk, médiévaux et traditionnels, accompagnés de leur contexte et de leurs paroles.</p>
           <router-link to="/musique" class="text-link">Parcourir les chants →</router-link>
         </article>
 
         <article class="feature-card" id="partitions">
-          <span class="feature-icon" aria-hidden="true">♫</span>
-          <h3>Partitions & traductions</h3>
+          <h3>Partitions musicales</h3>
           <p>Explorez les ressources disponibles pour apprendre les mélodies et comprendre les textes d'autres langues.</p>
           <router-link to="/partitions-chants-folk" class="text-link">Voir les partitions →</router-link>
         </article>
 
         <article class="feature-card">
-          <span class="feature-icon" aria-hidden="true">▤</span>
           <h3>Albums & compositions</h3>
           <p>Écoutez les albums de Bards in Exile et découvrez les compositions de Lucius Barde sur Spotify, Apple Music, Bandcamp et autres.</p>
           <a href="https://linktr.ee/bardsinexile" target="_blank" class="text-link">Plateformes disponibles →</a>
@@ -166,7 +163,7 @@
             Bards in Exile (Bardes en Exil) fait revivre des chants de toute l'Europe et propose
             aussi des compositions originales. Lancé en 2019 par Lucius Barde,
             le projet met à disposition un répertoire pensé pour être découvert,
-            écouté et chanté à plusieurs voix.
+            écouté et chanté à plusieurs voix. Lucius propose ses propres arrangements et interprétations réalisées avec l'aide de l'outil informatique.
           </p>
         </div>
         <aside class="about-note">
@@ -407,7 +404,7 @@ const handleSearch = () => {
 }
 
 .feature-card {
-  min-height: 225px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -472,13 +469,9 @@ const handleSearch = () => {
 }
 
 .song-number {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 4px;
-  color: #e5e7eb;
-  background: var(--ink);
+  color: rgb(34 34 34 / 62%);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.4;
 }
 
