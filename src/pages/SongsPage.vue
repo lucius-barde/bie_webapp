@@ -52,8 +52,8 @@
           <article v-for="song in songs" :key="song.id" class="chant-card">
             <router-link :to="songDetailLink(song)" class="chant-card-image-link" :aria-label="`Lire ${song.song_title}`">
               <img
-                v-if="song.song_image || song.song_image_gallery?.[0]"
-                :src="getSongImage(song.song_image || song.song_image_gallery[0])"
+                v-if="getSongImageUrl(song.song_image || song.song_image_gallery?.[0])"
+                :src="getSongImageUrl(song.song_image || song.song_image_gallery?.[0])"
                 :alt="`Illustration de : ${song.song_title}`"
                 loading="lazy"
                 decoding="async"
@@ -125,6 +125,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import { getSongImageUrl } from '../lib/songImages'
 import Breadcrumbs from '../components/Breadcrumbs.vue'
 
 const route = useRoute()
@@ -251,7 +252,6 @@ const generateSlug = (title) => {
     .replace(/(^-|-$)/g, '')
 }
 
-const getSongImage = (image) => image?.startsWith('http') ? image : `/supabase-url-here/${image || ''}`
 
 const songDetailLink = (song) => `/musique/${song.song_catalog_id}-${generateSlug(song.song_title)}`
 

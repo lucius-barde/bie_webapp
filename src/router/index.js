@@ -16,6 +16,7 @@ import LyricsEditPage from '../pages/LyricsEditPage.vue'
 import AboutPage from '../pages/AboutPage.vue'
 import ContactPage from '../pages/ContactPage.vue'
 import LinksPage from '../pages/LinksPage.vue'
+import EnglishPage from '../pages/EnglishPage.vue'
 import { useHead } from '@vueuse/head'
 
 const routes = [
@@ -23,6 +24,11 @@ const routes = [
     path: '/',
     name: 'home',
     component: HomePage
+  },
+  {
+    path: '/en',
+    name: 'english',
+    component: EnglishPage
   },
   {
     path: '/musique',
@@ -146,10 +152,12 @@ const defaultPageMeta = {
 router.afterEach((to) => {
   if (['home', 'songs', 'songs-page', 'traditional-songs', 'songs-by-origin', 'original-compositions', 'folk-sheets', 'search', 'song-detail'].includes(to.name)) return
 
-  const title = to.name === 'about' ? 'Le projet' : to.name === 'contact' ? 'Contact' : to.name === 'links' ? 'Liens' : 'Espace membre'
-  const description = to.name === 'about'
-    ? 'Découvrez le projet Bards in Exile et son répertoire de chants folk, médiévaux et traditionnels.'
-    : defaultPageMeta.description
+  const title = to.name === 'english' ? 'English section' : to.name === 'about' ? 'Le projet' : to.name === 'contact' ? 'Contact' : to.name === 'links' ? 'Liens' : 'Espace membre'
+  const description = to.name === 'english'
+    ? 'Discover Bards in Exile, a project bringing European folk, medieval and traditional songs back to life. The English section is temporarily unavailable.'
+    : to.name === 'about'
+      ? 'Découvrez le projet Bards in Exile et son répertoire de chants folk, médiévaux et traditionnels.'
+      : defaultPageMeta.description
   useHead({ title: `${title} | Bards in Exile`, meta: [{ name: 'description', content: description }] })
 })
 

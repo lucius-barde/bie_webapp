@@ -76,13 +76,15 @@
           <article v-for="song in latestSongs" :key="song.id" class="chant-card">
             <router-link :to="songDetailLink(song)" class="chant-card-image-link" :aria-label="`Lire ${song.song_title}`">
               <img
-                :src="getSongImage(song.song_image || song.song_image_gallery?.[0])"
-                :alt="`Illustration de ${song.song_title}`"
+                v-if="getSongImageUrl(song.song_image || song.song_image_gallery?.[0])"
+                :src="getSongImageUrl(song.song_image || song.song_image_gallery?.[0])"
+                :alt="`Illustration de: ${song.song_title}`"
                 loading="lazy"
                 decoding="async"
                 width="640"
                 height="360"
               >
+              <div v-else class="chant-card-image-placeholder" aria-hidden="true"></div>
             </router-link>
             <div class="chant-card-body">
               <div class="song-card-meta">
@@ -137,10 +139,9 @@
           <h2 id="albums-title">Obtenez les albums</h2>
           <p>Soutenez le projet en achetant les albums ou en écoutant les titres sur les plateformes suivantes:</p>
           <nav class="platform-list" aria-label="Plateformes musicales">
-            <a class="button" href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Spotify</a>
-            <a class="button button-secondary" href="https://music.apple.com/" target="_blank" rel="noopener noreferrer">Apple Music</a>
-            <a class="button button-secondary" href="https://www.deezer.com/" target="_blank" rel="noopener noreferrer">Deezer</a>
-            <a class="button button-secondary" href="https://music.amazon.com/" target="_blank" rel="noopener noreferrer">Amazon</a>
+            <a class="button" href="https://open.spotify.com/artist/0Yt6J3E5DA54uRb1Tx3eOn?si=IBVJON99TrC74KzPQIWEpg" target="_blank" rel="noopener noreferrer">Spotify</a>
+            <a class="button button-secondary" href="https://music.apple.com/us/artist/bards-in-exile/1720565414" target="_blank" rel="noopener noreferrer">Apple Music</a>
+            <a class="button button-secondary" href="https://www.deezer.com/fr/artist/246895562" target="_blank" rel="noopener noreferrer">Deezer</a>
             <a class="button button-secondary" href="https://bardsinexile.bandcamp.com/" target="_blank" rel="noopener noreferrer">Bandcamp</a>
           </nav>
         </div>
@@ -180,6 +181,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import { getSongImageUrl } from '../lib/songImages'
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -242,7 +244,6 @@ const generateSlug = (title) => {
     .replace(/(^-|-$)/g, '')
 }
 
-const getSongImage = (image) => image?.startsWith('http') ? image : `/supabase-url-here/${image || ''}`
 
 const songDetailLink = (song) => `/musique/${song.song_catalog_id}-${generateSlug(song.song_title)}`
 

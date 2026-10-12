@@ -8,7 +8,8 @@
       <!-- Hero Section with Song Image -->
       <section class="song-hero">
         <img
-          :src="getSongImage(song.song_image_gallery?.[0], song.song_catalog_id)"
+          v-if="songImageUrl"
+          :src="songImageUrl"
           :alt="`Illustration pour ${song.song_title}`"
           class="song-hero-image"
           fetchpriority="high"
@@ -78,10 +79,10 @@
           <section v-if="song.song_description_fr || song.song_description_en" class="song-section">
             <h2>Description</h2>
             <div class="flex">
-              <div v-if="song.song_description_fr" class="w-1/2 pr-2">
+              <div v-if="song.song_description_fr" class="sm:w-1/2 pr-2">
                 <p class="song-description-fr">{{ song.song_description_fr }}</p>
               </div>
-              <div v-if="song.song_description_en" class="w-1/2 pl-2" style="font-style: italic;">
+              <div v-if="song.song_description_en" class="sm:w-1/2 pl-2" style="font-style: italic;">
                 <p class="song-description-en">{{ song.song_description_en }}</p>
               </div>
             </div>
@@ -90,7 +91,7 @@
           <!-- Lyrics Section -->
           <section v-if="lyrics && lyrics.main_lyrics" class="song-section">
             <h2>Paroles</h2>
-            <div class="bie-lyrics text-2xl">{{ lyrics.main_lyrics }}</div>
+            <div class="bie-lyrics text-xl">{{ lyrics.main_lyrics }}</div>
           </section>
 
           <!-- Translations Section -->
@@ -98,15 +99,15 @@
             <h2>Traductions</h2>
             <details v-if="lyrics.translation_one && lyrics.translation_one_language" class="translation-details">
               <summary>{{ getLanguageName(lyrics.translation_one_language) }}</summary>
-              <div class="bie-lyrics">{{ lyrics.translation_one }}</div>
+              <div class="bie-lyrics text-sm">{{ lyrics.translation_one }}</div>
             </details>
             <details v-if="lyrics.translation_two && lyrics.translation_two_language" class="translation-details">
               <summary>{{ getLanguageName(lyrics.translation_two_language) }}</summary>
-              <div class="bie-lyrics">{{ lyrics.translation_two }}</div>
+              <div class="bie-lyrics text-sm">{{ lyrics.translation_two }}</div>
             </details>
             <details v-if="lyrics.translation_three && lyrics.translation_three_language" class="translation-details">
               <summary>{{ getLanguageName(lyrics.translation_three_language) }}</summary>
-              <div class="bie-lyrics">{{ lyrics.translation_three }}</div>
+              <div class="bie-lyrics text-sm">{{ lyrics.translation_three }}</div>
             </details>
           </section>
 
@@ -158,6 +159,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import { getSongImageUrl } from '../lib/songImages'
 import { getLanguageName } from '../lib/languages'
 import { useHead } from '@vueuse/head'
 import Breadcrumbs from '../components/Breadcrumbs.vue'
@@ -168,6 +170,9 @@ const lyrics = ref(null)
 const previousSong = ref(null)
 const nextSong = ref(null)
 const loading = ref(true)
+const songImageUrl = computed(() => getSongImageUrl(
+  song.value?.song_image || song.value?.song_image_gallery?.[0]
+))
 
 const cleanMetaText = (value, maxLength = 155) => String(value || '')
   .replace(/\s+/g, ' ')
@@ -283,15 +288,6 @@ const generateSlug = (title) => {
     .replace(/(^-|-$)/g, '')
 }
 
-const getSongImage = (image, catalogId) => {
-  if (image) return image.startsWith('http') ? image : `/supabase-url-here/${image}`
-  const placeholderImages = [
-    'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=900&q=80',
-    'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=80',
-    'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=900&q=80',
-  ]
-  return placeholderImages[catalogId % placeholderImages.length]
-}
 
 const formatDuration = (seconds) => {
   if (!seconds) return ''
@@ -541,13 +537,13 @@ watch(() => route.params.songId, () => {
 }
 
 .bie-lyrics {
-  padding: 20px;
+  padding: 40px 20px;
   background: rgb(255 255 255 / 50%);
   border-left: 4px solid var(--blue);
   border-radius: 2px;
-  font-family: monospace;
   white-space: pre-wrap;
   line-height: 1.8;
+  text-align:center;
 }
 
 .translation-details {
