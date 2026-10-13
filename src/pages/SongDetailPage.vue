@@ -91,7 +91,7 @@
           <!-- Lyrics Section -->
           <section v-if="lyrics && lyrics.main_lyrics" class="song-section">
             <h2>Paroles</h2>
-            <div class="bie-lyrics text-xl">{{ lyrics.main_lyrics }}</div>
+            <div class="bie-lyrics text-xl" v-html="renderInlineMarkdown(lyrics.main_lyrics)"></div>
           </section>
 
           <!-- Translations Section -->
@@ -99,15 +99,15 @@
             <h2>Traductions</h2>
             <details v-if="lyrics.translation_one && lyrics.translation_one_language" class="translation-details">
               <summary>{{ getLanguageName(lyrics.translation_one_language) }}</summary>
-              <div class="bie-lyrics text-sm">{{ lyrics.translation_one }}</div>
+              <div class="bie-lyrics text-sm" v-html="renderInlineMarkdown(lyrics.translation_one)"></div>
             </details>
             <details v-if="lyrics.translation_two && lyrics.translation_two_language" class="translation-details">
               <summary>{{ getLanguageName(lyrics.translation_two_language) }}</summary>
-              <div class="bie-lyrics text-sm">{{ lyrics.translation_two }}</div>
+              <div class="bie-lyrics text-sm" v-html="renderInlineMarkdown(lyrics.translation_two)"></div>
             </details>
             <details v-if="lyrics.translation_three && lyrics.translation_three_language" class="translation-details">
               <summary>{{ getLanguageName(lyrics.translation_three_language) }}</summary>
-              <div class="bie-lyrics text-sm">{{ lyrics.translation_three }}</div>
+              <div class="bie-lyrics text-sm" v-html="renderInlineMarkdown(lyrics.translation_three)"></div>
             </details>
           </section>
 
@@ -120,15 +120,7 @@
           <section v-if="song.song_sources?.length" class="song-section">
             <h2>Sources</h2>
             <ul style="list-style: square inside;">
-              <li v-for="(source, index) in song.song_sources" :key="index">
-                <a class="underline"
-                  v-if="getSourceLink(source)"
-                  :href="getSourceLink(source).url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >{{ getSourceLink(source).text }}</a>
-                <span v-else>{{ source }}</span>
-              </li>
+              <li v-for="(source, index) in song.song_sources" :key="index" v-html="renderInlineMarkdown(source)"></li>
             </ul>
           </section>
 
@@ -237,18 +229,44 @@ const youtubeEmbedUrl = computed(() => {
   return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : null
 })
 
-const getSourceLink = (source) => {
-  if (typeof source !== 'string') return null
+const escapeHtml = (value) => String(value)
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;')
 
-  const match = source.match(/^\[([^\]]+)\]\((https:\/\/[^\s)]+)\)$/i)
-  if (!match) return null
+const renderInlineMarkdown = (value) => {
+  if (typeof value !== 'string') return ''
 
-  try {
-    const url = new URL(match[2])
-    return url.protocol === 'https:' ? { text: match[1], url: url.href } : null
-  } catch {
-    return null
+  const inlineMarkdownPattern = /\[([^\]]+)\]\((https:\/\/[^\s)]+)\)|\*\*([^*\n]+?)\*\*|\*([^*\n]+?)\*/g
+  let rendered = ''
+  let previousIndex = 0
+
+  for (const match of value.matchAll(inlineMarkdownPattern)) {
+    rendered += escapeHtml(value.slice(previousIndex, match.index))
+
+    if (match[1] !== undefined) {
+      try {
+        const url = new URL(match[2])
+        if (url.protocol === 'https:') {
+          rendered += `<a class="underline" href="${escapeHtml(url.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(match[1])}</a>`
+        } else {
+          rendered += escapeHtml(match[0])
+        }
+      } catch {
+        rendered += escapeHtml(match[0])
+      }
+    } else if (match[3] !== undefined) {
+      rendered += `<strong>${escapeHtml(match[3])}</strong>`
+    } else {
+      rendered += `<em>${escapeHtml(match[4])}</em>`
+    }
+
+    previousIndex = match.index + match[0].length
   }
+
+  return rendered + escapeHtml(value.slice(previousIndex))
 }
 
 const breadcrumbItems = computed(() => {

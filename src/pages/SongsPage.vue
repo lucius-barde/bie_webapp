@@ -134,7 +134,7 @@ const totalSongs = ref(0)
 const loading = ref(true)
 const errorMessage = ref('')
 
-const SONGS_PER_PAGE = 30
+const SONGS_PER_PAGE = 15
 
 const currentPage = computed(() => Math.min(requestedPage.value, totalPages.value))
 

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /bie-login
+Disallow: /bie-logout
+Disallow: /recherche
+
+Sitemap: https://www.bardsinexile.org/sitemap.xml

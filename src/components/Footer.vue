@@ -8,6 +8,7 @@
             <router-link to="/musique">Tous les chants</router-link>
             <a href="https://linktr.ee/bardsinexile" target="_blank" rel="noopener noreferrer">Discographie</a>
             <router-link to="/partitions-chants-folk">Partitions</router-link>
+            <a href="https://www.youtube.com/playlist?list=PLr-Q7lM0zBg3hauNukrBsxdyBBJzky3qL" target="_blank" rel="noopener noreferrer">Livres audio</a>
           </nav>
         </div>
 
@@ -39,7 +40,6 @@
               Connecté: {{ user.email }} - <a href="/bie-logout" class="logout-link">Déconnexion</a>
             </template>
             <template v-else>
-              <a href="/bie-login" class="login-link">Connexion</a>
             </template>
           </span>
         </p>
@@ -70,7 +70,7 @@ onMounted(async () => {
       user.value = null
     }
   })
-  
+
   unsubscribe = subscription.unsubscribe
 })
 

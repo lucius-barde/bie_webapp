@@ -412,7 +412,7 @@ const handleSearch = () => {
   padding: 24px;
   border: 1px solid var(--line);
   border-radius: 5px;
-  background: rgb(255 255 255 / 18%);
+  background: rgb(255 255 255 / 39%);
 }
 
 .feature-icon {
@@ -575,7 +575,7 @@ const handleSearch = () => {
   padding: 32px;
   border: 1px solid var(--line);
   border-radius: 5px;
-  background: rgb(255 255 255 / 18%);
+  background: rgb(255 255 255 / 39%);
 }
 
 .about-panel p {

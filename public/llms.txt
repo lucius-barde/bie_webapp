@@ -1,0 +1,31 @@
+# Bards in Exile
+
+> Répertoire public de chants folk, médiévaux et traditionnels d’Europe, avec paroles, traductions et partitions.
+
+Bards in Exile est un chansonnier consacré à la découverte et à la transmission des chants traditionnels et populaires. Le site propose un catalogue consultable, des fiches de chants et des informations sur le projet.
+
+## Pages publiques
+
+- [Accueil](https://www.bardsinexile.org/) : présentation du répertoire.
+- [Les chants](https://www.bardsinexile.org/musique) : catalogue public des chants.
+- [Chants traditionnels](https://www.bardsinexile.org/categorie/chants) : sélection de chants traditionnels.
+- [Compositions personnelles](https://www.bardsinexile.org/categorie/compositions-personnelles) : chants de composition personnelle.
+- [Partitions](https://www.bardsinexile.org/partitions-chants-folk) : accès aux chants associés à des partitions.
+- [Le projet](https://www.bardsinexile.org/le-projet) : présentation de Bards in Exile.
+- [Contact](https://www.bardsinexile.org/contact) : contacter l’équipe.
+- [Liens](https://www.bardsinexile.org/liens) : ressources et sites associés.
+
+## Utilisation du contenu
+
+Les pages du répertoire sont consultables publiquement. La présence d’un contenu sur le site ne vaut pas autorisation de reproduire, redistribuer ou exploiter ses paroles, traductions, arrangements ou partitions. Vérifier les droits et les mentions associés à chaque œuvre avant toute réutilisation.
+
+Pour les réponses générées à partir du site, privilégier des résumés et des références vers la page source plutôt que la reproduction de paroles ou de partitions.
+
+## Pages non destinées à l’indexation ou à la documentation
+
+L’espace d’administration et les pages de connexion ne font pas partie du contenu éditorial public :
+
+- `/admin`
+- `/bie-login`
+- `/bie-logout`
+- `/recherche`
