@@ -265,7 +265,7 @@ const handleSearch = () => {
   text-align: center;
   background:
     linear-gradient(rgb(239 231 220 / 83%), rgb(239 231 220 / 92%)),
-    url("https://www.bardsinexile.org/wp-content/uploads/Lucius-Barde-2026.jpg")
+    url("/Lucius-Barde-2026.jpg")
       center 42% / cover no-repeat;
   text-shadow: 0px 0px 3px #fff;
 }

@@ -79,11 +79,11 @@
           <section v-if="song.song_description_fr || song.song_description_en" class="song-section">
             <h2>Description</h2>
             <div class="flex">
-              <div v-if="song.song_description_fr" class="sm:w-1/2 pr-2">
-                <p class="song-description-fr">{{ song.song_description_fr }}</p>
+              <div v-if="song.song_description_fr" class="md:w-1/2 pr-2">
+                <p class="song-description-fr" v-html="renderInlineMarkdown(song.song_description_fr)"></p>
               </div>
-              <div v-if="song.song_description_en" class="sm:w-1/2 pl-2" style="font-style: italic;">
-                <p class="song-description-en">{{ song.song_description_en }}</p>
+              <div v-if="song.song_description_en" class="md:w-1/2 pl-2" style="font-style: italic;">
+                <p class="song-description-en" v-html="renderInlineMarkdown(song.song_description_en)"></p>
               </div>
             </div>
           </section>

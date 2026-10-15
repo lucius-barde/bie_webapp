@@ -179,7 +179,7 @@ const breadcrumbItems = computed(() => {
 })
 const pageSubtitle = computed(() => {
   if (route.path === '/partitions-chants-folk') return "Parcourez un répertoire de partitions de chants anciens et populaires de France, de Suisse et d'ailleurs, disponibles sur MuseScore."
-  if (route.path === '/categorie/compositions-personnelles') return 'Découvrez les compositions exclusives des projets du label Bards in Exile'
+  if (route.path === '/categorie/compositions-personnelles') return 'Découvrez les compositions exclusives de Lucius, auteur du projet Bards in Exile'
   if (route.path === '/categorie/chants') return "Explorez notre sélection de chants folk, médiévaux et traditionnels d'Europe"
   if (route.params.origin) return 'Paroles de chansons folk et traditionnelles, triés par pays'
   if (route.path === '/recherche') return `Résultats pour « ${searchTerm.value} »`

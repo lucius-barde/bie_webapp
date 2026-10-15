@@ -16,6 +16,7 @@ import LyricsEditPage from '../pages/LyricsEditPage.vue'
 import AboutPage from '../pages/AboutPage.vue'
 import ContactPage from '../pages/ContactPage.vue'
 import LinksPage from '../pages/LinksPage.vue'
+import SideProjectsPage from '../pages/SideProjectsPage.vue'
 import EnglishPage from '../pages/EnglishPage.vue'
 import { useHead } from '@vueuse/head'
 
@@ -79,6 +80,11 @@ const routes = [
     path: '/liens',
     name: 'links',
     component: LinksPage
+  },
+  {
+    path: '/altaborea',
+    name: 'side-projects',
+    component: SideProjectsPage
   },
   {
     path: '/musique/:songId-:slug',
@@ -152,7 +158,7 @@ const defaultPageMeta = {
 router.afterEach((to) => {
   if (['home', 'songs', 'songs-page', 'traditional-songs', 'songs-by-origin', 'original-compositions', 'folk-sheets', 'search', 'song-detail'].includes(to.name)) return
 
-  const title = to.name === 'english' ? 'English section' : to.name === 'about' ? 'Le projet' : to.name === 'contact' ? 'Contact' : to.name === 'links' ? 'Liens' : 'Espace membre'
+  const title = to.name === 'english' ? 'English section' : to.name === 'about' ? 'Le projet' : to.name === 'contact' ? 'Contact' : to.name === 'links' ? 'Liens' : to.name === 'side-projects' ? 'Side projects' : 'Espace membre'
   const description = to.name === 'english'
     ? 'Discover Bards in Exile, a project bringing European folk, medieval and traditional songs back to life. The English section is temporarily unavailable.'
     : to.name === 'about'
