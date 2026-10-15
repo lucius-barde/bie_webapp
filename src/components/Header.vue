@@ -10,11 +10,10 @@
       </router-link>
 
       <nav class="main-nav" aria-label="Navigation principale">
-        <router-link to="/musique">Les chants</router-link>
         <router-link to="/#albums">Albums</router-link>
         <router-link to="/partitions-chants-folk">Partitions</router-link>
         <router-link to="/le-projet">À propos</router-link>
-        <router-link to="/musique" class="button">Explorer le répertoire</router-link>
+        <router-link to="/musique" class="button">Explorer</router-link>
       </nav>
     </div>
   </header>
