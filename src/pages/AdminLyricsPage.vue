@@ -3,15 +3,11 @@
     <div class="admin-container">
       <h1>Admin - Paroles</h1>
 
-      <div class="admin-user">
-        <span v-if="user">{{ user.email }}</span>
-        <router-link to="/bie-logout" class="logout-btn">Déconnexion</router-link>
-      </div>
-
       <!-- Toolbar -->
-      <div class="admin-toolbar">
-        <router-link to="/admin/lyrics/create" class="btn btn-primary">+ Nouvelle parole</router-link>
-
+      <AdminMobileNav :actions="[
+        { label: 'Retour', to: '/admin' },
+        { label: '+ Nouvelle parole', to: '/admin/lyrics/create', primary: true }
+      ]">
         <div class="sort-buttons">
           <button
             v-for="sort in sortOptions"
@@ -22,7 +18,7 @@
             {{ sort.label }}
           </button>
         </div>
-      </div>
+      </AdminMobileNav>
 
       <!-- Loading State -->
       <div v-if="loading" class="loading">
@@ -69,6 +65,7 @@
         Aucune parole trouvée.
       </div>
     </div>
+
   </main>
 </template>
 
@@ -76,12 +73,13 @@
 import { ref, watch, onMounted } from 'vue'
 import { supabase } from '../lib/supabase'
 import { useRouter } from 'vue-router'
+import AdminMobileNav from '../components/AdminToolbar.vue'
 
 const router = useRouter()
 const lyrics = ref([])
 const loading = ref(true)
 const error = ref(null)
-const user = ref(null)
+
 const currentSort = ref('by_id')
 
 const sortOptions = [
@@ -170,15 +168,6 @@ watch(() => currentSort.value, async () => {
 })
 
 onMounted(async () => {
-  // Check auth
-  const { data } = await supabase.auth.getUser()
-  if (!data?.user) {
-    router.push('/bie-login')
-    return
-  }
-  user.value = data.user
-
-  // Fetch lyrics
   await fetchLyrics()
 })
 </script>
@@ -186,6 +175,7 @@ onMounted(async () => {
 <style scoped>
 .admin-main {
   min-height: calc(100vh - 200px);
+  padding-bottom: 76px;
   background: var(--paper);
 }
 
@@ -200,31 +190,6 @@ onMounted(async () => {
   font-size: 28px;
 }
 
-.admin-user {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  padding: 12px 16px;
-  background: rgb(200 220 255 / 10%);
-  border: 1px solid rgb(44 90 160 / 20%);
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.logout-btn {
-  padding: 6px 12px;
-  background: var(--blue);
-  color: white;
-  text-decoration: none;
-  border-radius: 3px;
-  font-size: 12px;
-  transition: background-color 160ms ease;
-}
-
-.logout-btn:hover {
-  background: var(--blue-dark);
-}
 
 .admin-toolbar {
   display: flex;

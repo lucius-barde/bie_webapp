@@ -160,16 +160,16 @@
             </div>
         </div>
 
-        <!-- Comments / BIE Comments -->
+        <h2 class="mb-4">Commentaires B.i.E</h2>
         <div class="form-group">
-         <!--<label for="song_bie_comments">Commentaires</label>-->
-          <input type="hidden"
+          <label for="song_bie_comments">Commentaires internes</label>
+          <textarea
             id="song_bie_comments"
             v-model="formData.song_bie_comments"
             rows="6"
-            placeholder="Entrez les commentaires sur ce chant..."
-            class="form-input"
-          ></input>
+            placeholder="Entrez les commentaires internes sur ce chant..."
+            class="form-textarea"
+          ></textarea>
         </div>
 
         <!-- Form Actions -->
@@ -234,7 +234,9 @@ const submitForm = async () => {
     // Prepare data for insertion (remove null values)
     const dataToInsert = {}
     for (const [key, value] of Object.entries(formData.value)) {
-      if (value !== null && value !== '') {
+      if (key === 'song_bie_comments') {
+        dataToInsert[key] = value || null
+      } else if (value !== null && value !== '') {
         dataToInsert[key] = value
       }
     }

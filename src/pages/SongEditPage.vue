@@ -182,16 +182,16 @@
             </div>
           </div>
 
-          <!-- Comments / BIE Comments -->
+          <h2 class="mb-4">Commentaires B.i.E</h2>
           <div class="form-group">
-            <!--<label for="song_bie_comments">Commentaires B.i.E</label>-->
-            <input type="hidden"
+            <label for="song_bie_comments">Commentaires internes</label>
+            <textarea
               id="song_bie_comments"
               v-model="formData.song_bie_comments"
               rows="6"
-              placeholder="Entrez les commentaires sur ce chant..."
-              class="form-input"
-            />
+              placeholder="Entrez les commentaires internes sur ce chant..."
+              class="form-textarea"
+            ></textarea>
           </div>
 
           <h2 class="mb-4">Liens</h2>
@@ -560,7 +560,7 @@ const submitForm = async () => {
       if (key !== 'song_catalog_id' && key !== 'lyrics_id') {
         if (key === 'song_sources') {
           dataToUpdate[key] = value.map(source => source.trim()).filter(Boolean)
-        } else if (key === 'song_description_fr' || key === 'song_description_en') {
+        } else if (key === 'song_description_fr' || key === 'song_description_en' || key === 'song_bie_comments') {
           dataToUpdate[key] = value || null
         } else if (value !== null && value !== '') {
           dataToUpdate[key] = value

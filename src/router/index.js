@@ -11,6 +11,7 @@ import AdminPage from '../pages/AdminPage.vue'
 import SongCreatePage from '../pages/SongCreatePage.vue'
 import SongEditPage from '../pages/SongEditPage.vue'
 import AdminLyricsPage from '../pages/AdminLyricsPage.vue'
+import AdminCollectionsPage from '../pages/AdminCollectionsPage.vue'
 import LyricsCreatePage from '../pages/LyricsCreatePage.vue'
 import LyricsEditPage from '../pages/LyricsEditPage.vue'
 import AboutPage from '../pages/AboutPage.vue'
@@ -123,6 +124,12 @@ const routes = [
     path: '/admin/lyrics',
     name: 'admin-lyrics',
     component: AdminLyricsPage,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/collections',
+    name: 'admin-collections',
+    component: AdminCollectionsPage,
     meta: { requiresAuth: true }
   },
   {

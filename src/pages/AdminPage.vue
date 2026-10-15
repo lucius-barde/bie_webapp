@@ -4,12 +4,11 @@
       <h1>Admin Dashboard</h1>
 
       <!-- Toolbar -->
-      <div class="admin-toolbar">
-        <div class="toolbar-buttons">
-          <router-link to="/admin/song/create" class="btn btn-primary">+ Nouveau chant</router-link>
-          <router-link to="/admin/lyrics" class="btn btn-sort">Gérer les paroles</router-link>
-        </div>
-
+      <AdminMobileNav :actions="[
+        { label: '+ Nouveau chant', to: '/admin/song/create', primary: true },
+        { label: 'Fiches de paroles', to: '/admin/lyrics' },
+        { label: 'Collections', to: '/admin/collections' }
+      ]">
         <div class="sort-buttons">
           <button
             v-for="sort in sortOptions"
@@ -20,7 +19,7 @@
             {{ sort.label }}
           </button>
         </div>
-      </div>
+      </AdminMobileNav>
 
       <!-- Loading State -->
       <div v-if="loading" class="loading">
@@ -38,7 +37,7 @@
               <th>Titre</th>
               <th>Collection</th>
               <th>N°</th>
-              <th>Durée (s)</th>
+              <th>Dur.</th>
               <th>Commentaires</th>
               <th>Type</th>
               <th>Origine</th>
@@ -54,14 +53,14 @@
               :class="`row-status-${song.song_status}`"
             >
               <td class="actions">
-                <router-link :to="`/admin/song/${song.song_catalog_id}/edit`" class="action-link edit">Éditer</router-link>
+                <router-link :to="`/admin/song/${song.song_catalog_id}/edit`" class="action-link edit">Édit.</router-link>
 
                 <router-link
                   v-if="getLyricsId(song)"
                   :to="`/admin/lyrics/${getLyricsId(song)}/edit`"
                   class="action-link lyrics"
                 >
-                  Paroles
+                  Par.
                 </router-link>
               </td>
               <td>{{ song.song_catalog_id }}</td>
@@ -74,7 +73,7 @@
               <td class="text-truncate">{{ song.song_collection_legacy || '-' }}</td>
               <td>{{ song.song_track_number || '-' }}</td>
               <td>{{ song.song_duration_sec || '-' }}</td>
-              <td class="text-truncate">{{ song.song_bie_comments || '-' }}</td>
+              <td class="">{{ song.song_bie_comments || '-' }}</td>
               <td class="text-truncate">{{ song.song_type_legacy || '-' }}</td>
               <td class="text-truncate">{{ song.song_origin_legacy || '-' }}</td>
               <td class="text-truncate">{{ song.song_author_legacy || '-' }}</td>
@@ -90,6 +89,7 @@
         Aucun chant trouvé.
       </div>
     </div>
+
   </main>
 </template>
 
@@ -97,6 +97,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { supabase } from '../lib/supabase'
 import { useRouter } from 'vue-router'
+import AdminMobileNav from '../components/AdminToolbar.vue'
 
 const router = useRouter()
 const songs = ref([])
@@ -284,9 +285,7 @@ onMounted(async () => {
   width: 100%;
   border-collapse: collapse;
   background: white;
-  font-size: 16px;
-  font-family: monospace;
-  letter-spacing: -0.05em;
+  font-size: 12px;
 }
 
 .admin-table thead {
@@ -294,18 +293,18 @@ onMounted(async () => {
 }
 
 .admin-table th {
-  padding: 12px 8px;
+  padding: 4px 4px;
   text-align: left;
   font-weight: 600;
   border-bottom: 1px solid var(--line);
 }
 
 .admin-table td {
-  padding: 12px 8px;
-  border-bottom: 1px solid var(--line);
-  height: 56px;
-  white-space: nowrap;
-  vertical-align: baseline;
+    padding: 4px 4px;
+    border-bottom: 1px solid var(--line);
+    height: 32px;
+    white-space: nowrap;
+    vertical-align: baseline;
 }
 
 /* Row status colors */
@@ -371,7 +370,7 @@ onMounted(async () => {
 }
 
 .text-truncate {
-  max-width: 25ch;
+  max-width: 15ch;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -389,10 +388,6 @@ onMounted(async () => {
     padding: 20px 0;
   }
 
-  .admin-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
 
   .btn {
     width: 100%;
