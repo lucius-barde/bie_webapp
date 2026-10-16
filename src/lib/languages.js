@@ -1,4 +1,5 @@
 export const lyricLanguages = [
+  { code: 'inst', name: '-- Instrumental --' },
   { code: 'de', name: 'Allemand' },
   { code: 'de-old', name: 'Allemand (ancien)' },
   { code: 'en', name: 'Anglais' },

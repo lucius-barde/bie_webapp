@@ -20,6 +20,10 @@
           <div class="container song-hero-content">
             <router-link to="/musique" class="back-link">← Retour aux chants</router-link>
             <h1>{{ song.song_title }}</h1>
+            <p v-if="isUnlistedSong" class="unlisted-alert" role="status">
+              Chant non répertorié (statut: {{ song.song_status }}) -
+              <router-link class="underline" :to="`/admin/song/${song.song_catalog_id}/edit`">Éditer</router-link>
+            </p>
             <p class="song-meta">
               <span class="song-number">N° {{ song.song_catalog_id }}</span>
               <span v-if="song.song_origin_legacy">{{ song.song_origin_legacy }}</span>
@@ -162,6 +166,8 @@ const lyrics = ref(null)
 const previousSong = ref(null)
 const nextSong = ref(null)
 const loading = ref(true)
+const isAuthenticated = ref(false)
+const isUnlistedSong = computed(() => Number(song.value?.song_status) < 3)
 const songImageUrl = computed(() => getSongImageUrl(
   song.value?.song_image || song.value?.song_image_gallery?.[0]
 ))
@@ -321,18 +327,24 @@ const fetchSongData = async () => {
     const songIdPart = route.params.songId
     if (!songIdPart) throw new Error('Invalid song ID')
 
-    const songCatalogId = parseInt(songIdPart.split('-')[0])
+    const songCatalogId = parseInt(songIdPart.split('-')[0], 10)
+    if (!Number.isInteger(songCatalogId)) throw new Error('Invalid song ID')
 
-    // Fetch the current song
-    const { data: songData, error: songError } = await supabase
+    const { data: { session } } = await supabase.auth.getSession()
+    isAuthenticated.value = Boolean(session?.user)
+
+    // Fetch published songs publicly; allow authenticated users to fetch drafts.
+    let songQuery = supabase
       .from('bardsinexile_songs')
       .select('*')
       .eq('song_catalog_id', songCatalogId)
-      .gte('song_status', 3)
-      .single()
 
-    if (songError) {
-      console.error('Error fetching song:', songError)
+    if (!isAuthenticated.value) songQuery = songQuery.gte('song_status', 3)
+
+    const { data: songData, error: songError } = await songQuery.maybeSingle()
+
+    if (songError || !songData) {
+      if (songError) console.error('Error fetching song:', songError)
       song.value = null
       lyrics.value = null
     } else {
@@ -455,6 +467,18 @@ watch(() => route.params.songId, () => {
 .song-hero-content h1 {
   margin: 0;
   font-size: 36px;
+}
+
+.unlisted-alert {
+  display: inline-block;
+  margin: 10px 0 0;
+  padding: 6px 10px;
+  border: 1px solid rgb(254 243 199 / 70%);
+  border-radius: 4px;
+  color: #fff;
+  background: rgb(120 53 15 / 75%);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .song-meta {

@@ -188,6 +188,29 @@
         <div v-if="errorMessage" class="error-message">
           {{ errorMessage }}
         </div>
+        <section class="form-group">
+          <h2>Paroles</h2>
+          <label for="newLyricsText">Paroles (laisser vide pour un chant instrumental)</label>
+          <textarea
+            id="newLyricsText"
+            v-model="newLyricsText"
+            class="form-textarea"
+            placeholder="Entrez les paroles, ou laissez vide si le chant est instrumental"
+          ></textarea>
+          <label for="newLyricsLanguage">Langue des paroles<span v-if="newLyricsText.trim()"> *</span></label>
+          <select
+            id="newLyricsLanguage"
+            v-model="newLyricsLanguage"
+            class="form-input"
+            :required="Boolean(newLyricsText.trim())"
+          >
+            <option value="">-- Sélectionner une langue --</option>
+            <option v-for="language in lyricLanguages" :key="language.code" :value="language.code">
+              {{ language.name }}
+            </option>
+          </select>
+        </section>
+
       </form>
     </div>
   </main>
@@ -197,10 +220,13 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
+import { lyricLanguages } from '../lib/languages'
 
 const router = useRouter()
 const isLoading = ref(false)
 const errorMessage = ref('')
+const newLyricsText = ref('')
+const newLyricsLanguage = ref('inst')
 
 const formData = ref({
   song_catalog_id: null,
@@ -227,6 +253,11 @@ const submitForm = async () => {
     return
   }
 
+  if (newLyricsText.value.trim() && !newLyricsLanguage.value) {
+    errorMessage.value = 'La langue des paroles est obligatoire lorsque des paroles sont saisies'
+    return
+  }
+
   isLoading.value = true
   errorMessage.value = ''
 
@@ -241,11 +272,31 @@ const submitForm = async () => {
       }
     }
 
+    const { data: lyricsData, error: lyricsError } = await supabase
+      .from('bardsinexile_lyrics')
+      .insert([{
+        main_lyrics: newLyricsText.value.trim() || '',
+        main_lyrics_language: newLyricsText.value.trim() ? newLyricsLanguage.value : 'inst'
+      }])
+      .select('id')
+      .single()
+
+    if (lyricsError) throw lyricsError
+
     const { error } = await supabase
       .from('bardsinexile_songs')
       .insert([dataToInsert])
 
     if (error) throw error
+
+    const { error: associationError } = await supabase
+      .from('bardsinexile_songs_have_lyrics')
+      .insert([{
+        song_catalog_id: dataToInsert.song_catalog_id,
+        lyrics_id: lyricsData.id
+      }])
+
+    if (associationError) throw associationError
 
     // Redirect to admin page with success message
     await router.push('/admin')

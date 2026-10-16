@@ -238,10 +238,10 @@
             </select>
           </div>
 
-          <fieldset v-if="formData.lyrics_id === null" class="form-fieldset">
-            <legend>Ou insérer les paroles</legend>
+          <fieldset class="form-fieldset">
+            <legend>{{ formData.lyrics_id === null ? 'Ou insérer les paroles' : 'Langue des paroles' }}</legend>
             <div class="form-group">
-              <label for="newLyricsText">Paroles</label>
+              <label for="newLyricsText">{{ formData.lyrics_id === null ? 'Paroles' : 'Nouvelles paroles' }}</label>
               <textarea
                 v-model="newLyricsText"
                 id="newLyricsText"
@@ -250,12 +250,12 @@
               ></textarea>
             </div>
             <div class="form-group">
-              <label for="newLyricsLanguage">Langue des paroles *</label>
+              <label for="newLyricsLanguage">Langue des paroles<span v-if="newLyricsText.trim()"> *</span></label>
               <select
                 v-model="newLyricsLanguage"
                 id="newLyricsLanguage"
                 class="form-input"
-                required
+                :required="Boolean(newLyricsText.trim())"
               >
                 <option value="">-- Sélectionner une langue --</option>
                 <option v-for="language in lyricLanguages" :key="language.code" :value="language.code">
@@ -417,7 +417,7 @@ const removeSource = (index) => {
   }
 }
 const newLyricsText = ref('')
-const newLyricsLanguage = ref('')
+const newLyricsLanguage = ref('inst')
 
 const fetchLyrics = async () => {
   try {
@@ -447,6 +447,17 @@ const fetchSongLyricsId = async (songCatalogId) => {
     const lyricsId = data?.lyrics_id || null
     formData.value.lyrics_id = lyricsId
     originalLyricsId.value = lyricsId
+
+    if (lyricsId) {
+      const linkedLyrics = lyrics.value.find(lyric => lyric.id === lyricsId)
+      if (linkedLyrics?.main_lyrics_language) {
+        newLyricsLanguage.value = linkedLyrics.main_lyrics_language
+      }
+      newLyricsText.value = ''
+    } else {
+      newLyricsLanguage.value = 'inst'
+      newLyricsText.value = ''
+    }
   } catch (error) {
     console.error('Error fetching song lyrics ID:', error)
   }
@@ -529,20 +540,30 @@ const submitForm = async () => {
     return
   }
 
+  if (formData.value.lyrics_id === null && newLyricsText.value.trim() && !newLyricsLanguage.value) {
+    errorMessage.value = 'La langue des paroles est obligatoire lorsque des paroles sont saisies'
+    return
+  }
+
   isLoading.value = true
   errorMessage.value = ''
   successMessage.value = ''
 
   try {
-    // Handle creation of new lyrics if needed
-    if (formData.value.lyrics_id === null && newLyricsText.value.trim() && newLyricsLanguage.value.trim()) {
-      // Create new lyrics entry
+    if (formData.value.lyrics_id !== null && newLyricsText.value.trim()) {
+      errorMessage.value = 'Pour remplacer les paroles, sélectionnez « Créer une nouvelle fiche » avant de saisir le texte.'
+      return
+    }
+
+    // Create a lyrics entry for text, or an instrumental marker when left empty.
+    if (formData.value.lyrics_id === null) {
+      const hasLyrics = Boolean(newLyricsText.value.trim())
       const { data: newLyricsData, error: createLyricsError } = await supabase
         .from('bardsinexile_lyrics')
         .insert([
           {
-            main_lyrics: newLyricsText.value,
-            main_lyrics_language: newLyricsLanguage.value
+            main_lyrics: hasLyrics ? newLyricsText.value : '',
+            main_lyrics_language: hasLyrics ? newLyricsLanguage.value : 'inst'
           }
         ])
         .select('id')
