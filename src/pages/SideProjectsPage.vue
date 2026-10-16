@@ -5,8 +5,8 @@
       <h1>Altaborea</h1>
       <p>An Alpine-themed synthwave/darkwave project by Lucius Barde, with some folk, metal, rock, and medieval elements. Distributed by B.i.E. Made with LMMS.</p>
       <ul class="mt-8">
-          <li><a href="https://open.spotify.com/intl-fr/artist/3NOq0XigdAAfyM0Tm2d67x" target="_blank">Altaborea (Spotify)</a></li>
-          <li><a href="https://bardsinexile.bandcamp.com" target="_blank">Altaborea (Bandcamp)</a></li>
+          <li><a href="https://open.spotify.com/intl-fr/artist/3NOq0XigdAAfyM0Tm2d67x" target="_blank">Listen on Spotify</a></li>
+          <li><a href="https://bardsinexile.bandcamp.com" target="_blank">Listen on Bandcamp</a></li>
       </ul>
       <p><small>Also available on Deezer, Apple Music and Amazon.</small></p>
     </section>

@@ -3,7 +3,7 @@
     <div class="container footer-inner">
       <div class="footer-content">
         <div class="footer-col">
-          <h4>Explorez</h4>
+          <h2 class="text-md mt-2 mb-4">Explorer</h2>
           <nav>
             <router-link to="/musique">Tous les chants</router-link>
             <a href="https://linktr.ee/bardsinexile" target="_blank" rel="noopener noreferrer">Discographie</a>
@@ -13,16 +13,17 @@
         </div>
 
         <div class="footer-col">
-          <h4>À propos</h4>
+          <h2 class="text-md mt-2 mb-4">Le projet</h2>
           <nav>
-            <router-link to="/le-projet">Le projet</router-link>
+            <router-link to="/le-projet">À propos de Bards in Exile</router-link>
             <router-link to="/contact">Contact</router-link>
             <router-link to="/liens">Liens et sources</router-link>
+            <router-link to="/altaborea">Altaborea (projet annexe)</router-link>
           </nav>
         </div>
 
         <div class="footer-col">
-          <h4>Réseaux sociaux</h4>
+          <h2 class="text-md mt-2 mb-4">Réseaux sociaux</h2>
           <nav>
             <a href="https://www.youtube.com/@bardsinexile" target="_blank" rel="noopener noreferrer">YouTube</a>
             <a href="https://t.me/bardsinexile" target="_blank" rel="noopener noreferrer">Telegram</a>
