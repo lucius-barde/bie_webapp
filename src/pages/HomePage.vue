@@ -625,7 +625,7 @@ const handleSearch = () => {
 
 @media (max-width: 520px) {
   .hero {
-    padding: 44px 28px;
+    padding: 84px 28px;
   }
 
   .hero-copy {
