@@ -98,7 +98,8 @@
               <router-link :to="songDetailLink(song)" class="song-title-link">
                 <h3>{{ song.song_title }}</h3>
               </router-link>
-              <p v-if="song.song_type_legacy">{{ song.song_type_legacy }}</p>
+              <p><span v-if="song.song_type_legacy">{{ song.song_type_legacy }}. </span><span v-if="song.song_author_legacy">{{ song.song_author_legacy }}<span v-if="song.song_date_info">, {{ song.song_date_info }}</span></span></p>
+
               <router-link
                 :to="songDetailLink(song)"
                 class="button"
@@ -229,7 +230,7 @@ onMounted(async () => {
     topOrigins.value = [...counts.entries()]
       .map(([name, count]) => ({ name, count }))
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
-      .slice(0, 6)
+      .slice(0, 12)
   } catch (error) {
     console.error('Error fetching homepage songs and origins:', error)
   }
@@ -625,7 +626,7 @@ const handleSearch = () => {
 
 @media (max-width: 520px) {
   .hero {
-    padding: 84px 28px;
+      padding: 84px 28px;
   }
 
   .hero-copy {

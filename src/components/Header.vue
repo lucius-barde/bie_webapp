@@ -10,6 +10,7 @@
       </router-link>
 
       <nav class="main-nav" aria-label="Navigation principale">
+        <router-link v-if="isAuthenticated" to="/admin">Admin</router-link>
         <router-link to="/#albums">Albums</router-link>
         <router-link to="/partitions-chants-folk">Partitions</router-link>
         <router-link to="/le-projet">À propos</router-link>
@@ -18,6 +19,28 @@
     </div>
   </header>
 </template>
+
+<script setup>
+import { onMounted, onUnmounted, ref } from 'vue'
+import { supabase } from '../lib/supabase'
+
+const isAuthenticated = ref(false)
+let authSubscription
+
+onMounted(async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  isAuthenticated.value = Boolean(session?.user)
+
+  const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+    isAuthenticated.value = Boolean(session?.user)
+  })
+  authSubscription = data.subscription
+})
+
+onUnmounted(() => {
+  authSubscription?.unsubscribe()
+})
+</script>
 
 <style scoped>
 .site-header {

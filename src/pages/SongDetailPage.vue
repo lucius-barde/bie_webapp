@@ -21,12 +21,16 @@
             <router-link to="/musique" class="back-link">← Retour aux chants</router-link>
             <h1>{{ song.song_title }}</h1>
             <p v-if="isUnlistedSong" class="unlisted-alert" role="status">
-              Chant non répertorié (statut: {{ song.song_status }}) -
-              <router-link class="underline" :to="`/admin/song/${song.song_catalog_id}/edit`">Éditer</router-link>
+              Chant non répertorié (statut: {{ song.song_status }})
             </p>
             <p class="song-meta">
               <span class="song-number">N° {{ song.song_catalog_id }}</span>
               <span v-if="song.song_origin_legacy">{{ song.song_origin_legacy }}</span>
+              <router-link
+                v-if="isAuthenticated"
+                :to="`/admin/song/${song.song_catalog_id}/edit`"
+                class="edit-button"
+              >Éditer</router-link>
             </p>
           </div>
         </div>
@@ -94,7 +98,14 @@
 
           <!-- Lyrics Section -->
           <section v-if="lyrics && lyrics.main_lyrics" class="song-section">
-            <h2>Paroles</h2>
+            <div class="song-section-heading">
+              <h2>Paroles</h2>
+              <router-link
+                v-if="isAuthenticated && lyricsId"
+                :to="`/admin/lyrics/${lyricsId}/edit`"
+                class="edit-button lyrics-edit-button"
+              >Éditer</router-link>
+            </div>
             <div class="bie-lyrics text-xl" v-html="renderInlineMarkdown(lyrics.main_lyrics)"></div>
           </section>
 
@@ -163,6 +174,7 @@ import Breadcrumbs from '../components/Breadcrumbs.vue'
 const route = useRoute()
 const song = ref(null)
 const lyrics = ref(null)
+const lyricsId = ref(null)
 const previousSong = ref(null)
 const nextSong = ref(null)
 const loading = ref(true)
@@ -347,8 +359,10 @@ const fetchSongData = async () => {
       if (songError) console.error('Error fetching song:', songError)
       song.value = null
       lyrics.value = null
+      lyricsId.value = null
     } else {
       song.value = songData
+      lyricsId.value = null
 
       // Fetch lyrics for this song
       try {
@@ -359,6 +373,7 @@ const fetchSongData = async () => {
           .single()
 
         if (!lyricError && lyricData) {
+          lyricsId.value = lyricData.lyrics_id
           // Fetch the full lyrics data
           const { data: fullLyricData } = await supabase
             .from('bardsinexile_lyrics')
@@ -490,6 +505,29 @@ watch(() => route.params.songId, () => {
   color: rgba(255, 255, 255, 0.8);
 }
 
+.edit-button {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  padding: 6px 14px;
+  border: 1px solid var(--blue);
+  border-radius: 4px;
+  color: #fff;
+  background: var(--blue);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  text-shadow: none;
+}
+
+.edit-button:hover {
+  border-color: var(--blue-dark);
+  background: var(--blue-dark);
+  color: #fff;
+}
+
 .song-number {
   color: rgb(229 231 235 / 78%);
   font-size: 11px;
@@ -572,6 +610,22 @@ watch(() => route.params.songId, () => {
 
 .song-section {
   margin-bottom: 40px;
+}
+
+.song-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.song-section-heading h2 {
+  margin: 0;
+}
+
+.lyrics-edit-button {
+  margin-left: 0;
 }
 
 .song-section h2 {

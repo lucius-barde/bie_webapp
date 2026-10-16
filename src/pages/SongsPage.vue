@@ -74,7 +74,8 @@
               <router-link :to="songDetailLink(song)" class="song-title-link">
                 <h2>{{ song.song_title }}</h2>
               </router-link>
-              <p v-if="song.song_type_legacy">{{ song.song_type_legacy }}</p>
+              <p><span v-if="song.song_type_legacy">{{ song.song_type_legacy }}. </span><span v-if="song.song_author_legacy">{{ song.song_author_legacy }}<span v-if="song.song_date_info">, {{ song.song_date_info }}</span></span></p>
+
               <a
                 v-if="isSheetList && song.song_musicsheet_link"
                 :href="song.song_musicsheet_link"

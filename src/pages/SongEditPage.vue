@@ -148,6 +148,18 @@
             />
           </div>
 
+          <!-- Song Image -->
+          <div class="form-group">
+            <label for="song_image">Image</label>
+            <input
+              id="song_image"
+              v-model="songImage"
+              type="text"
+              placeholder="Nom ou chemin de l’image"
+              class="form-input"
+            />
+          </div>
+
           <!-- Date Info -->
           <div class="form-group">
             <label for="song_date_info">Époque / Date</label>
@@ -418,6 +430,7 @@ const removeSource = (index) => {
 }
 const newLyricsText = ref('')
 const newLyricsLanguage = ref('inst')
+const songImage = ref('')
 
 const fetchLyrics = async () => {
   try {
@@ -487,6 +500,7 @@ const fetchSongData = async () => {
         song_collection_legacy: data.song_collection_legacy || '',
         song_track_number: data.song_track_number || null,
         song_duration_sec: data.song_duration_sec || null,
+        song_image_gallery: data.song_image_gallery || [],
         song_bie_comments: data.song_bie_comments || '',
         song_type_legacy: data.song_type_legacy || '',
         song_origin_legacy: data.song_origin_legacy || '',
@@ -502,6 +516,7 @@ const fetchSongData = async () => {
         lyrics_id: null
       }
 
+      songImage.value = formData.value.song_image_gallery[0] || ''
       await fetchSongLyricsId(data.song_catalog_id)
     }
   } catch (error) {
@@ -576,7 +591,11 @@ const submitForm = async () => {
     }
 
     // Prepare data for update (remove null values except for catalog_id)
-    const dataToUpdate = {}
+    const dataToUpdate = {
+      song_image_gallery: songImage.value.trim()
+        ? [songImage.value.trim(), ...formData.value.song_image_gallery.slice(1)]
+        : []
+    }
     for (const [key, value] of Object.entries(formData.value)) {
       if (key !== 'song_catalog_id' && key !== 'lyrics_id') {
         if (key === 'song_sources') {

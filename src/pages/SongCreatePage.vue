@@ -124,6 +124,18 @@
           />
         </div>
 
+        <!-- Song Image -->
+        <div class="form-group">
+          <label for="song_image">Image</label>
+          <input
+            id="song_image"
+            v-model="songImage"
+            type="text"
+            placeholder="Nom ou chemin de l’image"
+            class="form-input"
+          />
+        </div>
+
         <!-- Date Info -->
         <div class="form-group">
           <label for="song_date_info">Époque / Date</label>
@@ -227,6 +239,7 @@ const isLoading = ref(false)
 const errorMessage = ref('')
 const newLyricsText = ref('')
 const newLyricsLanguage = ref('inst')
+const songImage = ref('')
 
 const formData = ref({
   song_catalog_id: null,
@@ -263,7 +276,9 @@ const submitForm = async () => {
 
   try {
     // Prepare data for insertion (remove null values)
-    const dataToInsert = {}
+    const dataToInsert = {
+      song_image_gallery: songImage.value.trim() ? [songImage.value.trim()] : []
+    }
     for (const [key, value] of Object.entries(formData.value)) {
       if (key === 'song_bie_comments') {
         dataToInsert[key] = value || null
