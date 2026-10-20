@@ -9,16 +9,18 @@
         { label: 'Fiches de paroles', to: '/admin/lyrics' },
         { label: 'Collections', to: '/admin/collections' }
       ]">
-        <div class="sort-buttons">
-          <button
-            v-for="sort in sortOptions"
-            :key="sort.value"
-            :class="['btn', 'btn-sort', { active: currentSort === sort.value }]"
-            @click="currentSort = sort.value"
-          >
-            {{ sort.label }}
-          </button>
-        </div>
+        <label class="sort-control">
+          <span>Trier par</span>
+          <select v-model="currentSort" class="sort-select">
+            <option
+              v-for="sort in sortOptions"
+              :key="sort.value"
+              :value="sort.value"
+            >
+              {{ sort.label }}
+            </option>
+          </select>
+        </label>
       </AdminMobileNav>
 
       <!-- Loading State -->
@@ -107,8 +109,12 @@ const currentSort = ref('by_id')
 const sortOptions = [
   { label: 'Tri par ID', value: 'by_id', query: 'order by song_catalog_id ASC' },
   { label: 'Tri par ID inv.', value: 'by_id_desc', query: 'order by song_catalog_id DESC' },
-  { label: 'Tri par album', value: 'by_album', query: 'order by song_collection_legacy ASC, song_track_number ASC, song_catalog_id ASC' },
-  { label: 'Tri par statut', value: 'by_status', query: 'order by song_status DESC, song_catalog_id ASC' },
+  { label: 'Tri par collection', value: 'by_album', query: 'order by song_collection_legacy ASC, song_track_number ASC, song_catalog_id ASC' },
+  { label: 'Tri par collection inv.', value: 'by_album_desc', query: 'order by song_collection_legacy DESC, song_track_number ASC, song_catalog_id ASC' },
+  { label: 'Tri par statut', value: 'by_status', query: 'order by song_status ASC, song_catalog_id ASC' },
+  { label: 'Tri par statut inv.', value: 'by_status_desc', query: 'order by song_status DESC, song_catalog_id ASC' },
+  { label: 'Tri par nom', value: 'by_name', query: 'order by song_title ASC, song_catalog_id ASC' },
+  { label: 'Tri par nom inv.', value: 'by_name_desc', query: 'order by song_title DESC, song_catalog_id ASC' },
 ]
 
 const fetchSongs = async () => {
@@ -128,8 +134,21 @@ const fetchSongs = async () => {
       query = query.order('song_collection_legacy', { ascending: true })
         .order('song_track_number', { ascending: true })
         .order('song_catalog_id', { ascending: true })
+    } else if (sortOption.value === 'by_album_desc') {
+      query = query.order('song_collection_legacy', { ascending: false })
+        .order('song_track_number', { ascending: true })
+        .order('song_catalog_id', { ascending: true })
     } else if (sortOption.value === 'by_status') {
+      query = query.order('song_status', { ascending: true })
+        .order('song_catalog_id', { ascending: true })
+    } else if (sortOption.value === 'by_status_desc') {
       query = query.order('song_status', { ascending: false })
+        .order('song_catalog_id', { ascending: true })
+    } else if (sortOption.value === 'by_name') {
+      query = query.order('song_title', { ascending: true })
+        .order('song_catalog_id', { ascending: true })
+    } else if (sortOption.value === 'by_name_desc') {
+      query = query.order('song_title', { ascending: false })
         .order('song_catalog_id', { ascending: true })
     }
 
@@ -250,23 +269,29 @@ onMounted(async () => {
   background: var(--blue-dark);
 }
 
-.sort-buttons {
+.sort-control {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.btn-sort {
-  background: var(--paper-deep);
+  align-items: center;
+  gap: 10px;
   color: var(--ink);
-  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.btn-sort:hover,
-.btn-sort.active {
-  background: var(--blue);
-  color: white;
-  border-color: var(--blue);
+.sort-select {
+  min-width: 190px;
+  padding: 10px 36px 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+  background: var(--paper-deep);
+  font: inherit;
+  cursor: pointer;
+}
+
+.sort-select:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
 }
 
 .loading {
@@ -393,12 +418,14 @@ onMounted(async () => {
     width: 100%;
   }
 
-  .sort-buttons {
+  .sort-control {
     width: 100%;
+    justify-content: space-between;
   }
 
-  .btn-sort {
+  .sort-select {
     flex: 1;
+    min-width: 0;
   }
 
   .admin-table {
