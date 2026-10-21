@@ -35,12 +35,14 @@
 
       <div class="copyright-bar">
         <p class="copyright">
-          © Bards in Exile · Le chansonnier européen
+          © 2026 Bards in Exile
           <span class="auth-info">
+              Développement et design par: <a href="https://www.le-codex.ch" target="_blank" class="underline">Le-Codex.ch</a>
             <template v-if="user">
-              Connecté: {{ user.email }} - <a href="/bie-logout" class="logout-link">Déconnexion</a>
+               - Connecté: {{ user.email }} - <a href="/bie-logout" class="logout-link">Déconnexion</a>
             </template>
             <template v-else>
+              - <a href="/bie-login" class="login-link">Connexion</a>
             </template>
           </span>
         </p>
