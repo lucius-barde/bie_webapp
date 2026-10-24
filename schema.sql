@@ -13,7 +13,7 @@ create table public.bardsinexile_songs (
   song_youtube_link text null,
   song_musicsheet_link text null,
   song_sources jsonb null default '[]'::jsonb,
-  song_image_gallery text[] not null default '{}'::text[],
+  song_image text null,
   song_artist text null,
   author_id uuid null,
   created_at timestamp with time zone not null default now(),

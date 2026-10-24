@@ -179,9 +179,7 @@ const nextSong = ref(null)
 const loading = ref(true)
 const isAuthenticated = ref(false)
 const isUnlistedSong = computed(() => Number(song.value?.song_status) < 3)
-const songImageUrl = computed(() => getSongImageUrl(
-  song.value?.song_image || song.value?.song_image_gallery?.[0]
-))
+const songImageUrl = computed(() => getSongImageUrl(song.value?.song_image))
 
 const cleanMetaText = (value, maxLength = 155) => String(value || '')
   .replace(/\s+/g, ' ')

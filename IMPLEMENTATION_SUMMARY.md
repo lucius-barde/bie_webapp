@@ -65,7 +65,7 @@ Implémentation d'un système d'administration complet pour gérer les chants, a
 - **SongCreatePage** (`/admin/song/create`)
   - Formulaire pour créer un nouveau chant
   - Champ song_title obligatoire
-  - Tous les champs éditables sauf: song_sources, song_image_gallery, song_artist, uuid, created_at, edited_at
+  - Tous les champs éditables sauf: song_sources, song_artist, uuid, created_at, edited_at
   - Bouton "Créer le chant"
   - Redirection vers `/admin` après succès
 

@@ -201,7 +201,7 @@ Couleurs des statuts (Tailwind):
 Formulaires avec champs:
 - **Obligatoire:** song_title
 - **Modifiables:** song_catalog_id, song_status, song_collection_legacy, song_track_number, song_duration_sec, song_bie_comments, song_type_legacy, song_origin_legacy, song_author_legacy, song_date_info, song_youtube_link, song_musicsheet_link
-- **Non modifiables:** song_sources, song_image_gallery, song_artist, uuid, created_at, edited_at
+- **Non modifiables:** song_sources, song_artist, uuid, created_at, edited_at
 
 States de champ song_status:
 - 0 = Brouillon

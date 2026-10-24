@@ -20,7 +20,7 @@ CREATE TABLE public.bardsinexile_songs (
   song_youtube_link TEXT,
   song_musicsheet_link TEXT,
   song_sources JSONB DEFAULT '[]'::jsonb,
-  song_image_gallery TEXT[] DEFAULT '{}'::text[],
+  song_image TEXT,
   song_artist TEXT,
   author_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   song_collection_legacy TEXT,
@@ -61,7 +61,7 @@ CREATE TABLE public.bardsinexile_songs (
 - **song_youtube_link** - Lien vers une vidéo YouTube
 - **song_musicsheet_link** - Lien vers une partition
 - **song_sources** - JSON array de sources (ouvrages, références)
-- **song_image_gallery** - Array d'URLs d'images supplémentaires
+- **song_image** - Nom ou chemin de l'image du chant
 
 #### Métadonnées
 - **author_id** - UUID de l'utilisateur qui a créé/édité
@@ -195,10 +195,7 @@ const { data: nextData } = await supabase
     "Chansonnier de Nostre Dame",
     "Corpus des troubadours"
   ],
-  "song_image_gallery": [
-    "https://example.com/image1.jpg",
-    "https://example.com/image2.jpg"
-  ]
+  "song_image": "https://example.com/image1.jpg"
 }
 ```
 

@@ -76,8 +76,8 @@
           <article v-for="song in latestSongs" :key="song.id" class="chant-card">
             <router-link :to="songDetailLink(song)" class="chant-card-image-link" :aria-label="`Lire ${song.song_title}`">
               <img
-                v-if="getSongImageUrl(song.song_image || song.song_image_gallery?.[0])"
-                :src="getSongImageUrl(song.song_image || song.song_image_gallery?.[0])"
+                v-if="getSongImageUrl(song.song_image)"
+                :src="getSongImageUrl(song.song_image)"
                 :alt="`Illustration de: ${song.song_title}`"
                 loading="lazy"
                 decoding="async"

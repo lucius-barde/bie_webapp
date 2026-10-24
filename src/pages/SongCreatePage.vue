@@ -277,7 +277,7 @@ const submitForm = async () => {
   try {
     // Prepare data for insertion (remove null values)
     const dataToInsert = {
-      song_image_gallery: songImage.value.trim() ? [songImage.value.trim()] : []
+      song_image: songImage.value.trim() || null
     }
     for (const [key, value] of Object.entries(formData.value)) {
       if (key === 'song_bie_comments') {
