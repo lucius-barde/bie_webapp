@@ -12,7 +12,7 @@
       <nav class="main-nav" aria-label="Navigation principale">
         <router-link v-if="isAuthenticated" to="/admin">{{ t('common.admin') }}</router-link>
         <router-link :to="albumsLink">{{ t('common.albums') }}</router-link>
-        <router-link :to="sheetsLink">{{ t('common.sheets') }}</router-link>
+        <router-link to="/partitions-chants-folk">{{ t('common.sheets') }}</router-link>
         <router-link to="/le-projet">{{ t('common.about') }}</router-link>
         <router-link :to="exploreLink" class="button">{{ t('common.explore') }}</router-link>
         <LanguageSwitcher />

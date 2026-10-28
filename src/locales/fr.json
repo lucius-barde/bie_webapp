@@ -75,8 +75,8 @@
     "sheet": "Partition musicale",
     "sources": "Sources",
     "navigation": {
-      "previous": "← Chanson précédente",
-      "next": "Chanson suivante →",
+      "previous": "Chanson précédente",
+      "next": "Chanson suivante",
       "all": "Tous les chants",
       "edit": "Éditer"
     },

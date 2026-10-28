@@ -155,6 +155,18 @@ const routes = [
     meta: { locale: 'en' }
   },
   {
+    path: '/en/category/songs/:categorySlug',
+    name: 'category-en',
+    component: SongsPage,
+    meta: { locale: 'en' }
+  },
+  {
+    path: '/en/search',
+    name: 'search-en',
+    component: SongsPage,
+    meta: { locale: 'en' }
+  },
+  {
     path: '/en/music/:songId-:slug',
     name: 'song-detail-en',
     component: SongDetailPage,
@@ -171,6 +183,18 @@ const routes = [
   {
     path: '/de/musik/page/:page',
     name: 'songs-page-de',
+    component: SongsPage,
+    meta: { locale: 'de' }
+  },
+  {
+    path: '/de/kategorie/lieder/:categorySlug',
+    name: 'category-de',
+    component: SongsPage,
+    meta: { locale: 'de' }
+  },
+  {
+    path: '/de/suche',
+    name: 'search-de',
     component: SongsPage,
     meta: { locale: 'de' }
   },
@@ -276,7 +300,7 @@ const defaultPageMeta = {
 
 // Update page title and meta based on route
 router.afterEach((to) => {
-  const publicPages = ['home', 'english', 'german', 'songs', 'songs-page', 'traditional-songs', 'songs-by-origin', 'original-compositions', 'folk-sheets', 'search', 'song-detail', 'songs-fr', 'songs-page-fr', 'traditional-songs-fr', 'songs-by-origin-fr', 'original-compositions-fr', 'folk-sheets-fr', 'search-fr', 'song-detail-fr', 'songs-en', 'songs-page-en', 'song-detail-en', 'songs-de', 'songs-page-de', 'song-detail-de']
+  const publicPages = ['home', 'english', 'german', 'songs', 'songs-page', 'traditional-songs', 'songs-by-origin', 'original-compositions', 'folk-sheets', 'search', 'song-detail', 'songs-fr', 'songs-page-fr', 'traditional-songs-fr', 'songs-by-origin-fr', 'original-compositions-fr', 'folk-sheets-fr', 'search-fr', 'song-detail-fr', 'songs-en', 'songs-page-en', 'category-en', 'search-en', 'song-detail-en', 'songs-de', 'songs-page-de', 'category-de', 'search-de', 'song-detail-de']
 
   if (publicPages.includes(to.name)) return
 

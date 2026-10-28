@@ -69,7 +69,7 @@
                   v-if="song.song_origin_legacy"
                   :to="originLink(song.song_origin_legacy)"
                   class="song-origin"
-                >{{ song.song_origin_legacy }}</router-link>
+                >{{ getSongOriginTranslated(song.song_origin_legacy) }}</router-link>
               </div>
               <router-link :to="songDetailLink(song)" class="song-title-link">
                 <h2>{{ song.song_title }}</h2>
@@ -128,6 +128,7 @@ import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabase'
 import { getSongImageUrl } from '../lib/songImages'
 import { getSongTypeTranslation } from '../lib/songTypes'
+import { getSongOriginTranslation } from '../lib/songOrigins'
 import { useLocale } from '../composables/useLocale'
 import Breadcrumbs from '../components/Breadcrumbs.vue'
 
@@ -147,47 +148,51 @@ const totalPages = computed(() => Math.ceil(totalSongs.value / SONGS_PER_PAGE) |
 const searchTerm = computed(() => String(route.query.q || '').trim())
 const requestedPage = computed(() => Math.max(1, parseInt(route.params.page || route.query.page) || 1))
 const isSheetList = computed(() => route.path === '/partitions-chants-folk' || route.path === '/fr/partitions-chants-folk')
+const isSearch = computed(() => route.path === '/recherche' || route.path === '/fr/recherche' || route.path === '/en/search' || route.path === '/de/suche')
+const isCategoryRoute = computed(() => route.path.startsWith('/fr/categorie/') || route.path.startsWith('/categorie/') || route.path.startsWith('/en/category/songs/') || route.path.startsWith('/de/kategorie/lieder/'))
+const isPersonalCompositions = computed(() => route.path === '/categorie/compositions-personnelles' || route.path === '/fr/categorie/compositions-personnelles' || (route.params.categorySlug === 'compositions-personnelles'))
+const isTraditionalSongs = computed(() => route.path === '/categorie/chants' || route.path === '/fr/categorie/chants' || (route.params.categorySlug === 'chants' && locale.value !== 'fr'))
 
 const pageTitle = computed(() => {
   if (isSheetList.value) {
     return 'Partitions de chants folk'
   }
-  if (route.path === '/categorie/compositions-personnelles' || route.path === '/fr/categorie/compositions-personnelles') {
+  if (isPersonalCompositions.value) {
     return t('pages.songs.personalCompositions')
   }
-  if (route.path === '/categorie/chants' || route.path === '/fr/categorie/chants') {
+  if (isTraditionalSongs.value) {
     return t('pages.songs.traditionalSongs')
   }
   if (route.path === '/en/music' || route.path === '/de/musik') {
     return t('pages.songs.allSongs')
   }
-  if (route.params.origin) return String(route.params.origin)
-  if (route.path === '/recherche' || route.path === '/fr/recherche') {
+  if (route.params.origin) return getSongOriginTranslated(route.params.origin)
+  if (isSearch.value) {
     return t('pages.songs.searchResults')
   }
   return t('pages.songs.allSongs')
 })
 const pageMetaTitle = computed(() => {
   const title = pageTitle.value
-  if (route.path === '/recherche' || route.path === '/fr/recherche') return `${title} ${searchTerm.value} | Paroles de chants - Bards in Exile`
+  if (isSearch.value) return `${title} ${searchTerm.value} | Paroles de chants - Bards in Exile`
   return `${title} | Paroles${isSheetList.value ? ' et partitions' : ''} de chants - Bards in Exile`
 })
 const pageMetaDescription = computed(() => {
   if (isSheetList.value) return 'Parcourez les partitions de chants folk et traditionnels de France, de Suisse et d\'Europe proposees par Bards in Exile.'
-  if (route.path === '/recherche' || route.path === '/fr/recherche') return `Resultats de recherche pour ${searchTerm.value} dans le repertoire de chants Bards in Exile.`
+  if (isSearch.value) return `Resultats de recherche pour ${searchTerm.value} dans le repertoire de chants Bards in Exile.`
   if (route.params.origin) return `Decouvrez les paroles et les histoires de chants folk et traditionnels originaires de ${String(route.params.origin)}.`
-  if (route.path === '/categorie/compositions-personnelles' || route.path === '/fr/categorie/compositions-personnelles') return 'Decouvrez les paroles et arrangements des compositions originales de Bards in Exile.'
-  if (route.path === '/categorie/chants' || route.path === '/fr/categorie/chants') return 'Explorez des paroles de chants folk, medievaux et traditionnels d\'Europe.'
+  if (isPersonalCompositions.value) return 'Decouvrez les paroles et arrangements des compositions originales de Bards in Exile.'
+  if (isTraditionalSongs.value) return 'Explorez des paroles de chants folk, medievaux et traditionnels d\'Europe.'
   return 'Explorez le repertoire de paroles de chants folk, medievaux et traditionnels de Bards in Exile.'
 })
 const breadcrumbItems = computed(() => {
   const home = { label: t('common.home'), to: '/' }
-  const title = (route.path === '/recherche' || route.path === '/fr/recherche') ? t('pages.songs.searchResults') : pageTitle.value
+  const title = isSearch.value ? t('pages.songs.searchResults') : pageTitle.value
   const items = [home]
 
   if (route.params.origin) {
     items.push({ label: t('pages.songs.traditionalSongs'), to: '/categorie/chants' })
-    items.push({ label: String(route.params.origin) })
+    items.push({ label: getSongOriginTranslated(route.params.origin) })
   } else {
     items.push({ label: title })
   }
@@ -198,21 +203,25 @@ const breadcrumbItems = computed(() => {
 const getSongTypeTranslated = (frenchType) => {
   return getSongTypeTranslation(frenchType, locale.value)
 }
+
+const getSongOriginTranslated = (frenchOrigin) => {
+  return getSongOriginTranslation(frenchOrigin, locale.value)
+}
 const pageSubtitle = computed(() => {
   if (isSheetList.value) {
     return t('pages.songs.allSongsDescriptionSheets')
   }
-  if (route.path === '/categorie/compositions-personnelles' || route.path === '/fr/categorie/compositions-personnelles') {
+  if (isPersonalCompositions.value) {
     return t('pages.songs.personalCompositionsDescription')
   }
-  if (route.path === '/categorie/chants' || route.path === '/fr/categorie/chants') {
+  if (isTraditionalSongs.value) {
     return t('pages.songs.traditionalSongsDescription')
   }
   if (route.path === '/en/music' || route.path === '/de/musik') {
     return t('pages.songs.traditionalSongsDescription')
   }
   if (route.params.origin) return t('pages.songs.originDescription')
-  if (route.path === '/recherche' || route.path === '/fr/recherche') {
+  if (isSearch.value) {
     return `${t('pages.songs.searchResultsDescription')} « ${searchTerm.value} »`
   }
   return t('pages.songs.allSongsDescription')
@@ -225,9 +234,9 @@ const fetchSongs = async () => {
     const applyFilters = (query) => {
       query = query.gte('song_status', 3)
 
-      if (route.path === '/categorie/compositions-personnelles' || route.path === '/fr/categorie/compositions-personnelles') {
+      if (isPersonalCompositions.value) {
         query = query.eq('song_origin_legacy', 'B.i.E')
-      } else if ((route.path === '/categorie/chants' || route.path === '/fr/categorie/chants') && !route.params.origin) {
+      } else if (isTraditionalSongs.value && !route.params.origin) {
         query = query.neq('song_origin_legacy', 'B.i.E')
       } else if (route.params.origin) {
         query = query.eq('song_origin_legacy', String(route.params.origin))
@@ -235,7 +244,7 @@ const fetchSongs = async () => {
 
       if (isSheetList.value) query = query.not('song_musicsheet_link', 'is', null).neq('song_musicsheet_link', '')
 
-      if ((route.path === '/recherche' || route.path === '/fr/recherche') && searchTerm.value) {
+      if (isSearch.value && searchTerm.value) {
         const escaped = searchTerm.value.replace(/[\\%,()]/g, ' ').trim()
         if (!escaped) return query
         query = query.or([
@@ -285,15 +294,51 @@ const generateSlug = (title) => {
 }
 
 
-const songDetailLink = (song) => `/musique/${song.song_catalog_id}-${generateSlug(song.song_title)}`
+const songDetailLink = (song) => {
+  const baseRoutes = {
+    fr: '/musique',
+    en: '/en/music',
+    de: '/de/musik'
+  }
+  const base = baseRoutes[locale.value] || '/musique'
+  return `${base}/${song.song_catalog_id}-${generateSlug(song.song_title)}`
+}
 
-const originLink = (origin) => origin === 'B.i.E'
-  ? '/categorie/compositions-personnelles'
-  : `/categorie/chants/${encodeURIComponent(origin)}`
+const originLink = (origin) => {
+  const baseRoutes = {
+    fr: {
+      personalCompositions: '/categorie/compositions-personnelles',
+      songs: '/categorie/chants'
+    },
+    en: {
+      personalCompositions: '/en/category/songs/compositions-personnelles',
+      songs: '/en/category/songs/chants'
+    },
+    de: {
+      personalCompositions: '/de/kategorie/lieder/compositions-personnelles',
+      songs: '/de/kategorie/lieder/chants'
+    }
+  }
+  const base = baseRoutes[locale.value] || baseRoutes.fr
+  if (origin === 'B.i.E') {
+    return base.personalCompositions
+  }
+  // All locales now have category routes
+  if (locale.value === 'fr') {
+    return `${base.songs}/${encodeURIComponent(origin)}`
+  }
+  // EN/DE: use category routes
+  return base.songs
+}
 
-const pageLink = (page) => route.path === '/musique' || route.path.startsWith('/musique/page/')
-  ? `/musique/page/${page}`
-  : { path: route.path, query: { ...route.query, page: String(page) } }
+const pageLink = (page) => {
+  // Handle FR legacy routes
+  if (route.path === '/musique' || route.path.startsWith('/musique/page/')) {
+    return `/musique/page/${page}`
+  }
+  // For all other routes (including category and search), use query parameter
+  return { path: route.path, query: { ...route.query, page: String(page) } }
+}
 
 import { useHead } from '@vueuse/head'
 
@@ -306,7 +351,7 @@ onMounted(() => {
   fetchSongs()
 })
 
-watch(() => [route.path, route.params.page, route.params.origin, route.query.page, route.query.q, locale.value], () => {
+watch(() => [route.path, route.params.page, route.params.origin, route.params.categorySlug, route.query.page, route.query.q, locale.value], () => {
   fetchSongs()
 })
 </script>

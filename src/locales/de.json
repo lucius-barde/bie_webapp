@@ -3,8 +3,8 @@
     "home": "Startseite",
     "admin": "Admin",
     "albums": "Alben",
-    "sheets": "Noten",
-    "about": "Über",
+    "sheets": "Noten (fr)",
+    "about": "Über (fr)",
     "contact": "Kontakt",
     "links": "Links",
     "explore": "Erkunden",
@@ -42,7 +42,7 @@
     "sheets": {
       "title": "Noten",
       "description": "Erkunden Sie verfügbare Ressourcen zum Erlernen von Melodien und zum Verstehen von Texten in anderen Sprachen.",
-      "link": "Noten anzeigen →"
+      "link": "Lieder mit Noten (fr) →"
     },
     "albums": {
       "title": "Alben & Kompositionen",

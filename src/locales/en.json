@@ -3,8 +3,8 @@
     "home": "Home",
     "admin": "Admin",
     "albums": "Albums",
-    "sheets": "Sheets",
-    "about": "About",
+    "sheets": "Music sheets (fr)",
+    "about": "About (fr)",
     "contact": "Contact",
     "links": "Links",
     "explore": "Explore",
@@ -26,7 +26,7 @@
   },
   "hero": {
     "eyebrow": "Folk · medieval · traditional songs",
-    "title": "European song lyrics to discover and bring back to life",
+    "title": "European song lyrics to discover and revive",
     "subtitle": "Browse a collection of ancient and popular songs from France, Switzerland and beyond, with lyrics, translations and sheet music.",
     "placeholder": "Search for a song, country or era…",
     "topics": "Popular topics"
@@ -42,7 +42,7 @@
     "sheets": {
       "title": "Sheet music",
       "description": "Explore available resources to learn melodies and understand texts in other languages.",
-      "link": "View sheets →"
+      "link": "Songs with music scores (fr) →"
     },
     "albums": {
       "title": "Albums & compositions",
@@ -75,8 +75,8 @@
     "sheet": "Sheet music",
     "sources": "Sources",
     "navigation": {
-      "previous": "← Previous song",
-      "next": "Next song →",
+      "previous": "Previous song",
+      "next": "Next song",
       "all": "All songs",
       "edit": "Edit"
     },

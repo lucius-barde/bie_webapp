@@ -47,7 +47,7 @@
         <article class="feature-card" id="partitions">
           <h3>{{ t('explore.sheets.title') }}</h3>
           <p>{{ t('explore.sheets.description') }}</p>
-          <router-link :to="sheetsLink" class="text-link">{{ t('explore.sheets.link') }}</router-link>
+          <router-link to="/partitions-chants-folk" class="text-link">{{ t('explore.sheets.link') }}</router-link>
         </article>
 
         <article class="feature-card">
@@ -90,7 +90,7 @@
                   v-if="song.song_origin_legacy"
                   :to="originLink(song.song_origin_legacy)"
                   class="song-origin"
-                >{{ song.song_origin_legacy }}</router-link>
+                >{{ getSongOriginTranslated(song.song_origin_legacy) }}</router-link>
               </div>
               <router-link :to="songDetailLink(song)" class="song-title-link">
                 <h3>{{ song.song_title }}</h3>
@@ -101,7 +101,7 @@
                 :to="songDetailLink(song)"
                 class="button"
               >
-                {{ locale === 'fr' ? 'Lire la suite...' : locale === 'en' ? 'Read more...' : 'Mehr lesen...' }}
+                {{ t('common.readMore') }}
               </router-link>
             </div>
           </article>
@@ -124,7 +124,7 @@
           :key="origin.name"
           :to="originLink(origin.name)"
         >
-          {{ origin.name }} ({{ origin.count }})
+          {{ getSongOriginTranslated(origin.name) }} ({{ origin.count }})
         </router-link>
         <router-link :to="exploreLink">{{ locale === 'fr' ? 'Toute l\'Europe' : locale === 'en' ? 'All of Europe' : 'Ganz Europa' }}</router-link>
       </nav>
@@ -179,6 +179,7 @@ import { supabase } from '../lib/supabase'
 import { getSongImageUrl } from '../lib/songImages'
 import { useLocale } from '../composables/useLocale'
 import { getSongTypeTranslation } from '../lib/songTypes'
+import { getSongOriginTranslation } from '../lib/songOrigins'
 
 const router = useRouter()
 const { locale, t } = useLocale()
@@ -299,7 +300,7 @@ const originLink = (origin) => {
   const path = origin === 'B.i.E'
     ? 'compositions-personnelles'
     : `chants/${encodeURIComponent(origin)}`
-  
+
   if (locale.value === 'fr') return `/categorie/${path}`
   if (locale.value === 'en') return '/en/music'
   if (locale.value === 'de') return '/de/musik'
@@ -310,13 +311,17 @@ const translateSongType = (frenchType) => {
   return getSongTypeTranslation(frenchType, locale.value)
 }
 
+const getSongOriginTranslated = (frenchOrigin) => {
+  return getSongOriginTranslation(frenchOrigin, locale.value)
+}
+
 const handleSearch = () => {
   const query = searchQuery.value.trim()
   if (!query) return
-  
+
   if (locale.value === 'fr') router.push({ path: '/recherche', query: { q: query } })
-  else if (locale.value === 'en') router.push({ path: '/en/music', query: { q: query } })
-  else if (locale.value === 'de') router.push({ path: '/de/musik', query: { q: query } })
+  else if (locale.value === 'en') router.push({ path: '/en/search', query: { q: query } })
+  else if (locale.value === 'de') router.push({ path: '/de/suche', query: { q: query } })
 }
 </script>
 

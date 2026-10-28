@@ -13,6 +13,11 @@ export const songTypes = {
     en: 'Medieval song',
     de: 'Mittelalterliches Lied'
   },
+  'Autres chants': {
+    fr: 'Chant non-classé',
+    en: 'Unclassified song',
+    de: 'Nicht klassifiziertes Lied'
+  },
   'Chant de marins': {
     fr: 'Chant de marins',
     en: 'Sea shanty',
@@ -129,9 +134,9 @@ export const getSongTypeTranslation = (frenchType, locale = 'fr') => {
   if (!typeTranslations) {
     // Fallback for unknown types
     const fallbacks = {
-      fr: 'Chant non-classé.',
+      fr: 'Chant non-classé',
       en: 'Unclassified song',
-      de: 'Sonstiges Lied'
+      de: 'Nicht klassifiziertes Lied'
     }
     return fallbacks[locale] || fallbacks.fr
   }
