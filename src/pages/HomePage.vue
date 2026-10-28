@@ -16,8 +16,7 @@
           >
           <button class="button" type="submit">{{ t('common.search') }}</button>
         </form>
-
-        <div class="topic-list" :aria-label="t('hero.topics')">
+        <div class="topic-list" :aria-label="t('hero.topics')" v-if="locale === 'fr'">
           <router-link :to="traditionalLink">{{ t('latest.traditional') }}</router-link>
           <router-link :to="medievalLink">{{ t('latest.medieval') }}</router-link>
           <router-link :to="militaryLink">{{ t('latest.military') }}</router-link>
@@ -110,7 +109,7 @@
     </section>
 
     <!-- Countries Section -->
-    <section class="section container" aria-labelledby="countries-title">
+    <section class="section container" aria-labelledby="countries-title" v-if="locale === 'fr'">
       <div class="section-heading">
         <div>
           <h2 id="countries-title">{{ locale === 'fr' ? 'Voyagez par pays et par culture' : locale === 'en' ? 'Travel by country and culture' : 'Nach Land und Kultur reisen' }}</h2>

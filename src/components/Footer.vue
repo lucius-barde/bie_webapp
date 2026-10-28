@@ -1,7 +1,10 @@
 <template>
   <footer class="site-footer">
     <div class="container footer-inner">
-      <div class="footer-content">
+    <div class="footer-content-alt text-sm" v-if="locale !== 'fr'">
+        Follow <a class="underline" href="https://t.me/bardsinexile">bardsinexile</a> on Telegram (News in English and French)
+    </div>
+    <div class="footer-content" v-if="locale === 'fr'">
         <div class="footer-col">
           <h2 class="text-md mt-2 mb-4">Explorer</h2>
           <nav>
@@ -37,7 +40,7 @@
         <p class="copyright">
           © 2026 Bards in Exile
           <span class="auth-info">
-              Développement et design par: <a href="https://www.le-codex.ch" target="_blank" class="underline">Le-Codex.ch</a>
+              Créé par / Created by: <a href="https://www.le-codex.ch" target="_blank" class="underline">Le-Codex.ch</a>
             <template v-if="user">
                - Connecté: {{ user.email }} - <a href="/bie-logout" class="logout-link">Déconnexion</a>
             </template>
