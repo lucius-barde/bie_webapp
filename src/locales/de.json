@@ -1,0 +1,124 @@
+{
+  "common": {
+    "home": "Startseite",
+    "admin": "Admin",
+    "albums": "Alben",
+    "sheets": "Noten",
+    "about": "Über",
+    "contact": "Kontakt",
+    "links": "Links",
+    "explore": "Erkunden",
+    "search": "Suchen",
+    "backToSongs": "Zurück zu Liedern",
+    "allSongs": "Alle Lieder",
+    "noResults": "Keine Ergebnisse",
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "close": "Schließen",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "readMore": "Mehr lesen...",
+    "breadcrumbs": "Brotkrumen"
+  },
+  "header": {
+    "tagline": "Das europäische Liederbuch",
+    "aria_home": "Bards in Exile, Startseite"
+  },
+  "hero": {
+    "eyebrow": "Volks- · Mittelalter- · Volkslieder",
+    "title": "Europäische Liedtexte zum Entdecken und Wiederbeleben",
+    "subtitle": "Durchsuchen Sie eine Sammlung alter und beliebter Lieder aus Frankreich, der Schweiz und darüber hinaus mit Texten, Übersetzungen und Noten.",
+    "placeholder": "Nach einem Lied, Land oder Epoche suchen…",
+    "topics": "Beliebte Themen"
+  },
+  "explore": {
+    "title": "Das Liederbuch erkunden",
+    "subtitle": "Finden Sie europäische Lieder, Originalkomposition und Ressourcen, um sie aufzuführen.",
+    "lyrics": {
+      "title": "Liedtexte und Übersetzungen",
+      "description": "Entdecken Sie Volks-, Mittelalter- und Volkslieder zusammen mit ihrem Kontext und Texten.",
+      "link": "Lieder durchsuchen →"
+    },
+    "sheets": {
+      "title": "Noten",
+      "description": "Erkunden Sie verfügbare Ressourcen zum Erlernen von Melodien und zum Verstehen von Texten in anderen Sprachen.",
+      "link": "Noten anzeigen →"
+    },
+    "albums": {
+      "title": "Alben & Kompositionen",
+      "description": "Hören Sie sich die Alben von Bards in Exile an und entdecken Sie Lucius Bardes Kompositionen auf Spotify, Apple Music, Bandcamp und mehr.",
+      "link": "Verfügbare Plattformen →"
+    }
+  },
+  "latest": {
+    "title": "Entdecken Sie neue Lieder",
+    "subtitle": "Finden Sie kürzlich veröffentlichte Lieder in der Sammlung.",
+    "link": "Alle Lieder →",
+    "traditional": "Volkslieder",
+    "medieval": "Mittelalterlieder",
+    "military": "Militärlieder",
+    "royalist": "Königstreue Lieder",
+    "personal": "Originalkompositionen"
+  },
+  "songs": {
+    "title": "Lieder",
+    "information": "Informationen",
+    "type": "Typ",
+    "origin": "Herkunft",
+    "author": "Autor",
+    "era": "Epoche",
+    "duration": "Dauer",
+    "language": "Sprache",
+    "collection": "Sammlung",
+    "lyrics": "Liedtext",
+    "translations": "Übersetzungen",
+    "sheet": "Noten",
+    "sources": "Quellen",
+    "navigation": {
+      "previous": "← Vorheriges Lied",
+      "next": "Nächstes Lied →",
+      "all": "Alle Lieder",
+      "edit": "Bearbeiten"
+    },
+    "unlisted": "Nicht aufgelistetes Lied",
+    "status": "Status"
+  },
+  "categories": {
+    "traditional": "Volkslieder",
+    "personalCompositions": "Originalkompositionen",
+    "folkSheets": "Volksmusik-Noten"
+  },
+  "pages": {
+    "songs": {
+      "allSongs": "Alle Lieder",
+      "traditionalSongs": "Volkslieder",
+      "personalCompositions": "Originalkompositionen",
+      "folkSheets": "Volksmusik-Noten",
+      "allSongsDescription": "Erkunden Sie die komplette Sammlung von Bards in Exile Liedern",
+      "allSongsDescriptionSheets": "Durchsuchen Sie eine Sammlung von Noten für alte und beliebte Lieder aus Frankreich, der Schweiz und darüber hinaus, erhältlich auf MuseScore.",
+      "traditionalSongsDescription": "Erkunden Sie unsere Auswahl an Volks-, Mittelalter- und traditionellen europäischen Liedern",
+      "personalCompositionsDescription": "Entdecken Sie die exklusiven Kompositionen von Lucius, Autor des Bards in Exile Projekts",
+      "originDescription": "Liedtexte von Volks- und Traditionslieder, sortiert nach Land",
+      "searchResults": "Suchergebnisse",
+      "searchResultsDescription": "Ergebnisse für",
+      "loading": "Lieder werden geladen...",
+      "noSongs": "Keine Lieder gefunden.",
+      "error": "Lieder können derzeit nicht geladen werden.",
+      "pagination": "Seite",
+      "paginationOf": "von",
+      "paginationSongs": "Lieder",
+      "viewSheet": "♫  Noten anzeigen..."
+    }
+  },
+  "breadcrumbs": {
+    "home": "Startseite",
+    "traditionalSongs": "Volkslieder",
+    "searchResults": "Suchergebnisse"
+  },
+  "footer": {
+    "explore": "Erkunden",
+    "about": "Über",
+    "resources": "Ressourcen",
+    "copyright": "© 2024 Bards in Exile. Alle Rechte vorbehalten."
+  }
+}

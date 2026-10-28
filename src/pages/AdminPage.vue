@@ -5,9 +5,9 @@
 
       <!-- Toolbar -->
       <AdminMobileNav :actions="[
-        { label: '+ Nouveau chant', to: '/admin/song/create', primary: true },
-        { label: 'Fiches de paroles', to: '/admin/lyrics' },
-        { label: 'Collections', to: '/admin/collections' }
+        { label: '🎵', to: '/admin/song/create', primary: true },
+        { label: '📝', to: '/admin/lyrics' },
+        { label: '💿', to: '/admin/collections' }
       ]">
         <label class="sort-control">
           <span>Trier par</span>

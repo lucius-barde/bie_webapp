@@ -1,0 +1,124 @@
+{
+  "common": {
+    "home": "Accueil",
+    "admin": "Admin",
+    "albums": "Albums",
+    "sheets": "Partitions",
+    "about": "À propos",
+    "contact": "Contact",
+    "links": "Liens",
+    "explore": "Explorer",
+    "search": "Rechercher",
+    "backToSongs": "Retour aux chants",
+    "allSongs": "Tous les chants",
+    "noResults": "Aucun résultat",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "close": "Fermer",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "readMore": "Lire la suite...",
+    "breadcrumbs": "Fil d'Ariane"
+  },
+  "header": {
+    "tagline": "Le chansonnier européen",
+    "aria_home": "Bards in Exile, accueil"
+  },
+  "hero": {
+    "eyebrow": "Chants folk · médiévaux · traditionnels",
+    "title": "Paroles de chants d'Europe à découvrir et à faire revivre",
+    "subtitle": "Parcourez un répertoire de chants anciens et populaires de France, de Suisse et d'ailleurs, avec paroles, traductions et partitions.",
+    "placeholder": "Rechercher un chant, un pays ou une époque…",
+    "topics": "Thèmes populaires"
+  },
+  "explore": {
+    "title": "Explorez le chansonnier",
+    "subtitle": "Retrouvez des chants d'Europe, des compositions originales et des ressources pour les interpréter.",
+    "lyrics": {
+      "title": "Paroles de chants et traductions",
+      "description": "Découvrez des chants folk, médiévaux et traditionnels, accompagnés de leur contexte et de leurs paroles.",
+      "link": "Parcourir les chants →"
+    },
+    "sheets": {
+      "title": "Partitions musicales",
+      "description": "Explorez les ressources disponibles pour apprendre les mélodies et comprendre les textes d'autres langues.",
+      "link": "Voir les partitions →"
+    },
+    "albums": {
+      "title": "Albums & compositions",
+      "description": "Écoutez les albums de Bards in Exile et découvrez les compositions de Lucius Barde sur Spotify, Apple Music, Bandcamp et autres.",
+      "link": "Plateformes disponibles →"
+    }
+  },
+  "latest": {
+    "title": "Découvrez les nouveaux chants",
+    "subtitle": "Retrouvez ici les chants publiés récemment dans le répertoire.",
+    "link": "Tous les chants →",
+    "traditional": "Chants traditionnels",
+    "medieval": "Chants médiévaux",
+    "military": "Chants militaires",
+    "royalist": "Chants royalistes",
+    "personal": "Compositions personnelles"
+  },
+  "songs": {
+    "title": "Chants",
+    "information": "Informations",
+    "type": "Type",
+    "origin": "Origine",
+    "author": "Auteur",
+    "era": "Époque",
+    "duration": "Durée",
+    "language": "Langue",
+    "collection": "Collection",
+    "lyrics": "Paroles",
+    "translations": "Traductions",
+    "sheet": "Partition musicale",
+    "sources": "Sources",
+    "navigation": {
+      "previous": "← Chanson précédente",
+      "next": "Chanson suivante →",
+      "all": "Tous les chants",
+      "edit": "Éditer"
+    },
+    "unlisted": "Chant non répertorié",
+    "status": "statut"
+  },
+  "categories": {
+    "traditional": "Chants traditionnels",
+    "personalCompositions": "Compositions personnelles",
+    "folkSheets": "Partitions de chants folk"
+  },
+  "pages": {
+    "songs": {
+      "allSongs": "Tous les chants",
+      "traditionalSongs": "Chants traditionnels",
+      "personalCompositions": "Compositions personnelles",
+      "folkSheets": "Partitions de chants folk",
+      "allSongsDescription": "Explorez le répertoire complet du projet Bards in Exile",
+      "allSongsDescriptionSheets": "Parcourez un répertoire de partitions de chants anciens et populaires de France, de Suisse et d'ailleurs, disponibles sur MuseScore.",
+      "traditionalSongsDescription": "Explorez notre sélection de chants folk, médiévaux et traditionnels d'Europe",
+      "personalCompositionsDescription": "Découvrez les compositions exclusives de Lucius, auteur du projet Bards in Exile",
+      "originDescription": "Paroles de chansons folk et traditionnelles, triés par pays",
+      "searchResults": "Résultats de recherche",
+      "searchResultsDescription": "Résultats pour",
+      "loading": "Chargement des chants...",
+      "noSongs": "Aucun chant trouvé.",
+      "error": "Impossible de charger les chants pour le moment.",
+      "pagination": "Page",
+      "paginationOf": "sur",
+      "paginationSongs": "chants",
+      "viewSheet": "♫  Voir la partition..."
+    }
+  },
+  "breadcrumbs": {
+    "home": "Accueil",
+    "traditionalSongs": "Chants traditionnels",
+    "searchResults": "Résultats de recherche"
+  },
+  "footer": {
+    "explore": "Explorez",
+    "about": "À propos",
+    "resources": "Ressources",
+    "copyright": "© 2024 Bards in Exile. Tous droits réservés."
+  }
+}

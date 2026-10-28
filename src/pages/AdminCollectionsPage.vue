@@ -13,8 +13,8 @@
           <thead>
             <tr>
               <th>Collection</th>
-              <th>Nombre de chants</th>
-              <th>Durée totale</th>
+              <th>Pistes</th>
+              <th>Total</th>
               <th>État</th>
             </tr>
           </thead>
@@ -49,11 +49,11 @@ const errorMessage = ref('')
 const formatDuration = (durationInSeconds) => {
   const totalSeconds = Math.max(0, Math.floor(durationInSeconds || 0))
   const hours = Math.floor(totalSeconds / 3600)
-  const minutes = Math.floor((totalSeconds % 3600) / 60)
-  const seconds = totalSeconds % 60
+  const minutes = (Math.floor((totalSeconds % 3600) / 60) < 9 ? '0' : '') + Math.floor((totalSeconds % 3600) / 60)
+  const seconds = (Math.floor(totalSeconds % 60) < 9 ? '0' : '') + (totalSeconds % 60)
 
-  if (hours) return `${hours} h ${minutes} min ${seconds} s`
-  if (minutes) return `${minutes} min ${seconds} s`
+  if (hours) return `${hours}:${minutes}:${seconds}`
+  if (minutes) return `${minutes}:${seconds}`
   return `${seconds} s`
 }
 

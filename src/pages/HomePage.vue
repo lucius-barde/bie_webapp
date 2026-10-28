@@ -3,30 +3,27 @@
     <!-- Hero Section -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-content">
-        <p class="eyebrow">Chants folk · médiévaux · traditionnels</p>
-        <h1 id="hero-title">Paroles de chants d'Europe à découvrir et à faire revivre</h1>
-        <p class="hero-copy">
-          Parcourez un répertoire de chants anciens et populaires de France, de Suisse et d'ailleurs,
-          avec paroles, traductions et partitions.
-        </p>
+        <p class="eyebrow">{{ t('hero.eyebrow') }}</p>
+        <h1 id="hero-title">{{ t('hero.title') }}</h1>
+        <p class="hero-copy">{{ t('hero.subtitle') }}</p>
 
         <form class="search-form" @submit.prevent="handleSearch" role="search">
           <input
             v-model="searchQuery"
             type="search"
-            placeholder="Rechercher un chant, un pays ou une époque…"
-            aria-label="Rechercher un chant, un pays ou une époque"
+            :placeholder="t('hero.placeholder')"
+            :aria-label="t('hero.placeholder')"
           >
-          <button class="button" type="submit">Rechercher</button>
+          <button class="button" type="submit">{{ t('common.search') }}</button>
         </form>
 
-        <div class="topic-list" aria-label="Thèmes populaires">
-          <router-link to="/categorie/chants">Chants traditionnels</router-link>
-          <router-link to="/recherche?q=médiéval">Chants médiévaux</router-link>
-          <router-link to="/recherche?q=militaire">Chants militaires</router-link>
-          <router-link to="/recherche?q=royaliste">Chants royalistes</router-link>
-          <router-link to="/partitions-chants-folk">Partitions</router-link>
-          <router-link to="/categorie/compositions-personnelles">Compositions personnelles</router-link>
+        <div class="topic-list" :aria-label="t('hero.topics')">
+          <router-link :to="traditionalLink">{{ t('latest.traditional') }}</router-link>
+          <router-link :to="medievalLink">{{ t('latest.medieval') }}</router-link>
+          <router-link :to="militaryLink">{{ t('latest.military') }}</router-link>
+          <router-link :to="royalistLink">{{ t('latest.royalist') }}</router-link>
+          <router-link :to="sheetsLink">{{ t('common.sheets') }}</router-link>
+          <router-link :to="personalLink">{{ t('latest.personal') }}</router-link>
         </div>
       </div>
     </section>
@@ -35,28 +32,28 @@
     <section class="section container" aria-labelledby="explore-title">
       <div class="section-heading">
         <div>
-          <h2 id="explore-title">Explorez le chansonnier</h2>
-          <p>Retrouvez des chants d'Europe, des compositions originales et des ressources pour les interpréter.</p>
+          <h2 id="explore-title">{{ t('explore.title') }}</h2>
+          <p>{{ t('explore.subtitle') }}</p>
         </div>
       </div>
 
       <div class="feature-grid">
         <article class="feature-card">
-          <h3>Paroles de chants et traductions</h3>
-          <p>Découvrez des chants folk, médiévaux et traditionnels, accompagnés de leur contexte et de leurs paroles.</p>
-          <router-link to="/musique" class="text-link">Parcourir les chants →</router-link>
+          <h3>{{ t('explore.lyrics.title') }}</h3>
+          <p>{{ t('explore.lyrics.description') }}</p>
+          <router-link :to="exploreLink" class="text-link">{{ t('explore.lyrics.link') }}</router-link>
         </article>
 
         <article class="feature-card" id="partitions">
-          <h3>Partitions musicales</h3>
-          <p>Explorez les ressources disponibles pour apprendre les mélodies et comprendre les textes d'autres langues.</p>
-          <router-link to="/partitions-chants-folk" class="text-link">Voir les partitions →</router-link>
+          <h3>{{ t('explore.sheets.title') }}</h3>
+          <p>{{ t('explore.sheets.description') }}</p>
+          <router-link :to="sheetsLink" class="text-link">{{ t('explore.sheets.link') }}</router-link>
         </article>
 
         <article class="feature-card">
-          <h3>Albums & compositions</h3>
-          <p>Écoutez les albums de Bards in Exile et découvrez les compositions de Lucius Barde sur Spotify, Apple Music, Bandcamp et autres.</p>
-          <a href="https://linktr.ee/bardsinexile" target="_blank" class="text-link">Plateformes disponibles →</a>
+          <h3>{{ t('explore.albums.title') }}</h3>
+          <p>{{ t('explore.albums.description') }}</p>
+          <a href="https://linktr.ee/bardsinexile" target="_blank" class="text-link">{{ t('explore.albums.link') }}</a>
         </article>
       </div>
     </section>
@@ -66,15 +63,15 @@
       <div class="container">
         <div class="section-heading">
           <div>
-            <h2 id="latest-title">Découvrez les nouveaux chants</h2>
-            <p>Retrouvez ici les chants publiés récemment dans le répertoire.</p>
+            <h2 id="latest-title">{{ t('latest.title') }}</h2>
+            <p>{{ t('latest.subtitle') }}</p>
           </div>
-          <router-link to="/musique" class="text-link">Tous les chants →</router-link>
+          <router-link :to="exploreLink" class="text-link">{{ t('latest.link') }}</router-link>
         </div>
 
         <div class="chant-grid">
           <article v-for="song in latestSongs" :key="song.id" class="chant-card">
-            <router-link :to="songDetailLink(song)" class="chant-card-image-link" :aria-label="`Lire ${song.song_title}`">
+            <router-link :to="songDetailLink(song)" class="chant-card-image-link" :aria-label="`Read ${song.song_title}`">
               <img
                 v-if="getSongImageUrl(song.song_image || song.song_image_gallery?.[0])"
                 :src="getSongImageUrl(song.song_image || song.song_image_gallery?.[0])"
@@ -98,13 +95,13 @@
               <router-link :to="songDetailLink(song)" class="song-title-link">
                 <h3>{{ song.song_title }}</h3>
               </router-link>
-              <p><span v-if="song.song_type_legacy">{{ song.song_type_legacy }}. </span><span v-if="song.song_author_legacy">{{ song.song_author_legacy }}<span v-if="song.song_date_info">, {{ song.song_date_info }}</span></span></p>
+              <p><span v-if="song.song_type_legacy">{{ translateSongType(song.song_type_legacy) }}. </span><span v-if="song.song_author_legacy">{{ song.song_author_legacy }}<span v-if="song.song_date_info">, {{ song.song_date_info }}</span></span></p>
 
               <router-link
                 :to="songDetailLink(song)"
                 class="button"
               >
-                Lire la suite...
+                {{ locale === 'fr' ? 'Lire la suite...' : locale === 'en' ? 'Read more...' : 'Mehr lesen...' }}
               </router-link>
             </div>
           </article>
@@ -116,12 +113,12 @@
     <section class="section container" aria-labelledby="countries-title">
       <div class="section-heading">
         <div>
-          <h2 id="countries-title">Voyagez par pays et par culture</h2>
-          <p>Partez à la recherche de chants traditionnels, de mélodies médiévales et de répertoires régionaux.</p>
+          <h2 id="countries-title">{{ locale === 'fr' ? 'Voyagez par pays et par culture' : locale === 'en' ? 'Travel by country and culture' : 'Nach Land und Kultur reisen' }}</h2>
+          <p>{{ locale === 'fr' ? 'Partez à la recherche de chants traditionnels, de mélodies médiévales et de répertoires régionaux.' : locale === 'en' ? 'Search for traditional songs, medieval melodies and regional repertoires.' : 'Suchen Sie nach Volksliedern, mittelalterlichen Melodien und regionalen Repertoires.' }}</p>
         </div>
       </div>
 
-      <nav class="country-list" aria-label="Explorer par pays ou région">
+      <nav class="country-list" :aria-label="locale === 'fr' ? 'Explorer par pays ou région' : locale === 'en' ? 'Explore by country or region' : 'Nach Land oder Region erkunden'">
         <router-link
           v-for="origin in topOrigins"
           :key="origin.name"
@@ -129,17 +126,17 @@
         >
           {{ origin.name }} ({{ origin.count }})
         </router-link>
-        <router-link to="/musique">Toute l'Europe</router-link>
+        <router-link :to="exploreLink">{{ locale === 'fr' ? 'Toute l\'Europe' : locale === 'en' ? 'All of Europe' : 'Ganz Europa' }}</router-link>
       </nav>
     </section>
 
     <!-- Albums and Bardic Club Section -->
-    <section class="section community-section" aria-label="Albums et communauté">
+    <section class="section community-section" :aria-label="locale === 'fr' ? 'Albums et communauté' : locale === 'en' ? 'Albums and community' : 'Alben und Gemeinschaft'">
       <div class="container community-grid">
         <div id="albums" class="community-column" aria-labelledby="albums-title">
-          <h2 id="albums-title">Obtenez les albums</h2>
-          <p>Soutenez le projet en achetant les albums ou en écoutant les titres sur les plateformes suivantes:</p>
-          <nav class="platform-list" aria-label="Plateformes musicales">
+          <h2 id="albums-title">{{ locale === 'fr' ? 'Obtenez les albums' : locale === 'en' ? 'Get the albums' : 'Holen Sie sich die Alben' }}</h2>
+          <p>{{ locale === 'fr' ? 'Soutenez le projet en achetant les albums ou en écoutant les titres sur les plateformes suivantes:' : locale === 'en' ? 'Support the project by buying albums or listening to tracks on the following platforms:' : 'Unterstützen Sie das Projekt, indem Sie Alben kaufen oder Tracks auf den folgenden Plattformen anhören:' }}</p>
+          <nav class="platform-list" :aria-label="locale === 'fr' ? 'Plateformes musicales' : locale === 'en' ? 'Music platforms' : 'Musikplattformen'">
             <a class="button" href="https://open.spotify.com/artist/0Yt6J3E5DA54uRb1Tx3eOn?si=IBVJON99TrC74KzPQIWEpg" target="_blank" rel="noopener noreferrer">Spotify</a>
             <a class="button button-secondary" href="https://music.apple.com/us/artist/bards-in-exile/1720565414" target="_blank" rel="noopener noreferrer">Apple Music</a>
             <a class="button button-secondary" href="https://www.deezer.com/fr/artist/246895562" target="_blank" rel="noopener noreferrer">Deezer</a>
@@ -148,9 +145,9 @@
         </div>
 
         <div class="community-column" aria-labelledby="bardic-club-title">
-          <h2 id="bardic-club-title">Rejoignez le Bardic Club</h2>
-          <p>Obtenez l'accès aux futurs chants et à des livres audio bonus en rejoignant l'espace Membres de la chaîne.</p>
-          <a class="button" href="https://www.youtube.com/@BardsInExileFolkRevival/join" target="_blank" rel="noopener noreferrer">Rejoindre...</a>
+          <h2 id="bardic-club-title">{{ locale === 'fr' ? 'Rejoignez le Bardic Club' : locale === 'en' ? 'Join the Bardic Club' : 'Treten Sie dem Bardic Club bei' }}</h2>
+          <p>{{ locale === 'fr' ? 'Obtenez l\'accès aux futurs chants et à des livres audio bonus en rejoignant l\'espace Membres de la chaîne.' : locale === 'en' ? 'Get access to future songs and bonus audiobooks by joining the channel membership.' : 'Erhalten Sie Zugriff auf zukünftige Lieder und Bonus-Audiobooks durch die Kanalmitgliedschaft.' }}</p>
+          <a class="button" href="https://www.youtube.com/@BardsInExileFolkRevival/join" target="_blank" rel="noopener noreferrer">{{ locale === 'fr' ? 'Rejoindre...' : locale === 'en' ? 'Join...' : 'Beitreten...' }}</a>
         </div>
       </div>
     </section>
@@ -159,19 +156,16 @@
     <section class="section container" id="apropos" aria-labelledby="about-title">
       <div class="about-panel">
         <div>
-          <p class="eyebrow">Le projet</p>
-          <h2 id="about-title">Un chansonnier européen vivant</h2>
+          <p class="eyebrow">{{ locale === 'fr' ? 'Le projet' : locale === 'en' ? 'The project' : 'Das Projekt' }}</p>
+          <h2 id="about-title">{{ locale === 'fr' ? 'Un chansonnier européen vivant' : locale === 'en' ? 'A living European songbook' : 'Ein lebendiges europäisches Liederbuch' }}</h2>
           <p>
-            Bards in Exile (Bardes en Exil) fait revivre des chants de toute l'Europe et propose
-            aussi des compositions originales. Lancé en 2019 par Lucius Barde,
-            le projet met à disposition un répertoire pensé pour être découvert,
-            écouté et chanté à plusieurs voix. Lucius propose ses propres arrangements et interprétations réalisées avec l'aide de l'outil informatique.
+            {{ locale === 'fr' ? 'Bards in Exile (Bardes en Exil) fait revivre des chants de toute l\'Europe et propose aussi des compositions originales. Lancé en 2019 par Lucius Barde, le projet met à disposition un répertoire pensé pour être découvert, écouté et chanté à plusieurs voix. Lucius propose ses propres arrangements et interprétations réalisées avec l\'aide de l\'outil informatique.' : locale === 'en' ? 'Bards in Exile brings songs from across Europe back to life and offers original compositions. Launched in 2019 by Lucius Barde, the project provides a repertoire designed to be discovered, listened to and sung in multiple voices. Lucius offers his own arrangements and interpretations created with the help of computer tools.' : 'Bards in Exile belebt Lieder aus ganz Europa wieder und bietet Originalkomposition an. Das Projekt wurde 2019 von Lucius Barde ins Leben gerufen und bietet ein Repertoire, das entdeckt, gehört und mehrstimmig gesungen werden kann. Lucius bietet seine eigenen Arrangements und Interpretationen, die mit Hilfe von Computerwerkzeugen erstellt wurden.' }}
           </p>
         </div>
         <aside class="about-note">
-          <strong>Pour les curieux et les interprètes</strong>
-          <p>Paroles, contexte historique, traductions et partitions selon les chants.</p>
-          <router-link to="/le-projet" class="text-link">En savoir plus →</router-link>
+          <strong>{{ locale === 'fr' ? 'Pour les curieux et les interprètes' : locale === 'en' ? 'For the curious and performers' : 'Für die Neugierigen und Interpreten' }}</strong>
+          <p>{{ locale === 'fr' ? 'Paroles, contexte historique, traductions et partitions selon les chants.' : locale === 'en' ? 'Lyrics, historical context, translations and sheet music as available.' : 'Texte, historischer Kontext, Übersetzungen und Noten je nach Verfügbarkeit.' }}</p>
+          <router-link to="/le-projet" class="text-link">{{ locale === 'fr' ? 'En savoir plus →' : locale === 'en' ? 'Learn more →' : 'Mehr erfahren →' }}</router-link>
         </aside>
       </div>
     </section>
@@ -179,15 +173,62 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
 import { getSongImageUrl } from '../lib/songImages'
+import { useLocale } from '../composables/useLocale'
+import { getSongTypeTranslation } from '../lib/songTypes'
 
 const router = useRouter()
+const { locale, t } = useLocale()
 const searchQuery = ref('')
 const latestSongs = ref([])
 const topOrigins = ref([])
+
+// Generate locale-specific links
+const traditionalLink = computed(() => {
+  if (locale.value === 'fr') return '/categorie/chants'
+  if (locale.value === 'en') return '/en/music'
+  if (locale.value === 'de') return '/de/musik'
+  return '/categorie/chants'
+})
+
+const medievalLink = computed(() => {
+  const base = locale.value === 'fr' ? '/recherche?q=' : locale.value === 'en' ? '/en/music?q=' : '/de/musik?q='
+  return locale.value === 'fr' ? `${base}médiéval` : locale.value === 'en' ? `${base}medieval` : `${base}Mittelalter`
+})
+
+const militaryLink = computed(() => {
+  const base = locale.value === 'fr' ? '/recherche?q=' : locale.value === 'en' ? '/en/music?q=' : '/de/musik?q='
+  return locale.value === 'fr' ? `${base}militaire` : locale.value === 'en' ? `${base}military` : `${base}Militär`
+})
+
+const royalistLink = computed(() => {
+  const base = locale.value === 'fr' ? '/recherche?q=' : locale.value === 'en' ? '/en/music?q=' : '/de/musik?q='
+  return locale.value === 'fr' ? `${base}royaliste` : locale.value === 'en' ? `${base}royalist` : `${base}Royalist`
+})
+
+const sheetsLink = computed(() => {
+  if (locale.value === 'fr') return '/partitions-chants-folk'
+  if (locale.value === 'en') return '/en/music'
+  if (locale.value === 'de') return '/de/musik'
+  return '/partitions-chants-folk'
+})
+
+const personalLink = computed(() => {
+  if (locale.value === 'fr') return '/categorie/compositions-personnelles'
+  if (locale.value === 'en') return '/en/music'
+  if (locale.value === 'de') return '/de/musik'
+  return '/categorie/compositions-personnelles'
+})
+
+const exploreLink = computed(() => {
+  if (locale.value === 'fr') return '/musique'
+  if (locale.value === 'en') return '/en/music'
+  if (locale.value === 'de') return '/de/musik'
+  return '/musique'
+})
 
 // Load the latest songs and count published origins for the homepage.
 import { useHead } from '@vueuse/head'
@@ -246,15 +287,36 @@ const generateSlug = (title) => {
 }
 
 
-const songDetailLink = (song) => `/musique/${song.song_catalog_id}-${generateSlug(song.song_title)}`
+const songDetailLink = (song) => {
+  const slug = generateSlug(song.song_title)
+  if (locale.value === 'fr') return `/musique/${song.song_catalog_id}-${slug}`
+  if (locale.value === 'en') return `/en/music/${song.song_catalog_id}-${slug}`
+  if (locale.value === 'de') return `/de/musik/${song.song_catalog_id}-${slug}`
+  return `/musique/${song.song_catalog_id}-${slug}`
+}
 
-const originLink = (origin) => origin === 'B.i.E'
-  ? '/categorie/compositions-personnelles'
-  : `/categorie/chants/${encodeURIComponent(origin)}`
+const originLink = (origin) => {
+  const path = origin === 'B.i.E'
+    ? 'compositions-personnelles'
+    : `chants/${encodeURIComponent(origin)}`
+  
+  if (locale.value === 'fr') return `/categorie/${path}`
+  if (locale.value === 'en') return '/en/music'
+  if (locale.value === 'de') return '/de/musik'
+  return `/categorie/${path}`
+}
+
+const translateSongType = (frenchType) => {
+  return getSongTypeTranslation(frenchType, locale.value)
+}
 
 const handleSearch = () => {
   const query = searchQuery.value.trim()
-  if (query) router.push({ path: '/recherche', query: { q: query } })
+  if (!query) return
+  
+  if (locale.value === 'fr') router.push({ path: '/recherche', query: { q: query } })
+  else if (locale.value === 'en') router.push({ path: '/en/music', query: { q: query } })
+  else if (locale.value === 'de') router.push({ path: '/de/musik', query: { q: query } })
 }
 </script>
 

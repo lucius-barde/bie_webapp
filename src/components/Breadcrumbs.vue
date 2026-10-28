@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="items.length" class="breadcrumbs container" aria-label="Fil d’Ariane">
+  <nav v-if="items.length" class="breadcrumbs container" :aria-label="ariaLabel">
     <ol>
       <li v-for="(item, index) in items" :key="`${item.label}-${index}`">
         <span v-if="index > 0" class="breadcrumb-separator" aria-hidden="true">/</span>
@@ -14,12 +14,22 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useLocale } from '../composables/useLocale'
+
 defineProps({
   items: {
     type: Array,
     required: true
+  },
+  translations: {
+    type: Object,
+    default: null
   }
 })
+
+const { t } = useLocale()
+const ariaLabel = computed(() => t('common.breadcrumbs') || 'Breadcrumbs')
 </script>
 
 <style scoped>

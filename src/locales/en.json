@@ -1,0 +1,124 @@
+{
+  "common": {
+    "home": "Home",
+    "admin": "Admin",
+    "albums": "Albums",
+    "sheets": "Sheets",
+    "about": "About",
+    "contact": "Contact",
+    "links": "Links",
+    "explore": "Explore",
+    "search": "Search",
+    "backToSongs": "Back to songs",
+    "allSongs": "All songs",
+    "noResults": "No results",
+    "loading": "Loading...",
+    "error": "Error",
+    "close": "Close",
+    "previous": "Previous",
+    "next": "Next",
+    "readMore": "Read more...",
+    "breadcrumbs": "Breadcrumbs"
+  },
+  "header": {
+    "tagline": "The European songbook",
+    "aria_home": "Bards in Exile, home"
+  },
+  "hero": {
+    "eyebrow": "Folk · medieval · traditional songs",
+    "title": "European song lyrics to discover and bring back to life",
+    "subtitle": "Browse a collection of ancient and popular songs from France, Switzerland and beyond, with lyrics, translations and sheet music.",
+    "placeholder": "Search for a song, country or era…",
+    "topics": "Popular topics"
+  },
+  "explore": {
+    "title": "Explore the songbook",
+    "subtitle": "Find European songs, original compositions and resources to perform them.",
+    "lyrics": {
+      "title": "Song lyrics and translations",
+      "description": "Discover folk, medieval and traditional songs, along with their context and lyrics.",
+      "link": "Browse songs →"
+    },
+    "sheets": {
+      "title": "Sheet music",
+      "description": "Explore available resources to learn melodies and understand texts in other languages.",
+      "link": "View sheets →"
+    },
+    "albums": {
+      "title": "Albums & compositions",
+      "description": "Listen to Bards in Exile albums and discover Lucius Barde's compositions on Spotify, Apple Music, Bandcamp and more.",
+      "link": "Available platforms →"
+    }
+  },
+  "latest": {
+    "title": "Discover new songs",
+    "subtitle": "Find recently published songs in the collection.",
+    "link": "All songs →",
+    "traditional": "Traditional songs",
+    "medieval": "Medieval songs",
+    "military": "Military songs",
+    "royalist": "Royalist songs",
+    "personal": "Original compositions"
+  },
+  "songs": {
+    "title": "Songs",
+    "information": "Information",
+    "type": "Type",
+    "origin": "Origin",
+    "author": "Author",
+    "era": "Era",
+    "duration": "Duration",
+    "language": "Language",
+    "collection": "Collection",
+    "lyrics": "Lyrics",
+    "translations": "Translations",
+    "sheet": "Sheet music",
+    "sources": "Sources",
+    "navigation": {
+      "previous": "← Previous song",
+      "next": "Next song →",
+      "all": "All songs",
+      "edit": "Edit"
+    },
+    "unlisted": "Unlisted song",
+    "status": "status"
+  },
+  "categories": {
+    "traditional": "Traditional songs",
+    "personalCompositions": "Original compositions",
+    "folkSheets": "Folk song sheets"
+  },
+  "pages": {
+    "songs": {
+      "allSongs": "All songs",
+      "traditionalSongs": "Traditional songs",
+      "personalCompositions": "Original compositions",
+      "folkSheets": "Folk song sheets",
+      "allSongsDescription": "Explore the complete collection of Bards in Exile songs",
+      "allSongsDescriptionSheets": "Browse a collection of sheet music for ancient and popular songs from France, Switzerland and beyond, available on MuseScore.",
+      "traditionalSongsDescription": "Explore our selection of folk, medieval and traditional European songs",
+      "personalCompositionsDescription": "Discover the exclusive compositions of Lucius, author of the Bards in Exile project",
+      "originDescription": "Lyrics of folk and traditional songs, sorted by country",
+      "searchResults": "Search results",
+      "searchResultsDescription": "Results for",
+      "loading": "Loading songs...",
+      "noSongs": "No songs found.",
+      "error": "Unable to load songs at the moment.",
+      "pagination": "Page",
+      "paginationOf": "of",
+      "paginationSongs": "songs",
+      "viewSheet": "♫  View sheet music..."
+    }
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "traditionalSongs": "Traditional songs",
+    "searchResults": "Search results"
+  },
+  "footer": {
+    "explore": "Explore",
+    "about": "About",
+    "resources": "Resources",
+    "copyright": "© 2024 Bards in Exile. All rights reserved."
+  }
+}

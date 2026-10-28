@@ -1,7 +1,7 @@
 <template>
   <main>
     <div v-if="loading" class="container loading-container">
-      Chargement de la chanson...
+      {{ t('common.loading') }}
     </div>
 
     <div v-else-if="song" class="song-detail">
@@ -18,10 +18,10 @@
         >
         <div class="song-hero-overlay">
           <div class="container song-hero-content">
-            <router-link to="/musique" class="back-link">← Retour aux chants</router-link>
+            <router-link :to="backLink" class="back-link">← {{ t('songs.navigation.previous') }}</router-link>
             <h1>{{ song.song_title }}</h1>
             <p v-if="isUnlistedSong" class="unlisted-alert" role="status">
-              Chant non répertorié (statut: {{ song.song_status }})
+              {{ t('songs.unlisted') }} ({{ t('songs.status') }}: {{ song.song_status }})
             </p>
             <p class="song-meta">
               <span class="song-number">N° {{ song.song_catalog_id }}</span>
@@ -30,7 +30,7 @@
                 v-if="isAuthenticated"
                 :to="`/admin/song/${song.song_catalog_id}/edit`"
                 class="edit-button"
-              >Éditer</router-link>
+              >{{ t('songs.navigation.edit') }}</router-link>
             </p>
           </div>
         </div>
@@ -44,29 +44,29 @@
           <!-- Main Info -->
           <div class="song-info">
             <div class="info-left">
-              <h2 class="mb-4">Informations</h2>
+              <h2 class="mb-4">{{ t('songs.information') }}</h2>
               <div v-if="song.song_type_legacy" class="info-row">
-                <strong>Type:</strong>
-                <span>{{ song.song_type_legacy }}</span>
+                <strong>{{ t('songs.type') }}:</strong>
+                <span>{{ translateSongType(song.song_type_legacy) }}</span>
               </div>
               <div v-if="song.song_author_legacy" class="info-row">
-                <strong>Auteur:</strong>
+                <strong>{{ t('songs.author') }}:</strong>
                 <span>{{ song.song_author_legacy }}</span>
               </div>
               <div v-if="song.song_date_info" class="info-row">
-                <strong>Époque:</strong>
+                <strong>{{ t('songs.era') }}:</strong>
                 <span>{{ song.song_date_info }}</span>
               </div>
               <div v-if="song.song_duration_sec" class="info-row">
-                <strong>Durée:</strong>
+                <strong>{{ t('songs.duration') }}:</strong>
                 <span>{{ formatDuration(song.song_duration_sec) }}</span>
               </div>
               <div v-if="lyrics && lyrics.main_lyrics_language" class="info-row">
-                <strong>Langue:</strong>
-                <span>{{ getLanguageName(lyrics.main_lyrics_language) }}</span>
+                <strong>{{ t('songs.language') }}:</strong>
+                <span>{{ getLanguageName(lyrics.main_lyrics_language, locale) }}</span>
               </div>
               <div v-if="song.song_collection_legacy" class="info-row">
-                <strong>Collection:</strong>
+                <strong>{{ t('songs.collection') }}:</strong>
                 <span>{{ song.song_collection_legacy }}</span>
               </div>
             </div>
@@ -85,54 +85,53 @@
 
 
           <!-- Description Section -->
-          <section v-if="song.song_description_fr || song.song_description_en" class="song-section">
-            <h2>Description</h2>
+          <section v-if="descriptionToShow" class="song-section">
+            <h2>{{ locale === 'fr' ? 'Description' : locale === 'en' ? 'Description' : 'Beschreibung' }}</h2>
             <div class="flex">
-              <div v-if="song.song_description_fr" class="">
-                <p class="song-description-fr" v-html="renderInlineMarkdown(song.song_description_fr)"></p>
+              <div class="">
+                <p v-html="renderInlineMarkdown(descriptionToShow)"></p>
               </div>
-
             </div>
           </section>
 
           <!-- Lyrics Section -->
           <section v-if="lyrics && lyrics.main_lyrics" class="song-section">
             <div class="song-section-heading">
-              <h2>Paroles</h2>
+              <h2>{{ t('songs.lyrics') }}</h2>
               <router-link
                 v-if="isAuthenticated && lyricsId"
                 :to="`/admin/lyrics/${lyricsId}/edit`"
                 class="edit-button lyrics-edit-button"
-              >Éditer</router-link>
+              >{{ t('songs.navigation.edit') }}</router-link>
             </div>
             <div class="bie-lyrics text-xl" v-html="renderInlineMarkdown(lyrics.main_lyrics)"></div>
           </section>
 
           <!-- Translations Section -->
           <section v-if="lyrics && (lyrics.translation_one || lyrics.translation_two || lyrics.translation_three)" class="song-section">
-            <h2>Traductions</h2>
+            <h2>{{ t('songs.translations') }}</h2>
             <details v-if="lyrics.translation_one && lyrics.translation_one_language" class="translation-details">
-              <summary>{{ getLanguageName(lyrics.translation_one_language) }}</summary>
+              <summary>{{ getLanguageName(lyrics.translation_one_language, locale) }}</summary>
               <div class="bie-lyrics text-sm" v-html="renderInlineMarkdown(lyrics.translation_one)"></div>
             </details>
             <details v-if="lyrics.translation_two && lyrics.translation_two_language" class="translation-details">
-              <summary>{{ getLanguageName(lyrics.translation_two_language) }}</summary>
+              <summary>{{ getLanguageName(lyrics.translation_two_language, locale) }}</summary>
               <div class="bie-lyrics text-sm" v-html="renderInlineMarkdown(lyrics.translation_two)"></div>
             </details>
             <details v-if="lyrics.translation_three && lyrics.translation_three_language" class="translation-details">
-              <summary>{{ getLanguageName(lyrics.translation_three_language) }}</summary>
+              <summary>{{ getLanguageName(lyrics.translation_three_language, locale) }}</summary>
               <div class="bie-lyrics text-sm" v-html="renderInlineMarkdown(lyrics.translation_three)"></div>
             </details>
           </section>
 
           <!-- Sources Section -->
           <section v-if="song.song_musicsheet_link" class="song-section">
-            <h2>Partition musicale</h2>
-            <ul style="list-style: square inside;"><li><a class="underline" :href="song.song_musicsheet_link" target="_blank" rel="noopener noreferrer">Voir la partition de {{ song.song_title }}</a></li></ul>
+            <h2>{{ t('songs.sheet') }}</h2>
+            <ul style="list-style: square inside;"><li><a class="underline" :href="song.song_musicsheet_link" target="_blank" rel="noopener noreferrer">{{ t('songs.sheet') }} {{ song.song_title }}</a></li></ul>
           </section>
 
           <section v-if="song.song_sources?.length" class="song-section">
-            <h2>Sources</h2>
+            <h2>{{ t('songs.sources') }}</h2>
             <ul style="list-style: square inside;">
               <li v-for="(source, index) in song.song_sources" :key="index" v-html="renderInlineMarkdown(source)"></li>
             </ul>
@@ -141,13 +140,13 @@
           <!-- Navigation -->
           <div class="song-navigation">
             <router-link v-if="previousSong" :to="previousSongLink" class="nav-button prev-button">
-              ← Chanson précédente
+              {{ t('songs.navigation.previous') }}
             </router-link>
-            <router-link to="/musique" class="nav-button home-button">
-              Tous les chants
+            <router-link :to="allSongsLink" class="nav-button home-button">
+              {{ t('songs.navigation.all') }}
             </router-link>
             <router-link v-if="nextSong" :to="nextSongLink" class="nav-button next-button">
-              Chanson suivante →
+              {{ t('songs.navigation.next') }}
             </router-link>
           </div>
         </article>
@@ -155,8 +154,8 @@
     </div>
 
     <div v-else class="container error-container">
-      <p>Chanson non trouvée.</p>
-      <router-link to="/musique" class="button">Retour aux chants</router-link>
+      <p>{{ locale === 'fr' ? 'Chanson non trouvée.' : locale === 'en' ? 'Song not found.' : 'Lied nicht gefunden.' }}</p>
+      <router-link :to="backLink" class="button">{{ t('common.backToSongs') }}</router-link>
     </div>
   </main>
 </template>
@@ -167,10 +166,13 @@ import { useRoute } from 'vue-router'
 import { supabase } from '../lib/supabase'
 import { getSongImageUrl } from '../lib/songImages'
 import { getLanguageName } from '../lib/languages'
+import { getSongTypeTranslation } from '../lib/songTypes'
+import { useLocale } from '../composables/useLocale'
 import { useHead } from '@vueuse/head'
 import Breadcrumbs from '../components/Breadcrumbs.vue'
 
 const route = useRoute()
+const { locale, t } = useLocale()
 const song = ref(null)
 const lyrics = ref(null)
 const lyricsId = ref(null)
@@ -182,6 +184,25 @@ const isUnlistedSong = computed(() => Number(song.value?.song_status) < 3)
 const songImageUrl = computed(() => getSongImageUrl(
   song.value?.song_image || song.value?.song_image_gallery?.[0]
 ))
+
+const descriptionToShow = computed(() => {
+  if (locale.value === 'en' && song.value?.song_description_en) return song.value.song_description_en
+  return song.value?.song_description_fr
+})
+
+const backLink = computed(() => {
+  if (locale.value === 'fr') return '/musique'
+  if (locale.value === 'en') return '/en/music'
+  if (locale.value === 'de') return '/de/musik'
+  return '/musique'
+})
+
+const allSongsLink = computed(() => {
+  if (locale.value === 'fr') return '/musique'
+  if (locale.value === 'en') return '/en/music'
+  if (locale.value === 'de') return '/de/musik'
+  return '/musique'
+})
 
 const cleanMetaText = (value, maxLength = 155) => String(value || '')
   .replace(/\s+/g, ' ')
@@ -306,12 +327,20 @@ const breadcrumbItems = computed(() => {
 
 const previousSongLink = computed(() => {
   if (!previousSong.value) return '#'
-  return `/musique/${previousSong.value.song_catalog_id}-${generateSlug(previousSong.value.song_title)}`
+  const slug = generateSlug(previousSong.value.song_title)
+  if (locale.value === 'fr') return `/musique/${previousSong.value.song_catalog_id}-${slug}`
+  if (locale.value === 'en') return `/en/music/${previousSong.value.song_catalog_id}-${slug}`
+  if (locale.value === 'de') return `/de/musik/${previousSong.value.song_catalog_id}-${slug}`
+  return `/musique/${previousSong.value.song_catalog_id}-${slug}`
 })
 
 const nextSongLink = computed(() => {
   if (!nextSong.value) return '#'
-  return `/musique/${nextSong.value.song_catalog_id}-${generateSlug(nextSong.value.song_title)}`
+  const slug = generateSlug(nextSong.value.song_title)
+  if (locale.value === 'fr') return `/musique/${nextSong.value.song_catalog_id}-${slug}`
+  if (locale.value === 'en') return `/en/music/${nextSong.value.song_catalog_id}-${slug}`
+  if (locale.value === 'de') return `/de/musik/${nextSong.value.song_catalog_id}-${slug}`
+  return `/musique/${nextSong.value.song_catalog_id}-${slug}`
 })
 
 const generateSlug = (title) => {
@@ -329,6 +358,10 @@ const formatDuration = (seconds) => {
   const mins = Math.floor(seconds / 60)
   const secs = seconds % 60
   return `${mins}:${secs.toString().padStart(2, '0')}`
+}
+
+const translateSongType = (frenchType) => {
+  return getSongTypeTranslation(frenchType, locale.value)
 }
 
 const fetchSongData = async () => {

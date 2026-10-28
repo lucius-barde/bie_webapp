@@ -1,31 +1,52 @@
 <template>
   <header class="site-header">
     <div class="container header-inner">
-      <router-link to="/" class="brand" aria-label="Bards in Exile, accueil">
+      <router-link :to="homeLink" class="brand" :aria-label="t('header.aria_home')">
         <img class="brand-logo" src="/bardsinexile_logo.png" alt="" />
         <span>
           <span class="brand-name">Bards in Exile</span>
-          <span class="brand-caption">Le chansonnier européen</span>
+          <span class="brand-caption">{{ t('header.tagline') }}</span>
         </span>
       </router-link>
 
       <nav class="main-nav" aria-label="Navigation principale">
-        <router-link v-if="isAuthenticated" to="/admin">Admin</router-link>
-        <router-link to="/#albums">Albums</router-link>
-        <router-link to="/partitions-chants-folk">Partitions</router-link>
-        <router-link to="/le-projet">À propos</router-link>
-        <router-link to="/musique" class="button">Explorer</router-link>
+        <router-link v-if="isAuthenticated" to="/admin">{{ t('common.admin') }}</router-link>
+        <router-link :to="albumsLink">{{ t('common.albums') }}</router-link>
+        <router-link :to="sheetsLink">{{ t('common.sheets') }}</router-link>
+        <router-link to="/le-projet">{{ t('common.about') }}</router-link>
+        <router-link :to="exploreLink" class="button">{{ t('common.explore') }}</router-link>
+        <LanguageSwitcher />
       </nav>
     </div>
   </header>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { supabase } from '../lib/supabase'
+import { useLocale } from '../composables/useLocale'
+import LanguageSwitcher from './LanguageSwitcher.vue'
 
 const isAuthenticated = ref(false)
 let authSubscription
+const { locale, t } = useLocale()
+
+// Generate locale-specific links
+const homeLink = computed(() => {
+  return locale.value === 'fr' ? '/' : `/${locale.value}`
+})
+
+const albumsLink = computed(() => {
+  return `${homeLink.value}#albums`
+})
+
+const sheetsLink = computed(() => {
+  return locale.value === 'fr' ? '/' : `/${locale.value}`
+})
+
+const exploreLink = computed(() => {
+  return locale.value === 'fr' ? '/' : `/${locale.value}`
+})
 
 onMounted(async () => {
   const { data: { session } } = await supabase.auth.getSession()
@@ -86,7 +107,7 @@ onUnmounted(() => {
 .main-nav {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 
 .main-nav a:not(.button) {

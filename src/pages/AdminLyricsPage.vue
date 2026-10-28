@@ -5,19 +5,21 @@
 
       <!-- Toolbar -->
       <AdminMobileNav :actions="[
-        { label: 'Retour', to: '/admin' },
-        { label: '+ Nouvelle parole', to: '/admin/lyrics/create', primary: true }
+        { label: '⬅️', to: '/admin' },
+        { label: '📝', to: '/admin/lyrics/create', primary: true }
       ]">
-        <div class="sort-buttons">
-          <button
-            v-for="sort in sortOptions"
-            :key="sort.value"
-            :class="['btn', 'btn-sort', { active: currentSort === sort.value }]"
-            @click="currentSort = sort.value"
-          >
-            {{ sort.label }}
-          </button>
-        </div>
+        <label class="sort-control">
+          <span>Trier par</span>
+          <select v-model="currentSort" class="sort-select">
+            <option
+              v-for="sort in sortOptions"
+              :key="sort.value"
+              :value="sort.value"
+            >
+              {{ sort.label }}
+            </option>
+          </select>
+        </label>
       </AdminMobileNav>
 
       <!-- Loading State -->
@@ -219,23 +221,29 @@ onMounted(async () => {
   background: var(--blue-dark);
 }
 
-.sort-buttons {
+.sort-control {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.btn-sort {
-  background: var(--paper-deep);
+  align-items: center;
+  gap: 10px;
   color: var(--ink);
-  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.btn-sort:hover,
-.btn-sort.active {
-  background: var(--blue);
-  color: white;
-  border-color: var(--blue);
+.sort-select {
+  min-width: 190px;
+  padding: 10px 36px 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink);
+  background: var(--paper-deep);
+  font: inherit;
+  cursor: pointer;
+}
+
+.sort-select:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
 }
 
 .loading {
@@ -359,12 +367,14 @@ onMounted(async () => {
     width: 100%;
   }
 
-  .sort-buttons {
+  .sort-control {
     width: 100%;
+    justify-content: space-between;
   }
 
-  .btn-sort {
+  .sort-select {
     flex: 1;
+    min-width: 0;
   }
 
   .admin-table {

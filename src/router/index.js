@@ -18,55 +18,170 @@ import AboutPage from '../pages/AboutPage.vue'
 import ContactPage from '../pages/ContactPage.vue'
 import LinksPage from '../pages/LinksPage.vue'
 import SideProjectsPage from '../pages/SideProjectsPage.vue'
-import EnglishPage from '../pages/EnglishPage.vue'
 import { useHead } from '@vueuse/head'
 
 const routes = [
+  // Root routes - default to French
   {
     path: '/',
     name: 'home',
-    component: HomePage
+    component: HomePage,
+    meta: { locale: 'fr' }
   },
   {
     path: '/en',
     name: 'english',
-    component: EnglishPage
+    component: HomePage,
+    meta: { locale: 'en' }
   },
+  {
+    path: '/de',
+    name: 'german',
+    component: HomePage,
+    meta: { locale: 'de' }
+  },
+
+  // Legacy French routes (backward compatibility) - will stay accessible
   {
     path: '/musique',
     name: 'songs',
-    component: SongsPage
+    component: SongsPage,
+    meta: { locale: 'fr' }
   },
   {
     path: '/musique/page/:page',
     name: 'songs-page',
-    component: SongsPage
+    component: SongsPage,
+    meta: { locale: 'fr' }
   },
   {
     path: '/categorie/chants',
     name: 'traditional-songs',
-    component: SongsPage
+    component: SongsPage,
+    meta: { locale: 'fr' }
   },
   {
     path: '/categorie/chants/:origin',
     name: 'songs-by-origin',
-    component: SongsPage
+    component: SongsPage,
+    meta: { locale: 'fr' }
   },
   {
     path: '/categorie/compositions-personnelles',
     name: 'original-compositions',
-    component: SongsPage
+    component: SongsPage,
+    meta: { locale: 'fr' }
   },
   {
     path: '/partitions-chants-folk',
     name: 'folk-sheets',
-    component: SongsPage
+    component: SongsPage,
+    meta: { locale: 'fr' }
   },
   {
     path: '/recherche',
     name: 'search',
-    component: SongsPage
+    component: SongsPage,
+    meta: { locale: 'fr' }
   },
+  {
+    path: '/musique/:songId-:slug',
+    name: 'song-detail',
+    component: SongDetailPage,
+    meta: { locale: 'fr' }
+  },
+
+  // French routes with /fr prefix
+  {
+    path: '/fr/musique',
+    name: 'songs-fr',
+    component: SongsPage,
+    meta: { locale: 'fr' }
+  },
+  {
+    path: '/fr/musique/page/:page',
+    name: 'songs-page-fr',
+    component: SongsPage,
+    meta: { locale: 'fr' }
+  },
+  {
+    path: '/fr/categorie/chants',
+    name: 'traditional-songs-fr',
+    component: SongsPage,
+    meta: { locale: 'fr' }
+  },
+  {
+    path: '/fr/categorie/chants/:origin',
+    name: 'songs-by-origin-fr',
+    component: SongsPage,
+    meta: { locale: 'fr' }
+  },
+  {
+    path: '/fr/categorie/compositions-personnelles',
+    name: 'original-compositions-fr',
+    component: SongsPage,
+    meta: { locale: 'fr' }
+  },
+  {
+    path: '/fr/partitions-chants-folk',
+    name: 'folk-sheets-fr',
+    component: SongsPage,
+    meta: { locale: 'fr' }
+  },
+  {
+    path: '/fr/recherche',
+    name: 'search-fr',
+    component: SongsPage,
+    meta: { locale: 'fr' }
+  },
+  {
+    path: '/fr/musique/:songId-:slug',
+    name: 'song-detail-fr',
+    component: SongDetailPage,
+    meta: { locale: 'fr' }
+  },
+
+  // English routes with /en/music
+  {
+    path: '/en/music',
+    name: 'songs-en',
+    component: SongsPage,
+    meta: { locale: 'en' }
+  },
+  {
+    path: '/en/music/page/:page',
+    name: 'songs-page-en',
+    component: SongsPage,
+    meta: { locale: 'en' }
+  },
+  {
+    path: '/en/music/:songId-:slug',
+    name: 'song-detail-en',
+    component: SongDetailPage,
+    meta: { locale: 'en' }
+  },
+
+  // German routes with /de/musik
+  {
+    path: '/de/musik',
+    name: 'songs-de',
+    component: SongsPage,
+    meta: { locale: 'de' }
+  },
+  {
+    path: '/de/musik/page/:page',
+    name: 'songs-page-de',
+    component: SongsPage,
+    meta: { locale: 'de' }
+  },
+  {
+    path: '/de/musik/:songId-:slug',
+    name: 'song-detail-de',
+    component: SongDetailPage,
+    meta: { locale: 'de' }
+  },
+
+  // Other pages
   {
     path: '/le-projet',
     name: 'about',
@@ -87,11 +202,8 @@ const routes = [
     name: 'side-projects',
     component: SideProjectsPage
   },
-  {
-    path: '/musique/:songId-:slug',
-    name: 'song-detail',
-    component: SongDetailPage
-  },
+
+  // Auth routes
   {
     path: '/bie-login',
     name: 'login',
@@ -156,24 +268,30 @@ const router = createRouter({
   }
 })
 
-// Protect admin routes from unauthenticated users
+// Default metadata
 const defaultPageMeta = {
   title: 'Bards in Exile - Paroles, partitions et arrangements de chants traditionnels',
-  description: 'Explorez les paroles, traductions et partitions de chants folk, médiévaux et traditionnels de France, de Suisse et d’Europe avec Bards in Exile.'
+  description: `Explorez les paroles, traductions et partitions de chants folk, médiévaux et traditionnels de France, de Suisse et d'Europe avec Bards in Exile.`
 }
 
+// Update page title and meta based on route
 router.afterEach((to) => {
-  if (['home', 'songs', 'songs-page', 'traditional-songs', 'songs-by-origin', 'original-compositions', 'folk-sheets', 'search', 'song-detail'].includes(to.name)) return
+  const publicPages = ['home', 'english', 'german', 'songs', 'songs-page', 'traditional-songs', 'songs-by-origin', 'original-compositions', 'folk-sheets', 'search', 'song-detail', 'songs-fr', 'songs-page-fr', 'traditional-songs-fr', 'songs-by-origin-fr', 'original-compositions-fr', 'folk-sheets-fr', 'search-fr', 'song-detail-fr', 'songs-en', 'songs-page-en', 'song-detail-en', 'songs-de', 'songs-page-de', 'song-detail-de']
 
-  const title = to.name === 'english' ? 'English section' : to.name === 'about' ? 'Le projet' : to.name === 'contact' ? 'Contact' : to.name === 'links' ? 'Liens' : to.name === 'side-projects' ? 'Side projects' : 'Espace membre'
-  const description = to.name === 'english'
-    ? 'Discover Bards in Exile, a project bringing European folk, medieval and traditional songs back to life. The English section is temporarily unavailable.'
-    : to.name === 'about'
-      ? 'Découvrez le projet Bards in Exile et son répertoire de chants folk, médiévaux et traditionnels.'
-      : defaultPageMeta.description
-  useHead({ title: `${title} | Bards in Exile`, meta: [{ name: 'description', content: description }] })
+  if (publicPages.includes(to.name)) return
+
+  const titles = {
+    about: 'Le projet',
+    contact: 'Contact',
+    links: 'Liens',
+    'side-projects': 'Side projects'
+  }
+
+  const title = titles[to.name] || 'Espace membre'
+  useHead({ title: `${title} | Bards in Exile`, meta: [{ name: 'description', content: defaultPageMeta.description }] })
 })
 
+// Protect admin routes
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     const { data: { session } } = await supabase.auth.getSession()
