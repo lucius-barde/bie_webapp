@@ -500,7 +500,6 @@ const fetchSongData = async () => {
         song_collection_legacy: data.song_collection_legacy || '',
         song_track_number: data.song_track_number || null,
         song_duration_sec: data.song_duration_sec || null,
-        song_image_gallery: data.song_image_gallery || [],
         song_bie_comments: data.song_bie_comments || '',
         song_type_legacy: data.song_type_legacy || '',
         song_origin_legacy: data.song_origin_legacy || '',
@@ -516,7 +515,7 @@ const fetchSongData = async () => {
         lyrics_id: null
       }
 
-      songImage.value = formData.value.song_image_gallery[0] || ''
+      songImage.value = data.song_image || ''
       await fetchSongLyricsId(data.song_catalog_id)
     }
   } catch (error) {
@@ -592,9 +591,7 @@ const submitForm = async () => {
 
     // Prepare data for update (remove null values except for catalog_id)
     const dataToUpdate = {
-      song_image_gallery: songImage.value.trim()
-        ? [songImage.value.trim(), ...formData.value.song_image_gallery.slice(1)]
-        : []
+      song_image: songImage.value.trim() || null
     }
     for (const [key, value] of Object.entries(formData.value)) {
       if (key !== 'song_catalog_id' && key !== 'lyrics_id') {

@@ -30,7 +30,7 @@
   - Vérification d'authentification obligatoire
 
 - **SongCreatePage.vue** - Formulaire de création d'un chant
-  - Tous les champs modifiables sauf song_sources, song_image_gallery, song_artist, uuid, created_at, edited_at
+  - Tous les champs modifiables sauf song_sources, song_artist, uuid, created_at, edited_at
   - Champ song_title obligatoire
   - Validation et gestion d'erreurs
   - Redirection vers /admin après création

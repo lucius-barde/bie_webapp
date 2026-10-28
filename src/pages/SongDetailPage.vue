@@ -181,9 +181,7 @@ const nextSong = ref(null)
 const loading = ref(true)
 const isAuthenticated = ref(false)
 const isUnlistedSong = computed(() => Number(song.value?.song_status) < 3)
-const songImageUrl = computed(() => getSongImageUrl(
-  song.value?.song_image || song.value?.song_image_gallery?.[0]
-))
+const songImageUrl = computed(() => getSongImageUrl(song.value?.song_image))
 
 const descriptionToShow = computed(() => {
   if (locale.value === 'en' && song.value?.song_description_en) return song.value.song_description_en
