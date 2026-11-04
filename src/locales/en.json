@@ -78,7 +78,8 @@
       "previous": "Previous song",
       "next": "Next song",
       "all": "All songs",
-      "edit": "Edit"
+      "edit": "Edit",
+      "editlyrics": "Edit lyrics"
     },
     "unlisted": "Unlisted song",
     "status": "status"

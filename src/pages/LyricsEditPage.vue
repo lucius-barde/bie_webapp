@@ -7,7 +7,7 @@
 
       <div v-else>
         <div class="song-form-header">
-          <router-link to="/admin/lyrics" class="back-link">← Retour à la gestion des paroles</router-link>
+          <router-link :to="callbackPath" class="back-link">← Retour à la gestion des paroles</router-link>
           <h1>Modifier la parole</h1>
         </div>
 
@@ -62,7 +62,7 @@
             <button type="submit" :disabled="isLoading" class="btn btn-primary">
               {{ isLoading ? 'Mise à jour en cours...' : 'Mettre à jour' }}
             </button>
-            <router-link to="/admin/lyrics" class="btn btn-secondary">Annuler</router-link>
+            <router-link :to="callbackPath" class="btn btn-secondary">Annuler</router-link>
           </div>
 
           <div v-if="errorMessage" class="error-message">
@@ -86,6 +86,9 @@ import { lyricLanguages } from '../lib/languages'
 
 const router = useRouter()
 const route = useRoute()
+const callbackPath = typeof route.query.callback === 'string' && route.query.callback.startsWith('/admin')
+  ? route.query.callback
+  : '/admin/lyrics'
 const isLoading = ref(false)
 const pageLoading = ref(true)
 const errorMessage = ref('')
@@ -180,7 +183,7 @@ const submitForm = async () => {
     successMessage.value = 'Parole mise à jour avec succès'
 
     setTimeout(() => {
-      router.push('/admin/lyrics')
+      router.push(callbackPath)
     }, 1000)
   } catch (error) {
     console.error('Error updating lyrics:', error)

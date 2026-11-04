@@ -28,7 +28,7 @@
               <span v-if="song.song_origin_legacy">{{ song.song_origin_legacy }}</span>
               <router-link
                 v-if="isAuthenticated"
-                :to="`/admin/song/${song.song_catalog_id}/edit`"
+                :to="{ path: `/admin/song/${song.song_catalog_id}/edit`, query: { callback: route.fullPath } }"
                 class="edit-button"
               >{{ t('songs.navigation.edit') }}</router-link>
             </p>
@@ -102,7 +102,7 @@
                 v-if="isAuthenticated && lyricsId"
                 :to="`/admin/lyrics/${lyricsId}/edit`"
                 class="edit-button lyrics-edit-button"
-              >{{ t('songs.navigation.edit') }}</router-link>
+              >{{ t('songs.navigation.editlyrics') }}</router-link>
             </div>
             <div class="bie-lyrics text-xl" v-html="renderInlineMarkdown(lyrics.main_lyrics)"></div>
           </section>

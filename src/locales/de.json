@@ -78,7 +78,8 @@
       "previous": "← Vorheriges Lied",
       "next": "Nächstes Lied →",
       "all": "Alle Lieder",
-      "edit": "Bearbeiten"
+      "edit": "Bearbeiten",
+      "editlyrics": "Liedtext bearbeiten"
     },
     "unlisted": "Nicht aufgelistetes Lied",
     "status": "Status"

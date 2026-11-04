@@ -90,25 +90,23 @@
             <!-- Type Legacy -->
             <div class="form-group w-1/2 pr-2">
             <label for="song_type_legacy">Type de chant</label>
-            <input
-                id="song_type_legacy"
-                v-model="formData.song_type_legacy"
-                type="text"
-                placeholder="Ex: Hymne, Cantique, Ballade"
-                class="form-input"
-            />
+            <select id="song_type_legacy" v-model="formData.song_type_legacy" class="form-input">
+              <option value="">-- Sélectionner un type --</option>
+              <option v-for="[frenchName, type] in sortedSongTypes" :key="frenchName" :value="frenchName">
+                {{ type.fr }}
+              </option>
+            </select>
             </div>
 
             <!-- Origin Legacy -->
             <div class="form-group w-1/2 pl-2">
             <label for="song_origin_legacy">Origine</label>
-            <input
-                id="song_origin_legacy"
-                v-model="formData.song_origin_legacy"
-                type="text"
-                placeholder="Ex: France, Occitanie"
-                class="form-input"
-            />
+            <select id="song_origin_legacy" v-model="formData.song_origin_legacy" class="form-input">
+              <option value="">-- Sélectionner une origine --</option>
+              <option v-for="[frenchName, origin] in sortedSongOrigins" :key="frenchName" :value="frenchName">
+                {{ origin.fr }}
+              </option>
+            </select>
             </div>
         </div>
 
@@ -184,22 +182,6 @@
           ></textarea>
         </div>
 
-        <!-- Form Actions -->
-        <div class="form-actions">
-          <button
-            type="submit"
-            :disabled="isLoading"
-            class="btn btn-primary"
-          >
-            {{ isLoading ? 'Création en cours...' : 'Créer le chant' }}
-          </button>
-          <router-link to="/admin" class="btn btn-secondary">Annuler</router-link>
-        </div>
-
-        <!-- Error Message -->
-        <div v-if="errorMessage" class="error-message">
-          {{ errorMessage }}
-        </div>
         <section class="form-group">
           <h2>Paroles</h2>
           <label for="newLyricsText">Paroles (laisser vide pour un chant instrumental)</label>
@@ -218,10 +200,27 @@
           >
             <option value="">-- Sélectionner une langue --</option>
             <option v-for="language in lyricLanguages" :key="language.code" :value="language.code">
-              {{ language.name }}
+              {{ language.name.split('|')[0].replace(/^fr:/, '') }}
             </option>
           </select>
         </section>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button
+            type="submit"
+            :disabled="isLoading"
+            class="btn btn-primary"
+          >
+            {{ isLoading ? 'Création en cours...' : 'Créer le chant' }}
+          </button>
+          <router-link to="/admin" class="btn btn-secondary">Annuler</router-link>
+        </div>
+
+        <!-- Error Message -->
+        <div v-if="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
 
       </form>
     </div>
@@ -229,10 +228,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '../lib/supabase'
 import { lyricLanguages } from '../lib/languages'
+import { songOrigins } from '../lib/songOrigins'
+import { songTypes } from '../lib/songTypes'
+
+const sortedSongTypes = computed(() => Object.entries(songTypes).sort(([, first], [, second]) =>
+  first.fr.localeCompare(second.fr, 'fr')
+))
+const sortedSongOrigins = computed(() => Object.entries(songOrigins).sort(([, first], [, second]) =>
+  first.fr.localeCompare(second.fr, 'fr')
+))
 
 const router = useRouter()
 const isLoading = ref(false)

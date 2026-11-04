@@ -78,7 +78,8 @@
       "previous": "Chanson précédente",
       "next": "Chanson suivante",
       "all": "Tous les chants",
-      "edit": "Éditer"
+      "edit": "Éditer",
+      "editlyrics": "Éditer les paroles"
     },
     "unlisted": "Chant non répertorié",
     "status": "statut"

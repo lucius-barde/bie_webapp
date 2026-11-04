@@ -9,7 +9,7 @@
       <!-- Form -->
       <div v-else>
         <div class="song-form-header">
-          <router-link to="/admin" class="back-link">← Retour à l'administration</router-link>
+          <router-link :to="callbackPath" class="back-link">← Retour</router-link>
           <h1>Modifier le chant: {{ formData.song_title || 'Chargement...' }}</h1>
         </div>
 
@@ -114,25 +114,23 @@
             <!-- Type Legacy -->
             <div class="form-group w-1/2 pr-2">
                 <label for="song_type_legacy">Type de chant</label>
-                <input
-                id="song_type_legacy"
-                v-model="formData.song_type_legacy"
-                type="text"
-                placeholder="Ex: Hymne, Cantique, Ballade"
-                class="form-input"
-                />
+                <select id="song_type_legacy" v-model="formData.song_type_legacy" class="form-input">
+                  <option value="">-- Sélectionner un type --</option>
+                  <option v-for="[frenchName, type] in sortedSongTypes" :key="frenchName" :value="frenchName">
+                    {{ type.fr }}
+                  </option>
+                </select>
             </div>
 
             <!-- Origin Legacy -->
             <div class="form-group w-1/2 pl-2">
                 <label for="song_origin_legacy">Origine</label>
-                <input
-                id="song_origin_legacy"
-                v-model="formData.song_origin_legacy"
-                type="text"
-                placeholder="Ex: France, Occitanie"
-                class="form-input"
-                />
+                <select id="song_origin_legacy" v-model="formData.song_origin_legacy" class="form-input">
+                  <option value="">-- Sélectionner une origine --</option>
+                  <option v-for="[frenchName, origin] in sortedSongOrigins" :key="frenchName" :value="frenchName">
+                    {{ origin.fr }}
+                  </option>
+                </select>
             </div>
           </div>
 
@@ -271,7 +269,7 @@
               >
                 <option value="">-- Sélectionner une langue --</option>
                 <option v-for="language in lyricLanguages" :key="language.code" :value="language.code">
-                  {{ language.name }}
+                  {{ language.name.split('|')[0].replace(/^fr:/, '') }}
                 </option>
               </select>
             </div>
@@ -316,7 +314,7 @@
             >
               {{ isLoading ? 'Mise à jour en cours...' : 'Mettre à jour' }}
             </button>
-            <router-link to="/admin" class="btn btn-secondary">Annuler</router-link>
+            <router-link :to="callbackPath" class="btn btn-secondary">Annuler</router-link>
           </div>
 
           <!-- Error Message -->
@@ -378,13 +376,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { supabase } from '../lib/supabase'
 import { lyricLanguages } from '../lib/languages'
+import { songOrigins } from '../lib/songOrigins'
+import { songTypes } from '../lib/songTypes'
 
 const router = useRouter()
 const route = useRoute()
+const callbackPath = typeof route.query.callback === 'string' && route.query.callback.startsWith('/') && !route.query.callback.startsWith('//')
+  ? route.query.callback
+  : '/admin'
+const sortedSongTypes = computed(() => Object.entries(songTypes).sort(([, first], [, second]) =>
+  first.fr.localeCompare(second.fr, 'fr')
+))
+const sortedSongOrigins = computed(() => Object.entries(songOrigins).sort(([, first], [, second]) =>
+  first.fr.localeCompare(second.fr, 'fr')
+))
 const isLoading = ref(false)
 const pageLoading = ref(true)
 const errorMessage = ref('')
@@ -642,7 +651,7 @@ const submitForm = async () => {
 
     // Redirect to admin page after 1 second
     setTimeout(() => {
-      router.push('/admin')
+      router.push(callbackPath)
     }, 1000)
   } catch (error) {
     console.error('Error updating song:', error)

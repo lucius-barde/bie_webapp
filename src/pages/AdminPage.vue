@@ -7,7 +7,8 @@
       <AdminMobileNav :actions="[
         { label: '🎵', to: '/admin/song/create', primary: true },
         { label: '📝', to: '/admin/lyrics' },
-        { label: '💿', to: '/admin/collections' }
+        { label: '💿', to: '/admin/collections' },
+        { label: '➕', to: '/admin/song/create' }
       ]">
         <label class="sort-control">
           <span>Trier par</span>
@@ -55,11 +56,11 @@
               :class="`row-status-${song.song_status}`"
             >
               <td class="actions">
-                <router-link :to="`/admin/song/${song.song_catalog_id}/edit`" class="action-link edit">Édit.</router-link>
+                <router-link :to="{ path: `/admin/song/${song.song_catalog_id}/edit`, query: { callback: '/admin' } }" class="action-link edit">Édit.</router-link>
 
                 <router-link
                   v-if="getLyricsId(song)"
-                  :to="`/admin/lyrics/${getLyricsId(song)}/edit`"
+                  :to="{ path: `/admin/lyrics/${getLyricsId(song)}/edit`, query: { callback: '/admin' } }"
                   class="action-link lyrics"
                 >
                   Par.
