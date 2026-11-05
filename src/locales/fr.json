@@ -79,7 +79,8 @@
       "next": "Chanson suivante",
       "all": "Tous les chants",
       "edit": "Éditer",
-      "editlyrics": "Éditer les paroles"
+      "editlyrics": "Éditer les paroles",
+      "back": "Retour"
     },
     "unlisted": "Chant non répertorié",
     "status": "statut"
@@ -90,6 +91,21 @@
     "folkSheets": "Partitions de chants folk"
   },
   "pages": {
+    "meta": {
+      "homeTitle": "Bards in Exile - Paroles, partitions et arrangements de chants traditionnels",
+      "homeDescription": "Explorez les paroles, traductions et partitions de chants folk, médiévaux et traditionnels de France, de Suisse et d’Europe avec Bards in Exile.",
+      "songListTitle": "| Paroles{sheet} de chants - Bards in Exile",
+      "songListSearchTitle": "{title} {query} | Paroles de chants - Bards in Exile",
+      "songListDescription": "Explorez le répertoire de paroles de chants folk, médiévaux et traditionnels de Bards in Exile.",
+      "songListSheetsDescription": "Parcourez les partitions de chants folk et traditionnels de France, de Suisse et d’Europe proposées par Bards in Exile.",
+      "songListSearchDescription": "Résultats de recherche pour {query} dans le répertoire de chants Bards in Exile.",
+      "songListOriginDescription": "Découvrez les paroles et les histoires de chants folk et traditionnels originaires de {origin}.",
+      "songListPersonalDescription": "Découvrez les paroles et arrangements des compositions originales de Bards in Exile.",
+      "songListTraditionalDescription": "Explorez des paroles de chants folk, médiévaux et traditionnels d’Europe.",
+      "songDetailFallbackTitle": "Chant",
+      "songDetailTitle": "{title} - Paroles{sheet} | Bards in Exile",
+      "songDetailFallbackDescription": "Paroles et ressources autour des chants folk et traditionnels de Bards in Exile."
+    },
     "songs": {
       "allSongs": "Tous les chants",
       "traditionalSongs": "Chants traditionnels",

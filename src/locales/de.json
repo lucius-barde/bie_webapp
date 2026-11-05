@@ -79,7 +79,8 @@
       "next": "Nächstes Lied →",
       "all": "Alle Lieder",
       "edit": "Bearbeiten",
-      "editlyrics": "Liedtext bearbeiten"
+      "editlyrics": "Liedtext bearbeiten",
+      "back": "Zurück"
     },
     "unlisted": "Nicht aufgelistetes Lied",
     "status": "Status"
@@ -90,6 +91,21 @@
     "folkSheets": "Volksmusik-Noten"
   },
   "pages": {
+    "meta": {
+      "homeTitle": "Bards in Exile - Liedtexte, Noten und Arrangements traditioneller Lieder",
+      "homeDescription": "Entdecken Sie mit Bards in Exile Liedtexte, Übersetzungen und Noten für Folk-, mittelalterliche und traditionelle Lieder aus Frankreich, der Schweiz und Europa.",
+      "songListTitle": "| Liedtexte{sheet} - Bards in Exile",
+      "songListSearchTitle": "{title} {query} | Liedtexte - Bards in Exile",
+      "songListDescription": "Entdecken Sie die Sammlung von Folk-, mittelalterlichen und traditionellen Liedern von Bards in Exile.",
+      "songListSheetsDescription": "Durchsuchen Sie Noten für Folk- und traditionelle Lieder aus Frankreich, der Schweiz und Europa bei Bards in Exile.",
+      "songListSearchDescription": "Suchergebnisse für {query} in der Liedersammlung von Bards in Exile.",
+      "songListOriginDescription": "Entdecken Sie Liedtexte und Geschichten von Folk- und traditionellen Liedern aus {origin}.",
+      "songListPersonalDescription": "Entdecken Sie Liedtexte und Arrangements der Originalkompositionen von Bards in Exile.",
+      "songListTraditionalDescription": "Entdecken Sie Liedtexte von Folk-, mittelalterlichen und traditionellen Liedern aus Europa.",
+      "songDetailFallbackTitle": "Lied",
+      "songDetailTitle": "{title} - Liedtexte{sheet} | Bards in Exile",
+      "songDetailFallbackDescription": "Liedtexte und Ressourcen zu Folk- und traditionellen Liedern von Bards in Exile."
+    },
     "songs": {
       "allSongs": "Alle Lieder",
       "traditionalSongs": "Volkslieder",

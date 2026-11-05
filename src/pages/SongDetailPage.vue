@@ -18,7 +18,7 @@
         >
         <div class="song-hero-overlay">
           <div class="container song-hero-content">
-            <router-link :to="backLink" class="back-link">← {{ t('songs.navigation.previous') }}</router-link>
+            <router-link :to="backLink" class="back-link">← {{ t('songs.navigation.back') }}</router-link>
             <h1>{{ song.song_title }}</h1>
             <p v-if="isUnlistedSong" class="unlisted-alert" role="status">
               {{ t('songs.unlisted') }} ({{ t('songs.status') }}: {{ song.song_status }})
@@ -207,13 +207,20 @@ const cleanMetaText = (value, maxLength = 155) => String(value || '')
   .trim()
   .slice(0, maxLength)
 
+const interpolateMeta = (key, values = {}) => Object.entries(values).reduce(
+  (text, [name, value]) => text.replace(`{${name}}`, value),
+  t(key)
+)
 const songMetaTitle = computed(() => {
-  const title = song.value?.song_title || 'Chant'
+  const title = song.value?.song_title || t('pages.meta.songDetailFallbackTitle')
   const hasSheet = Boolean(song.value?.song_musicsheet_link)
-  return `${title} - Paroles${hasSheet ? ' et partitions' : ''} | Bards in Exile`
+  const sheetLabel = hasSheet
+    ? (locale.value === 'fr' ? ' et partitions' : locale.value === 'en' ? ' and sheet music' : ' und Noten')
+    : ''
+  return interpolateMeta('pages.meta.songDetailTitle', { title, sheet: sheetLabel })
 })
 const songMetaDescription = computed(() => {
-  if (!song.value) return 'Paroles et ressources autour des chants folk et traditionnels de Bards in Exile.'
+  if (!song.value) return t('pages.meta.songDetailFallbackDescription')
 
   const metadata = [
     song.value.song_type_legacy,

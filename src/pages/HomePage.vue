@@ -235,10 +235,10 @@ import { useHead } from '@vueuse/head'
 
 useHead({
   link: [{ rel: 'canonical', href: `${window.location.origin}/` }],
-  title: 'Bards in Exile - Paroles, partitions et arrangements de chants traditionnels',
+  title: computed(() => t('pages.meta.homeTitle')),
   meta: [{
     name: 'description',
-    content: 'Explorez les paroles, traductions et partitions de chants folk, médiévaux et traditionnels de France, de Suisse et d’Europe avec Bards in Exile.'
+    content: computed(() => t('pages.meta.homeDescription'))
   }]
 })
 
@@ -296,14 +296,19 @@ const songDetailLink = (song) => {
 }
 
 const originLink = (origin) => {
-  const path = origin === 'B.i.E'
-    ? 'compositions-personnelles'
-    : `chants/${encodeURIComponent(origin)}`
+  if (origin === 'B.i.E') {
+    if (locale.value === 'en') return '/en/category/songs/compositions-personnelles'
+    if (locale.value === 'de') return '/de/kategorie/lieder/compositions-personnelles'
+    return '/categorie/compositions-personnelles'
+  }
 
-  if (locale.value === 'fr') return `/categorie/${path}`
-  if (locale.value === 'en') return '/en/music'
-  if (locale.value === 'de') return '/de/musik'
-  return `/categorie/${path}`
+  const baseRoutes = {
+    fr: '/categorie/chants',
+    en: '/en/category/songs',
+    de: '/de/kategorie/lieder'
+  }
+  const base = baseRoutes[locale.value] || baseRoutes.fr
+  return `${base}/${encodeURIComponent(origin)}`
 }
 
 const translateSongType = (frenchType) => {

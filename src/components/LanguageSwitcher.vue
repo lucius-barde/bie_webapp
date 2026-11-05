@@ -1,25 +1,27 @@
 <template>
   <div class="language-switcher">
-    <a
+    <RouterLink
       v-for="loc in locales"
       :key="loc"
-      :href="hrefFor(loc)"
+      :to="pathFor(loc)"
       :class="['lang-btn', { active: isCurrentLocale(loc) }]"
       :aria-label="`Switch to ${loc.toUpperCase()}`"
     >
       {{ loc.toUpperCase() }}
-    </a>
+    </RouterLink>
   </div>
 </template>
 
 <script setup>
+import { useRoute, RouterLink } from 'vue-router'
 import { useLocale } from '../composables/useLocale'
+import { getLocalizedPath } from '../lib/localizedRoute'
 
+const route = useRoute()
 const { isCurrentLocale, supportedLocales } = useLocale()
 
 const locales = supportedLocales
-
-const hrefFor = (loc) => (loc === 'fr' ? '/' : `/${loc}`)
+const pathFor = (locale) => getLocalizedPath(route, locale)
 </script>
 
 <style scoped>

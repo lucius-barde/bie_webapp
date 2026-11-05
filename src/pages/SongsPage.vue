@@ -152,10 +152,15 @@ const isSearch = computed(() => route.path === '/recherche' || route.path === '/
 const isCategoryRoute = computed(() => route.path.startsWith('/fr/categorie/') || route.path.startsWith('/categorie/') || route.path.startsWith('/en/category/songs/') || route.path.startsWith('/de/kategorie/lieder/'))
 const isPersonalCompositions = computed(() => route.path === '/categorie/compositions-personnelles' || route.path === '/fr/categorie/compositions-personnelles' || (route.params.categorySlug === 'compositions-personnelles'))
 const isTraditionalSongs = computed(() => route.path === '/categorie/chants' || route.path === '/fr/categorie/chants' || (route.params.categorySlug === 'chants' && locale.value !== 'fr'))
+const originFilter = computed(() => route.params.origin || (
+  route.params.categorySlug && route.params.categorySlug !== 'compositions-personnelles' && route.params.categorySlug !== 'chants'
+    ? String(route.params.categorySlug)
+    : ''
+))
 
 const pageTitle = computed(() => {
   if (isSheetList.value) {
-    return 'Partitions de chants folk'
+    return t('pages.songs.folkSheets')
   }
   if (isPersonalCompositions.value) {
     return t('pages.songs.personalCompositions')
@@ -166,33 +171,39 @@ const pageTitle = computed(() => {
   if (route.path === '/en/music' || route.path === '/de/musik') {
     return t('pages.songs.allSongs')
   }
-  if (route.params.origin) return getSongOriginTranslated(route.params.origin)
+  if (originFilter.value) return getSongOriginTranslated(originFilter.value)
   if (isSearch.value) {
     return t('pages.songs.searchResults')
   }
   return t('pages.songs.allSongs')
 })
+const interpolateMeta = (key, values = {}) => Object.entries(values).reduce(
+  (text, [name, value]) => text.replace(`{${name}}`, value),
+  t(key)
+)
 const pageMetaTitle = computed(() => {
-  const title = pageTitle.value
-  if (isSearch.value) return `${title} ${searchTerm.value} | Paroles de chants - Bards in Exile`
-  return `${title} | Paroles${isSheetList.value ? ' et partitions' : ''} de chants - Bards in Exile`
+  if (isSearch.value) {
+    return interpolateMeta('pages.meta.songListSearchTitle', { title: pageTitle.value, query: searchTerm.value })
+  }
+  return `${pageTitle.value} ${interpolateMeta('pages.meta.songListTitle', { sheet: isSheetList.value ? (locale.value === 'fr' ? ' et partitions' : locale.value === 'en' ? ' and sheet music' : ' und Noten') : '' })}`
 })
 const pageMetaDescription = computed(() => {
-  if (isSheetList.value) return 'Parcourez les partitions de chants folk et traditionnels de France, de Suisse et d\'Europe proposees par Bards in Exile.'
-  if (isSearch.value) return `Resultats de recherche pour ${searchTerm.value} dans le repertoire de chants Bards in Exile.`
-  if (route.params.origin) return `Decouvrez les paroles et les histoires de chants folk et traditionnels originaires de ${String(route.params.origin)}.`
-  if (isPersonalCompositions.value) return 'Decouvrez les paroles et arrangements des compositions originales de Bards in Exile.'
-  if (isTraditionalSongs.value) return 'Explorez des paroles de chants folk, medievaux et traditionnels d\'Europe.'
-  return 'Explorez le repertoire de paroles de chants folk, medievaux et traditionnels de Bards in Exile.'
+  if (isSheetList.value) return t('pages.meta.songListSheetsDescription')
+  if (isSearch.value) return interpolateMeta('pages.meta.songListSearchDescription', { query: searchTerm.value })
+  if (originFilter.value) return interpolateMeta('pages.meta.songListOriginDescription', { origin: getSongOriginTranslated(originFilter.value) })
+  if (isPersonalCompositions.value) return t('pages.meta.songListPersonalDescription')
+  if (isTraditionalSongs.value) return t('pages.meta.songListTraditionalDescription')
+  return t('pages.meta.songListDescription')
 })
 const breadcrumbItems = computed(() => {
   const home = { label: t('common.home'), to: '/' }
   const title = isSearch.value ? t('pages.songs.searchResults') : pageTitle.value
   const items = [home]
 
-  if (route.params.origin) {
-    items.push({ label: t('pages.songs.traditionalSongs'), to: '/categorie/chants' })
-    items.push({ label: getSongOriginTranslated(route.params.origin) })
+  if (originFilter.value) {
+    const categoryPath = locale.value === 'en' ? '/en/category/songs/chants' : locale.value === 'de' ? '/de/kategorie/lieder/chants' : '/categorie/chants'
+    items.push({ label: t('pages.songs.traditionalSongs'), to: categoryPath })
+    items.push({ label: getSongOriginTranslated(originFilter.value) })
   } else {
     items.push({ label: title })
   }
@@ -220,7 +231,7 @@ const pageSubtitle = computed(() => {
   if (route.path === '/en/music' || route.path === '/de/musik') {
     return t('pages.songs.traditionalSongsDescription')
   }
-  if (route.params.origin) return t('pages.songs.originDescription')
+  if (originFilter.value) return t('pages.songs.originDescription')
   if (isSearch.value) {
     return `${t('pages.songs.searchResultsDescription')} « ${searchTerm.value} »`
   }
@@ -236,10 +247,10 @@ const fetchSongs = async () => {
 
       if (isPersonalCompositions.value) {
         query = query.eq('song_origin_legacy', 'B.i.E')
-      } else if (isTraditionalSongs.value && !route.params.origin) {
+      } else if (isTraditionalSongs.value && !originFilter.value) {
         query = query.neq('song_origin_legacy', 'B.i.E')
-      } else if (route.params.origin) {
-        query = query.eq('song_origin_legacy', String(route.params.origin))
+      } else if (originFilter.value) {
+        query = query.eq('song_origin_legacy', String(originFilter.value))
       }
 
       if (isSheetList.value) query = query.not('song_musicsheet_link', 'is', null).neq('song_musicsheet_link', '')
@@ -312,23 +323,18 @@ const originLink = (origin) => {
     },
     en: {
       personalCompositions: '/en/category/songs/compositions-personnelles',
-      songs: '/en/category/songs/chants'
+      songs: '/en/category/songs'
     },
     de: {
       personalCompositions: '/de/kategorie/lieder/compositions-personnelles',
-      songs: '/de/kategorie/lieder/chants'
+      songs: '/de/kategorie/lieder'
     }
   }
   const base = baseRoutes[locale.value] || baseRoutes.fr
   if (origin === 'B.i.E') {
     return base.personalCompositions
   }
-  // All locales now have category routes
-  if (locale.value === 'fr') {
-    return `${base.songs}/${encodeURIComponent(origin)}`
-  }
-  // EN/DE: use category routes
-  return base.songs
+  return `${base.songs}/${encodeURIComponent(origin)}`
 }
 
 const pageLink = (page) => {

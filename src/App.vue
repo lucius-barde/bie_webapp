@@ -7,9 +7,17 @@
 </template>
 
 <script setup>
+import { watchEffect } from 'vue'
 import { RouterView } from 'vue-router'
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
+import { useLocale } from './composables/useLocale'
+
+const { locale } = useLocale()
+
+watchEffect(() => {
+  document.documentElement.lang = locale.value
+})
 </script>
 
 <style>
